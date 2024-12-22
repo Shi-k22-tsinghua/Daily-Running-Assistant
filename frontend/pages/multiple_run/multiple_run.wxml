@@ -34,10 +34,15 @@
             <text>{{verifiedRoomID}}房间：</text>
         </view>
         <view class="user-list">
-            <!-- Iterate through users -->
-            <block wx:for="{{users}}" wx:key="id">
+            <block wx:for="{{users}}" wx:key="username">
                 <view class="user">
-                    <image class="profile-pic" src="{{item.profilePic}}" mode="aspectFill" />
+                    <image 
+                        class="profile-pic" 
+                        src="{{item.profilePic}}" 
+                        mode="aspectFill"
+                        binderror="handleImageError"
+                        data-index="{{index}}"
+                    />
                     <text class="username">{{item.username}}</text>
                 </view>
             </block>
