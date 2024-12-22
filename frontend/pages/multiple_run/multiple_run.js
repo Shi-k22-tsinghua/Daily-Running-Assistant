@@ -103,6 +103,11 @@ Page({
                     longitude: res.longitude,
                     showMap: true,
                 });
+
+                this.coordinateInterval = setInterval(this.record.bind(this), 10000); // Every 10 seconds
+                this.updateOtherRunners();
+
+
             },
             fail: (error) => {
                 console.error('获取位置失败', error);
@@ -144,7 +149,8 @@ Page({
             success(res) {
                 if (res.data.success && res.data.code === 'ROOM_FOUND') {
                     const users = res.data.data.runners.map(user => ({
-                        username: user.username,
+                        // Use nickname if available, otherwise fall back to username
+                        username: user.nickname || user.username,
                         profilePic: global.api.getProfilePicture(user.username) || '../../images/my-icon.png',
                         latitude: user.latitude,
                         longitude: user.longitude,
@@ -156,7 +162,6 @@ Page({
                         users: users
                     });
                 }
-                // ... rest of your success handler
             },
             fail(err) {
                 wx.showToast({
@@ -165,6 +170,9 @@ Page({
                 });
             }
         });
+
+
+        //record(); //为了初始化坐标
 
         this.formatPace();
         this.otherRunnersInterval = setInterval(this.updateOtherRunners.bind(this), 5000);
@@ -208,7 +216,7 @@ Page({
                     // 更新用户列表数据
                     const updatedUsers = res.data.data.runners.map(runner => ({
                         profilePic: global.api.getProfilePicture(runner.username) || '../../images/my-icon.png',
-                        username: runner.username,
+                        username: runner.nickname || runner.username,
                         nickname: runner.nickname,
                         meters: runner.meters,
                         seconds: runner.seconds,
@@ -240,15 +248,38 @@ Page({
         })
         if (this.data.running == true) {
             console.log("开始跑步")
-            this.interval = setInterval(this.record.bind(this), this.data.interval);
+            // If not already tracking, start tracking (though it should already be tracking)
+            if (!this.interval) {
+                this.interval = setInterval(this.record.bind(this), this.data.interval);
+            }
+            
+            // Set start time if not already set
             if (this.data.startTime === '') {
                 this.setData({
                     startTime: new Date().toISOString()
                 });
             }
+    
+            // Additional API call to mark run as started
+            wx.request({
+                url: global.utils.getAPI(global.utils.serverURL, `/api/runRoom/start`),
+                method: 'POST',
+                data: {
+                    runID: this.data.verifiedRoomID,
+                    username: wx.getStorageSync('username')
+                },
+                success: (res) => {
+                    console.log('跑步状态更新成功');
+                },
+                fail: (error) => {
+                    console.error('跑步状态更新失败:', error);
+                }
+            });
         } else {
             console.log("暂停/结束跑步")
+            // You might want to keep tracking, just mark as not actively running
             clearInterval(this.interval);
+            this.interval = null;
         }
     },
 
@@ -402,6 +433,9 @@ Page({
         }
         if (this.otherRunnersInterval) {
             clearInterval(this.otherRunnersInterval);
+        }
+        if (this.coordinateInterval) {
+            clearInterval(this.coordinateInterval);
         }
     }
 

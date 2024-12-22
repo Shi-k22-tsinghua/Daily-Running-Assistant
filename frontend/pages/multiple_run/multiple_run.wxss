@@ -12,7 +12,7 @@
 }
 
 .counter{
-    width: 150rpx;
+    width: 190rpx;
     background-color: #fff;
     opacity: 0.8;
     position: fixed;
