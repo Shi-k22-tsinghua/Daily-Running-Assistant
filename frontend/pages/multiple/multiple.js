@@ -52,7 +52,7 @@ Page({
         }
 
         wx.request({
-            url: `http://124.221.96.133:8000/api/runRoom/create`,
+            url: global.utils.getAPI(global.utils.serverURL, '/api/runRoom/create'),
             method: 'POST',
             data: data,
             success: (res) => {
@@ -109,7 +109,7 @@ Page({
         }
 
         wx.request({
-            url: `http://124.221.96.133:8000/api/runRoom/join`,
+            url: global.utils.getAPI(global.utils.serverURL, '/api/runRoom/join'),
             method: 'POST',
             data: data,
             success: (res) => {
@@ -120,6 +120,7 @@ Page({
                     });
 
                     wx.setStorageSync('verifiedRoomID', roomID),
+                    wx.setStorageSync('verifiedRoomPassword', password),
 
                         // Navigate to the multiple_run room
                         wx.navigateTo({
