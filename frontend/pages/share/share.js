@@ -37,8 +37,7 @@ Page({
     /**
      * 获取帖子列表
      */
-    fetchPosts: function () {
-        console.log('call fetchPosts function')
+    fetchPosts: function() {
         const that = this;
         wx.request({
             url: global.utils.getAPI(global.utils.serverURL, '/api/users/share/posts'),
@@ -47,6 +46,7 @@ Page({
                 if (res.statusCode === 200) {
                     this.setData({
                         posts: res.data.posts.reverse(),
+                        serverURL: global.utils.serverURL  // Add this line
                     });
                 } else {
                     wx.showToast({
@@ -56,13 +56,7 @@ Page({
                     });
                 }
             },
-            fail: () => {
-                wx.showToast({
-                    title: '网络请求失败',
-                    icon: 'none',
-                    duration: 2000
-                });
-            }
+            // ... rest of your code
         });
     },
 
