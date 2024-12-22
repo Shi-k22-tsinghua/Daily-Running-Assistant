@@ -5,6 +5,9 @@ const jwt = require('jsonwebtoken');
 const fs = require('fs');
 const path = require('path');
 
+const multer = require('multer');
+const upload = multer().array('images[]', 3); // Allow up to 3 images
+
 // 获取环境变量中的密钥
 //TODO:
 const SECRET_KEY = process.env.SECRET_KEY;
@@ -522,40 +525,138 @@ const deleteRunRecord = async (req, res) => {
     }
 };
 
+const activeUploads = new Map();
+const uploadPromises = new Map();
+
 const createPost = async (req, res) => {
     try {
         const { title, content, username } = req.body;
-        console.log(title)
+        console.log('Received request with:', {
+            title,
+            content,
+            username,
+            hasFiles: req.files && req.files.length > 0,
+            filesCount: req.files?.length,
+            timestamp: new Date()
+        });
 
         const user = await User.findOne({ username });
         if (!user) {
             return res.status(404).json({ message: "User not found" });
         }
 
-        let imageIds = [];
-        // If using multer with array:
-        if (req.files) {  // Just req.files if using multer.array()
-            for (const file of req.files) {
-                const uploadStream = gfs.openUploadStream(username + '-post-image-' + Date.now(), {
-                    contentType: file.mimetype
-                });
-                uploadStream.end(file.buffer);
-                imageIds.push(uploadStream.id);
+        // Create a unique key for this post
+        const postKey = `${username}-${title}-${content}`;
+        
+        // If there's an ongoing upload for this post, wait for it
+        if (uploadPromises.has(postKey)) {
+            console.log('Adding images to existing post...');
+            const existingPost = await uploadPromises.get(postKey);
+            
+            if (existingPost && req.files && req.files.length > 0) {
+                // Get the current post from the database to ensure we have the latest version
+                const currentPost = await Post.findById(existingPost._id);
+                
+                // Add new images
+                const newImageIds = [];
+                for (const file of req.files) {
+                    const uploadStream = gfs.openUploadStream(username + '-post-image-' + Date.now(), {
+                        contentType: file.mimetype
+                    });
+                    uploadStream.end(file.buffer);
+                    newImageIds.push(uploadStream.id);
+                }
+
+                // Update using findOneAndUpdate to avoid parallel save issues
+                const updatedPost = await Post.findOneAndUpdate(
+                    { _id: existingPost._id },
+                    { $push: { images: { $each: newImageIds } } },
+                    { new: true }
+                );
+
+                console.log('Added new images. Total images:', updatedPost.images.length);
+                return res.status(200).json({ message: "Image added to existing post", post: updatedPost });
             }
         }
 
-        const newPost = new Post({
-            title,
-            content,
-            author: user._id,
-            images: imageIds
+        // Create a new promise for this upload
+        const uploadPromise = new Promise(async (resolve) => {
+            let imageIds = [];
+            if (req.files && req.files.length > 0) {
+                for (const file of req.files) {
+                    const uploadStream = gfs.openUploadStream(username + '-post-image-' + Date.now(), {
+                        contentType: file.mimetype
+                    });
+                    uploadStream.end(file.buffer);
+                    imageIds.push(uploadStream.id);
+                }
+                console.log('Created new post with images:', imageIds.length);
+            }
+
+            const newPost = new Post({
+                title,
+                content,
+                author: user._id,
+                images: imageIds
+            });
+
+            await newPost.save();
+            user.posts.push(newPost._id);
+            await user.save();
+            resolve(newPost);
         });
 
-        await newPost.save();
-        user.posts.push(newPost._id);
-        await user.save();
+        // Store the promise
+        uploadPromises.set(postKey, uploadPromise);
+
+        // Clean up after 5 seconds
+        setTimeout(() => {
+            uploadPromises.delete(postKey);
+        }, 5000);
+
+        // Wait for this upload to complete
+        const post = await uploadPromise;
+        return res.status(200).json({ message: "Post created successfully", post: post });
+
+    } catch (error) {
+        console.error('Error in createPost:', error);
+        res.status(500).json({ message: error.message });
+    }
+};
+
+// In user.controller.js
+const uploadPostImage = async (req, res) => {
+    try {
+        const { username } = req.body;
         
-        return res.status(200).json({ message: "Post created successfully", post: newPost });
+        if (!req.file) {
+            return res.status(400).json({ message: "No file uploaded" });
+        }
+
+        const uploadStream = gfs.openUploadStream(username + '-post-image-' + Date.now(), {
+            contentType: req.file.mimetype
+        });
+        uploadStream.end(req.file.buffer);
+        
+        return res.json({ imageId: uploadStream.id });
+    } catch (error) {
+        console.error('Error uploading image:', error);
+        res.status(500).json({ message: error.message });
+    }
+};
+
+// Get post image
+const getPostImage = async (req, res) => {
+    try {
+        const imageId = req.params.imageId;
+        // Create download stream from GridFS
+        const downloadStream = gfs.openDownloadStream(new mongoose.Types.ObjectId(imageId));
+
+        // Set the proper content type
+        res.set('Content-Type', 'image/jpeg');  // Adjust content type if needed
+
+        // Pipe the file to the response
+        downloadStream.pipe(res);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -980,6 +1081,8 @@ module.exports = {
     getRunRecords, // get all run records
 
     createPost,
+    uploadPostImage,
+    getPostImage,
     getPosts,
     getPostById,
     getPostByUsername,
