@@ -45,9 +45,12 @@ router.get('/run/records/:username/:recordId', userController.getRunRecordById);
 router.delete('/run/records/:username/:recordId', userController.deleteRunRecord); // delete run record by id
 
 // 创建帖子
-router.post('/share/posts', userController.createPost);
+//router.post('/share/posts', userController.createPost);
+router.post('/share/posts', upload.array('images', 3), userController.createPost);
 // 获取帖子列表
 router.get('/share/posts', userController.getPosts);
+//router.get('/posts/images/:imageId', userController.getPostImage);
+
 // 获取单个帖子
 router.get('/share/posts/:postId', userController.getPostById);
 // 获取用户的帖子

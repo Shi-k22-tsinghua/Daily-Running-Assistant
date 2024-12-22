@@ -522,63 +522,40 @@ const deleteRunRecord = async (req, res) => {
     }
 };
 
-// send post
 const createPost = async (req, res) => {
     try {
         const { title, content, username } = req.body;
+        console.log(title)
 
-        // 查找用户
         const user = await User.findOne({ username });
-
         if (!user) {
             return res.status(404).json({ message: "User not found" });
         }
 
-        // 处理上传的图片
         let imageIds = [];
-        if (req.files && req.files.images) {
-            // 如果有多个文件，req.files.images 将是一个数组
-            // 如果只有一个文件，req.files.images 将是一个对象
-            const files = Array.isArray(req.files.images) ? req.files.images : [req.files.images];
-
-            for (const file of files) {
-                // 创建上传流并获取文件ID
+        // If using multer with array:
+        if (req.files) {  // Just req.files if using multer.array()
+            for (const file of req.files) {
                 const uploadStream = gfs.openUploadStream(username + '-post-image-' + Date.now(), {
                     contentType: file.mimetype
                 });
-
-                // 将文件缓冲区写入上传流
                 uploadStream.end(file.buffer);
-
-                // 将文件ID添加到数组中
                 imageIds.push(uploadStream.id);
             }
         }
-/*
-        // Create upload stream
-        const uploadStream = gfs.openUploadStream(username + '-profile-picture' , {
-            contentType: req.file.mimetype
-        });
 
-        // Write file to GridFS
-        uploadStream.end(req.file.buffer);
-
-        // Update user's profilePicture field with the new file ID
-        user.profilePicture = uploadStream.id;
-        */
-        // 创建帖子并保存到数据库
         const newPost = new Post({
-            title: title,
-            content: content,
-            author: user._id, // 将帖子与用户关联
-            images: imageIds // 将图片文件ID保存到帖子中
+            title,
+            content,
+            author: user._id,
+            images: imageIds
         });
 
         await newPost.save();
         user.posts.push(newPost._id);
         await user.save();
         
-        return res.status(200).json({ message: "Post created successfully",post: newPost });
+        return res.status(200).json({ message: "Post created successfully", post: newPost });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
