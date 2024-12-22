@@ -1,4 +1,5 @@
 // pages/post/post.js
+const utils = require('../../utils/util.js')
 const app = require('../../app.js');
 
 Page({
@@ -108,8 +109,7 @@ Page({
         const that = this // 保存对post页面的引用
         // 发送请求到服务器，创建帖子
         wx.request({
-            url: 'http://124.221.96.133:8000/api/users/share/posts', // 修正了URL
-            //url: global.utils.getAPI(global.utils.serverURL, '/api/users/share/posts'),
+            url: global.utils.getAPI(global.utils.serverURL, '/api/users/share/posts'),
             method: 'POST',
             data: {
                 title: title,
