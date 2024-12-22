@@ -18,6 +18,8 @@ Page({
         paceFormatted: '', // 格式化配速输出
         startTime: '', // 开始跑步时间
 
+        defaultPicUrl: '../../images/my-icon.png',  // Add this line
+
         users: [{
                 profilePic: '../../images/my-icon.png',
                 username: 'NULL'
@@ -57,7 +59,21 @@ Page({
         ],
 
         verifiedRoomID: '',
+        verifiedRoomPassword: '',
         lastUpdateTime: null, // 上次更新时间
+    },
+
+
+    handleImageError: function(e) {
+        const index = e.currentTarget.dataset.index;
+        const usersArray = this.data.users;
+        
+        // Update just the profile pic for the user whose image failed to load
+        usersArray[index].profilePic = this.data.defaultPicUrl;
+        
+        this.setData({
+            users: usersArray
+        });
     },
 
     formatPace: function () {
@@ -129,22 +145,18 @@ Page({
                 if (res.data.success && res.data.code === 'ROOM_FOUND') {
                     const users = res.data.data.runners.map(user => ({
                         username: user.username,
-                        profilePic: user.profile_pic,
+                        profilePic: global.api.getProfilePicture(user.username) || '../../images/my-icon.png',
                         latitude: user.latitude,
                         longitude: user.longitude,
                     }));
-
+            
                     console.log('Users:', users);
-
+            
                     that.setData({
                         users: users
                     });
-                } else {
-                    wx.showToast({
-                        title: '加载用户失败',
-                        icon: 'none'
-                    });
                 }
+                // ... rest of your success handler
             },
             fail(err) {
                 wx.showToast({
@@ -194,7 +206,7 @@ Page({
 
                     // 更新用户列表数据
                     const updatedUsers = res.data.data.runners.map(runner => ({
-                        profilePic: runner.profile_pic || '../../images/my-icon.png',
+                        profilePic: global.api.getProfilePicture(runner.username) || '../../images/my-icon.png',
                         username: runner.username,
                         nickname: runner.nickname,
                         meters: runner.meters,
@@ -294,6 +306,7 @@ Page({
             
             this.formatPace();
             
+            /*
             const updateData = {
                 username: wx.getStorageSync('username'),
                 runData: {
@@ -319,6 +332,32 @@ Page({
                     }
                 }
             });
+            */
+
+            const updatedData = {
+                runID: wx.getStorageSync('verifiedRoomID'),
+                password: wx.getStorageSync('verifiedRoomPassword'),
+                username: wx.getStorageSync('username'),
+                longitude: res.longitude,
+                latitude: res.latitude,
+            }
+
+            console.log('更新位置:', updatedData);
+
+            wx.request({
+                url: global.utils.getAPI(global.utils.serverURL, `/api/runRoom/update`),
+                method: 'POST',
+                data: updateData,
+                success: (res) => {
+                    if (res.data.message) {
+                        console.log('更新位置成功');
+                    }else{
+                        console.log('更新位置失败');
+                    }
+                }
+            });
+
+            wx.request
         })
     },
 
@@ -356,7 +395,7 @@ Page({
         app.globalData.currentRunData = runData;
 
         wx.request({
-            url: 'http://124.221.96.133:8000/api/users/run/record',
+            url: global.utils.getAPI(global.utils.serverURL, `/api/users/run/record`),
             method: 'POST',
             data: runData,
             success: (res) => {
