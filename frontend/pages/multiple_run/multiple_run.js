@@ -305,34 +305,6 @@ Page({
             })
             
             this.formatPace();
-            
-            /*
-            const updateData = {
-                username: wx.getStorageSync('username'),
-                runData: {
-                    meters: parseFloat((this.data.meters).toFixed(1)),
-                    seconds: this.data.seconds,
-                    latitude: res.latitude,
-                    longitude: res.longitude,
-                    running: this.data.running,
-                    markers: points,
-                    start: this.data.startTime,
-                }
-            };
-
-            wx.request({
-                url: global.utils.getAPI(global.utils.serverURL, `/api/users/run/data`),
-                method: 'PUT',
-                data: updateData,
-                success: (res) => {
-                    if (res.data.message) {
-                        console.log('更新位置成功');
-                    }else{
-                        console.log('更新位置失败');
-                    }
-                }
-            });
-            */
 
             const updatedData = {
                 runID: wx.getStorageSync('verifiedRoomID'),
@@ -347,7 +319,7 @@ Page({
             wx.request({
                 url: global.utils.getAPI(global.utils.serverURL, `/api/runRoom/update`),
                 method: 'POST',
-                data: updateData,
+                data: updatedData,
                 success: (res) => {
                     if (res.data.message) {
                         console.log('更新位置成功');
