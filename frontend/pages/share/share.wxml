@@ -5,19 +5,23 @@
     <view class="post-list">
         <view class="post" wx:for="{{posts}}" wx:key="index">
             <navigator url="../postdetail/postdetail?id={{item.postId}}">
-            <view class="post">
-                <view>
-                    <text class="post-title">{{item.title}}</text>
+                <view class="post">
+                    <view>
+                        <text class="post-title">{{item.title}}</text>
+                    </view>
+                    <block wx:for="{{item.images}}" wx:for-item="imageId" wx:key="*this">
+                        <image 
+                            class="post-image" 
+                            src="{{serverURL}}/api/users/posts/images/{{imageId}}" 
+                            mode="aspectFill"
+                        />
+                    </block>
                 </view>
-                <block wx:for="{{item.images}}" wx:key="index">
-                    <image class="post-image" src="{{item}}" />
-                </block>
-            </view>
 
-            <view class="post-interaction">
+                <view class="post-interaction">
                     <text class="comment-count">💬 {{item.commentCount}}</text>
                     <text class="like-count">❤️ {{item.likes}}</text>
-            </view>
+                </view>
             </navigator>
         </view>
     </view>

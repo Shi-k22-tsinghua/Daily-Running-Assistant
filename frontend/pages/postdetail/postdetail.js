@@ -1,4 +1,7 @@
 // pages/postdetail/postdetail.js
+const utils = require('../../utils/util.js')
+const app = require('../../app.js');
+
 Page({
 
     data: {
@@ -25,18 +28,27 @@ Page({
             },
     },
 
+    onImageError: function(e) {
+        console.error('Image load error:', e);
+        const index = e.currentTarget.dataset.index;
+        console.log('Failed to load image at index:', index);
+    },
+    
+    onImageLoad: function(e) {
+        console.log('Image loaded successfully:', e);
+    },
+
     fetchPostDetails: function (postId) {
         wx.request({
-            url: 'http://124.221.96.133:8000/api/users/share/posts/' + postId, // 请替换为您的服务器API地址
+            url: global.utils.getAPI(global.utils.serverURL, '/api/users/share/posts/' + postId),
             method: 'GET',
             success: (res) => {
                 if (res.statusCode === 200) {
                     this.setData({
                         post: res.data.post,
-                        comments: res.data.comments
+                        comments: res.data.comments,
+                        serverURL: global.utils.serverURL  // Add this line
                     });
-                console.log(this.data.post);
-                console.log()
                 } else {
                     wx.showToast({
                         title: '获取帖子详情失败',
@@ -78,8 +90,7 @@ Page({
     createComment: function (postId, commentContent) {
         console.log(postId);
         wx.request({
-            // http://124.221.96.133:8000/api/users/share/posts/4/comments
-            url: 'http://124.221.96.133:8000/api/users/share/posts/' + postId + '/comments' ,
+            url: global.utils.getAPI(global.utils.serverURL, '/api/users/share/posts/' + postId + '/comments'),
             method: 'POST',
             data: {
                 username: wx.getStorageSync('username'),
