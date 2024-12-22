@@ -1,5 +1,7 @@
 // pages/share/share.js
+const utils = require('../../utils/util.js')
 const app = require('../../app.js');
+
 Page({
 
     /**
@@ -35,16 +37,16 @@ Page({
     /**
      * 获取帖子列表
      */
-    fetchPosts: function () {
-        console.log('call fetchPosts function')
+    fetchPosts: function() {
         const that = this;
         wx.request({
-            url: 'http://124.221.96.133:8000/api/users/share/posts', // 请替换为您的服务器API地址
+            url: global.utils.getAPI(global.utils.serverURL, '/api/users/share/posts'),
             method: 'GET',
             success: (res) => {
                 if (res.statusCode === 200) {
                     this.setData({
-                        posts: res.data.posts
+                        posts: res.data.posts.reverse(),
+                        serverURL: global.utils.serverURL  // Add this line
                     });
                 } else {
                     wx.showToast({
@@ -54,13 +56,7 @@ Page({
                     });
                 }
             },
-            fail: () => {
-                wx.showToast({
-                    title: '网络请求失败',
-                    icon: 'none',
-                    duration: 2000
-                });
-            }
+            // ... rest of your code
         });
     },
 
