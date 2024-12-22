@@ -191,7 +191,8 @@ Page({
                         longitude: runner.longitude,
                         width: 30,
                         height: 30,
-                        iconPath: '../../images/my-icon.png',
+                        iconPath: global.api.getProfilePicture(runner.username) || '../../images/my-icon.png',
+                        // Add these properties to make the icon appear more circular
                         callout: {
                             content: runner.nickname || runner.username,
                             color: '#000000',
