@@ -9,12 +9,16 @@
             <text class="post-title">{{post.title}}</text>
             <text class="post-content">{{post.content}}</text>
             <view wx:for="{{post.images}}" wx:key="index">
-                <image class="post-image" src="{{item}}" />
+                <image 
+                    class="post-image" 
+                    src="{{serverURL}}/api/users/posts/images/{{item}}"
+                    mode="aspectFill"
+                />
             </view>
         </view>
         <view class="post-interaction">
             <text class="comment-count">💬 {{commentCount}}</text>
-            <text class="like-count" bindtap="toggleLike" data-id="{{item.postId}}">{{item.isLiked ? '❤️' : '♡'}} {{item.likes}}</text>
+            <text class="like-count" bindtap="toggleLike" data-id="{{item.postId}}">{{item.isLiked ? '❤️' : '♡'}} {{post.likes}}</text>
         </view>
     </view>
 

@@ -55,7 +55,7 @@
   
   .comment-count, .like-count {
     color: #888;
-    font-size: 14px;
+    font-size: 16px;
   }
   
   /* 评论区域样式 */
@@ -125,3 +125,15 @@
   button:active {
     background-color: #179B16;
   }
+
+  .post-image {
+    width: 100%;
+    height: 200px; /* or whatever height you want */
+    border-radius: 8px;
+    margin: 5px 0;
+}
+
+.image-container {
+    width: 100%;
+    margin: 5px 0;
+}
