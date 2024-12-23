@@ -3,6 +3,9 @@ const utils = require('../../utils/util.js')
 const app = require('../../app.js');
 
 Page({
+    /**
+     * 页面的初始数据
+     */
     data: {
         meters: 0, // 里程，单位米
         seconds: 0, // 时间，单位秒
@@ -10,15 +13,12 @@ Page({
         longitude: 116.4070, // 经度
         running: false, // 是否开始
         interval: 1000, // 定位更新间隔，单位毫秒
-        points: [], // 存储本人的轨迹点
-        markers: [], // 其他人的位置标记
+        markers: [], // 标记
         showMap: false, // 控制地图是否显示
         polyline: [], // 路线
         userName: '', // 用户名
         paceFormatted: '', // 格式化配速输出
         startTime: '', // 开始跑步时间
-
-        defaultPicUrl: '../../images/my-icon.png',  // Add this line
 
         users: [{
                 profilePic: '../../images/my-icon.png',
@@ -59,21 +59,8 @@ Page({
         ],
 
         verifiedRoomID: '',
-        verifiedRoomPassword: '',
+        otherRunnersMarkers: [], // 其他跑步者的位置标记
         lastUpdateTime: null, // 上次更新时间
-    },
-
-
-    handleImageError: function(e) {
-        const index = e.currentTarget.dataset.index;
-        const usersArray = this.data.users;
-        
-        // Update just the profile pic for the user whose image failed to load
-        usersArray[index].profilePic = this.data.defaultPicUrl;
-        
-        this.setData({
-            users: usersArray
-        });
     },
 
     formatPace: function () {
@@ -85,6 +72,9 @@ Page({
         });
     },
 
+    /**
+     * 页面的生命周期函数--页面加载时调用
+     */
     onLoad() {
         app.tokenCheck();
         //格式化日期 xxxx/xx/xx
@@ -95,21 +85,16 @@ Page({
 
         this.mapCtx = wx.createMapContext('map');
         wx.getLocation({
-            type: 'gcj02',
-            success: (res) => {
+            type: 'gcj02', // 使用中国国内的坐标系
+            success: (res) => { // 获取位置成功时的回调
                 console.log('获取位置成功')
                 this.setData({
                     latitude: res.latitude,
                     longitude: res.longitude,
                     showMap: true,
                 });
-
-                this.coordinateInterval = setInterval(this.record.bind(this), 10000); // Every 10 seconds
-                this.updateOtherRunners();
-
-
             },
-            fail: (error) => {
+            fail: (error) => { // 获取位置失败时的回调
                 console.error('获取位置失败', error);
                 wx.showToast({
                     title: '无法获取位置信息',
@@ -133,8 +118,11 @@ Page({
         }
 
         const that = this;
+
+        // Make sure the verifiedRoomID is set correctly
         const runID = that.data.verifiedRoomID;
 
+        // Check if the runID is available
         if (!runID) {
             wx.showToast({
                 title: '房间号不可用',
@@ -143,23 +131,31 @@ Page({
             return;
         }
 
+        // Make the GET request with runID as part of the URL path
         wx.request({
-            url: global.utils.getAPI(global.utils.serverURL, `/api/runRoom/${runID}`),
-            method: 'GET',
+            url: global.utils.getAPI(global.utils.serverURL, `/api/runRoom/${runID}`), // Use getAPI to construct the URL
+            method: 'GET', // Make sure it's a GET request
             success(res) {
                 if (res.data.success && res.data.code === 'ROOM_FOUND') {
+                    // On success, extract the 'runners' array
                     const users = res.data.data.runners.map(user => ({
-                        // Use nickname if available, otherwise fall back to username
-                        username: user.nickname || user.username,
-                        profilePic: global.api.getProfilePicture(user.username) || '../../images/my-icon.png',
+                        username: user.username,
+                        profilePic: user.profile_pic, // Assuming the 'profile_pic' is a URL or valid image path
                         latitude: user.latitude,
                         longitude: user.longitude,
                     }));
-            
+
+                    // Print the users array to the console for testing
                     console.log('Users:', users);
-            
+
+                    // Update the page's data to display users
                     that.setData({
                         users: users
+                    });
+                } else {
+                    wx.showToast({
+                        title: '加载用户失败',
+                        icon: 'none'
                     });
                 }
             },
@@ -170,9 +166,6 @@ Page({
                 });
             }
         });
-
-
-        //record(); //为了初始化坐标
 
         this.formatPace();
         this.otherRunnersInterval = setInterval(this.updateOtherRunners.bind(this), 5000);
@@ -187,22 +180,22 @@ Page({
             method: 'GET',
             success: (res) => {
                 if (res.data.success && res.data.code === 'ROOM_FOUND') {
+                    // 过滤掉当前用户和不在房间内的用户
                     const currentUsername = wx.getStorageSync('username');
                     const otherRunners = res.data.data.runners.filter(
                         runner => runner.username !== currentUsername && runner.in_room === true
                     );
 
                     // 更新其他跑步者的标记
-                    const markers = otherRunners.map((runner, index) => ({
-                        id: index,
+                    const otherRunnersMarkers = otherRunners.map((runner, index) => ({
+                        id: `other-${index}`,
                         latitude: runner.latitude,
                         longitude: runner.longitude,
                         width: 30,
                         height: 30,
-                        iconPath: global.api.getProfilePicture(runner.username) || '../../images/my-icon.png',
-                        // Add these properties to make the icon appear more circular
+                        iconPath: '../../images/my-icon.png',
                         callout: {
-                            content: runner.nickname || runner.username,
+                            content: runner.nickname || runner.username, // 优先显示昵称
                             color: '#000000',
                             fontSize: 14,
                             borderRadius: 5,
@@ -215,8 +208,8 @@ Page({
 
                     // 更新用户列表数据
                     const updatedUsers = res.data.data.runners.map(runner => ({
-                        profilePic: global.api.getProfilePicture(runner.username) || '../../images/my-icon.png',
-                        username: runner.nickname || runner.username,
+                        profilePic: runner.profile_pic || '../../images/my-icon.png',
+                        username: runner.username,
                         nickname: runner.nickname,
                         meters: runner.meters,
                         seconds: runner.seconds,
@@ -225,12 +218,14 @@ Page({
                     }));
 
                     this.setData({
-                        markers,
+                        otherRunnersMarkers,
                         users: updatedUsers
                     });
 
+                    // 更新界面上其他用户的跑步数据
                     otherRunners.forEach(runner => {
                         if (runner.running) {
+                            // 可以添加额外的UI更新逻辑，比如显示其他跑步者的实时数据
                             console.log(`${runner.nickname || runner.username}: ${runner.meters}米`);
                         }
                     });
@@ -248,86 +243,66 @@ Page({
         })
         if (this.data.running == true) {
             console.log("开始跑步")
-            // If not already tracking, start tracking (though it should already be tracking)
-            if (!this.interval) {
-                this.interval = setInterval(this.record.bind(this), this.data.interval);
-            }
-            
-            // Set start time if not already set
+            this.interval = setInterval(this.record.bind(this), this.data.interval);
             if (this.data.startTime === '') {
                 this.setData({
                     startTime: new Date().toISOString()
                 });
             }
-    
-            // Additional API call to mark run as started
-            wx.request({
-                url: global.utils.getAPI(global.utils.serverURL, `/api/runRoom/start`),
-                method: 'POST',
-                data: {
-                    runID: this.data.verifiedRoomID,
-                    username: wx.getStorageSync('username')
-                },
-                success: (res) => {
-                    console.log('跑步状态更新成功');
-                },
-                fail: (error) => {
-                    console.error('跑步状态更新失败:', error);
-                }
-            });
         } else {
             console.log("暂停/结束跑步")
-            // You might want to keep tracking, just mark as not actively running
             clearInterval(this.interval);
-            this.interval = null;
         }
     },
 
     record() {
+        //没有开始跑步就不记录
         if (!this.data.running) {
             return
         }
         const runID = this.data.verifiedRoomID;
         if (!runID) return;
-        
         this.setData({
             seconds: this.data.seconds + this.data.interval / 1000
         })
-        
         wx.getLocation({
             type: 'gcj02',
         }).then(res => {
-            let newPoint = {
+            //当前标记位置信息
+            let newMarker = {
                 latitude: res.latitude,
                 longitude: res.longitude,
-                id: this.data.points.length + 1
+                id: this.data.markers.length + 1,
+                width: 0,
+                height: 0,
+                alpha: 0
             }
-            
-            let points = Array.isArray(this.data.points) ? this.data.points : [];
+            let markers = Array.isArray(this.data.markers) ? this.data.markers : [];
             let pace = 0;
-            
-            if (points.length > 0) {
-                let lastPoint = points.slice(-1)[0]
-                pace = utils.getDistance(lastPoint.latitude, lastPoint.longitude, newPoint.latitude, newPoint.longitude);
+            if (markers.length > 0) {
+                let lastMarker = markers.slice(-1)[0]
+                //根据上一次标记点和当前标记点计算距离，超出5m添加标记
+                pace = utils.getDistance(lastMarker.latitude, lastMarker.longitude, newMarker.latitude, newMarker.longitude);
                 pace = parseFloat(pace.toFixed(1))
                 if (pace > 5) {
-                    points.push(newPoint);
+                    markers.push(newMarker);
+                    console.log("dot");
                 } else {
                     pace = 0;
+                    console.log("here")
                 }
             } else {
-                points.push(newPoint);
+                markers.push(newMarker);
             }
-            
             this.setData({
                 latitude: res.latitude,
                 longitude: res.longitude,
-                points,
+                markers,
                 polyline: [{
-                    points: points.map(point => ({
-                        latitude: point.latitude,
-                        longitude: point.longitude
-                    })),
+                    points: markers.length > 0 ? markers.map(marker => ({
+                        latitude: marker.latitude,
+                        longitude: marker.longitude
+                    })) : [],
                     color: "#009688",
                     width: 5,
                     dottedLine: false,
@@ -335,38 +310,40 @@ Page({
                 }],
                 meters: parseFloat((this.data.meters + pace).toFixed(1))
             })
-            
             this.formatPace();
-
-            const updatedData = {
-                runID: wx.getStorageSync('verifiedRoomID'),
-                password: wx.getStorageSync('verifiedRoomPassword'),
+            // 准备要发送到服务器的数据
+            const updateData = {
                 username: wx.getStorageSync('username'),
-                longitude: res.longitude,
-                latitude: res.latitude,
-            }
+                runData: {
+                    meters: parseFloat((this.data.meters).toFixed(1)),
+                    seconds: this.data.seconds,
+                    latitude: res.latitude,
+                    longitude: res.longitude,
+                    running: this.data.running,
+                    markers: markers,
+                    start: this.data.startTime,
+                }
+            };
 
-            console.log('更新位置:', updatedData);
-
+            // 发送位置更新到服务器
             wx.request({
-                url: global.utils.getAPI(global.utils.serverURL, `/api/runRoom/update`),
+                url: global.utils.getAPI(global.utils.serverURL, `/api/users/run/data`),
                 method: 'POST',
-                data: updatedData,
+                data: updateData,
                 success: (res) => {
-                    if (res.data.message) {
+                    if (res.data.success) {
                         console.log('更新位置成功');
-                    }else{
-                        console.log('更新位置失败');
                     }
                 }
             });
 
-            wx.request
         })
     },
 
     endRun: function (e) {
-        if (this.data.points.length < 2) {
+
+        // 如果轨迹点数少于两点，直接返回
+        if (this.data.markers.length < 2) {
             console.log("你没有开始跑步！");
             wx.showToast({
                 title: '你没有开始跑步！',
@@ -375,35 +352,41 @@ Page({
             return;
         }
 
+        // 停止记录
         this.setData({
             running: false
         });
         clearInterval(this.interval);
+        // clearInterval(this.otherRunnersInterval);
 
+        // 准备发送给后端的数据
         const runData = {
-            username: wx.getStorageSync('username'),
+            username: wx.getStorageSync('username'), // 这里需要替换为实际的用户名
             runRecord: {
                 meters: this.data.meters,
                 seconds: this.data.seconds,
-                markers: this.data.points.map(point => ({
-                    latitude: point.latitude,
-                    longitude: point.longitude,
-                    id: point.id
+                markers: this.data.markers.map(marker => ({
+                    latitude: marker.latitude,
+                    longitude: marker.longitude,
+                    id: marker.id
                 })),
                 start: this.data.startTime,
                 end: new Date().toISOString()
             }
         };
 
+        // 在把数据发送到后端之前，先将数据存进globalData
         const app = getApp();
         app.globalData.currentRunData = runData;
 
+        // 发送请求到后端
         wx.request({
-            url: global.utils.getAPI(global.utils.serverURL, `/api/users/run/record`),
+            url: 'http://124.221.96.133:8000/api/users/run/record',
             method: 'POST',
             data: runData,
             success: (res) => {
                 console.log('跑步数据上传成功:', res);
+                // 上传成功后跳转到记录页面
                 wx.navigateTo({
                     url: '../singlerecord/singlerecord',
                 });
@@ -415,7 +398,7 @@ Page({
                     content: '是否重试上传数据？',
                     success: (res) => {
                         if (res.confirm) {
-                            this.endRun(e);
+                            this.endRun(e); // 重试
                         } else {
                             wx.navigateTo({
                                 url: '../singlerecord/singlerecord'
@@ -425,18 +408,16 @@ Page({
                 });
             }
         });
+
     },
 
     onUnload() {
+        // 页面卸载时清除所有定时器
         if (this.interval) {
             clearInterval(this.interval);
         }
         if (this.otherRunnersInterval) {
             clearInterval(this.otherRunnersInterval);
         }
-        if (this.coordinateInterval) {
-            clearInterval(this.coordinateInterval);
-        }
     }
-
 });

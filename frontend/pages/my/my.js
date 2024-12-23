@@ -243,6 +243,7 @@ Page({
         const username = wx.getStorageSync('username');
         const nickname = wx.getStorageSync('nickname');
         const profilePicUrl = global.api.getProfilePicture(username);
+        console.log(profilePicUrl);
         this.setData({
             username: username,
             nickname: nickname,
