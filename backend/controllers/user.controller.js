@@ -1,6 +1,6 @@
 require('dotenv').config();
 const mongoose = require('mongoose');
-const { User, Post, Comment } = require('../models/user.model');
+const { User, Post, Comment, Like  } = require('../models/user.model');
 const jwt = require('jsonwebtoken');
 const fs = require('fs');
 const path = require('path');
@@ -9,7 +9,6 @@ const multer = require('multer');
 const upload = multer().array('images[]', 3); // Allow up to 3 images
 
 // 获取环境变量中的密钥
-//TODO:
 const SECRET_KEY = process.env.SECRET_KEY;
 
 // Initialize GridFS
@@ -710,7 +709,6 @@ const getPostById = async (req, res) => {
         // 如果找到了帖子，返回200状态和帖子数据
         res.status(200).json({ message: "Post retrieved successfully", post });
     } catch (error) {
-        // 如果发生错误，返回500状态和错误消息
         res.status(500).json({ message: error.message });
     }
 };
@@ -947,23 +945,36 @@ const deleteComment = async (req, res) => {
 
 const likePost = async (req, res) => {
     try {
-      // 从请求参数中获取 postID
-      const postID = req.params.postID;
+        const postId = req.params.postId;
+        const { username } = req.body;
   
-      // 查找具有指定 postID 的帖子并增加点赞数
-      const post = await Post.findOneAndUpdate(
-        { postId: postID }, // 查询条件，使用自定义的 postId 字段
-        { $inc: { likes: 1 } }, // 使用$inc 操作符来增加 likes 字段的值
-        { new: true, useFindAndModify: false } // 返回更新后的文档，不使用过时的 findAndModify
-      );
+        // 查找具有指定 username 的用户
+        const user = await User.findOne({ username: username });
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        // 查找具有指定 postId 的帖子
+        const post = await Post.findOne({ postId: postId });
+        if (!post) {
+            return res.status(404).json({ message: 'Post not found' });
+        }
+
+        // 检查用户是否已经点赞该帖子
+        const existingLike = await Like.findOne({ user: user._id, post: post._id });
+        if (existingLike) {
+            return res.status(400).json({ message: 'Post already liked by user' });
+        }
+
+        // 创建新的点赞记录
+        const newLike = new Like({ user: user._id, post: post._id });
+        await newLike.save();
+
+        post.likes += 1;
+        await post.save();
   
-      // 如果帖子不存在，返回404状态码和错误消息
-      if (!post) {
-        return res.status(404).json({ message: 'Post not found' });
-      }
-  
-      // 返回200状态码和更新后的帖子信息
-      res.status(200).json({ message: 'Post liked successfully', post });
+        // 返回200状态码和更新后的帖子信息
+        res.status(200).json({ message: 'Post liked successfully', post });
     } catch (error) {
       // 如果发生错误，返回500状态码和错误消息
       res.status(500).json({ message: error.message });
@@ -973,23 +984,67 @@ const likePost = async (req, res) => {
 
 const unlikePost = async (req, res) => {
     try {
-        // 从请求参数中获取 postID
-        const postID = req.params.postID;
+        // 从请求参数中获取 postId
+        const postId = req.params.postId;
+        // 从请求体中获取 username
+        const { username } = req.body;
 
-        // 查找具有指定 postID 的帖子并减少点赞数
-        const post = await Post.findOneAndUpdate(
-            { postId: postID }, // 查询条件，使用自定义的 postId 字段
-            { $inc: { likes: -1 } }, // 使用$inc 操作符来减少 likes 字段的值
-            { new: true, useFindAndModify: false } // 返回更新后的文档，不使用过时的 findAndModify
-        );
+        // 查找具有指定 username 的用户
+        const user = await User.findOne({ username: username });
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
 
-        // 如果帖子不存在，返回404状态码和错误消息
+        // 查找具有指定 postId 的帖子
+        const post = await Post.findOne({ postId: postId });
         if (!post) {
             return res.status(404).json({ message: 'Post not found' });
         }
 
+        // 查找并删除用户对帖子的点赞记录
+        const like = await Like.findOneAndDelete({ user: user._id, post: post._id });
+        if (!like) {
+            return res.status(400).json({ message: 'Post not liked by user' });
+        }
+
+        // 更新帖子的点赞数
+        post.likes -= 1;
+        await post.save();
+
         // 返回200状态码和更新后的帖子信息
         res.status(200).json({ message: 'Post unliked successfully', post });
+    } catch (error) {
+        // 如果发生错误，返回500状态码和错误消息
+        res.status(500).json({ message: error.message });
+    }
+};
+
+const checkIfLikedPost = async (req, res) => {
+    try {
+        const postId = req.params.postId;
+        const { username } = req.body;
+
+        // 查找具有指定 username 的用户
+        const user = await User.findOne({ username: username });
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        // 查找具有指定 postId 的帖子
+        const post = await Post.findOne({ postId: postId });
+        if (!post) {
+            return res.status(404).json({ message: 'Post not found' });
+        }
+
+        // 检查用户是否已经点赞该帖子
+        const existingLike = await Like.findOne({ user: user._id, post: post._id });
+        if (existingLike) {
+            // 如果找到点赞记录，返回已点赞的状态
+            return res.status(200).json({ message: 'Post liked by user', liked: true });
+        } else {
+            // 如果没有找到点赞记录，返回未点赞的状态
+            return res.status(200).json({ message: 'Post not liked by user', liked: false });
+        }
     } catch (error) {
         // 如果发生错误，返回500状态码和错误消息
         res.status(500).json({ message: error.message });
@@ -1088,6 +1143,7 @@ module.exports = {
 
     likePost,
     unlikePost,
+    checkIfLikedPost,
     likeComment,
     unlikeComment
 }
