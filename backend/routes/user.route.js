@@ -3,9 +3,16 @@ const User = require("../models/user.model");
 const router = express.Router();
 
 const userController = require("../controllers/user.controller");
+
 const multer = require('multer');
 const storage = multer.memoryStorage();
-const upload = multer({ storage: storage });
+const upload = multer({ 
+    storage: storage,
+    limits: {
+        fileSize: 5 * 1024 * 1024, // 5MB limit per file
+        files: 3 // Max 3 files
+    }
+});
 
 // get user
 router.get('/', userController.getUsers);
@@ -45,9 +52,13 @@ router.get('/run/records/:username/:recordId', userController.getRunRecordById);
 router.delete('/run/records/:username/:recordId', userController.deleteRunRecord); // delete run record by id
 
 // 创建帖子
-router.post('/share/posts', userController.createPost);
+router.post('/share/posts/image', upload.single('image'), userController.uploadPostImage);
+router.post('/share/posts', upload.array('images', 3), userController.createPost);
+router.get('/posts/images/:imageId', userController.getPostImage);
 // 获取帖子列表
 router.get('/share/posts', userController.getPosts);
+//router.get('/posts/images/:imageId', userController.getPostImage);
+
 // 获取单个帖子
 router.get('/share/posts/:postId', userController.getPostById);
 // 获取用户的帖子

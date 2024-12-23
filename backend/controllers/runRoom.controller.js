@@ -167,26 +167,10 @@ const joinRoom = async (req, res) => {
       nickname = username;
     }
 
-    // Fetch the user's profile picture URL from the API
-    let profile_pic = null;
-    try {
-      const response = await fetch(`http://localhost:8000/api/users/profilepic/${username}`);
-      if (response.ok) {
-        const blob = await response.blob();
-        profile_pic = URL.createObjectURL(blob);
-      } else {
-        console.error('Error fetching user profile picture:', response.status);
-      }
-    } catch (error) {
-      console.error('Error fetching user profile picture:', error);
-    }
-
     // Add the runner to the room
     room.runners.push({
       username,
       nickname,
-      //time_entered_room: Date.now(),
-      profile_pic,
       longitude,
       latitude,
     });
@@ -194,28 +178,8 @@ const joinRoom = async (req, res) => {
     // Save the updated room
     await room.save();
 
-    // Fetch the profile picture URLs for all users in the room
-    const updatedRunners = await Promise.all(
-      room.runners.map(async (runner) => {
-        let runnerProfilePic = null;
-        try {
-          const response = await fetch(`http://localhost:8000/api/users/profilepic/${runner.username}`);
-          if (response.ok) {
-            const blob = await response.blob();
-            runnerProfilePic = URL.createObjectURL(blob);
-          }
-        } catch (error) {
-          console.error(`Error fetching profile picture for user ${runner.username}:`, error);
-        }
-        return {
-          ...runner.toObject(),
-          profile_pic: runnerProfilePic, // Assign the URL string directly
-        };
-      })
-    );
-
     // Update the room with the fetched profile picture URLs
-    room.runners = updatedRunners;
+    //room.runners = updatedRunners;
 
     // Send the updated room information to all connected users
     // (assuming you have a way to broadcast the update, e.g., using Socket.IO)
@@ -354,6 +318,7 @@ const deleteRoom = async (req, res) => {
 module.exports = {
     getRoom,
     getAllRooms,
+    
     createRoom,
     joinRoom,
     leaveRoom,

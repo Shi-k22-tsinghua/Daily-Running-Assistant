@@ -1,4 +1,5 @@
 // pages/post/post.js
+const utils = require('../../utils/util.js')
 const app = require('../../app.js');
 
 
@@ -20,7 +21,7 @@ Page({
     /**
      * 获取输入的标题、正文
      */
-    inputTitle: function(e) {
+    inputTitle: function (e) {
         this.setData({
             titleInput: e.detail.value,
         });
@@ -30,7 +31,6 @@ Page({
             contentInput: e.detail.value,
         });
     },
-
 
     /**
      * 处理发布帖子的函数
@@ -51,18 +51,30 @@ Page({
      * 调用wx.chooseImage()接口
      */
     uploadImage: function () {
-        const that = this; // 保存当前页面的this引用
+        const that = this;
+        // Check if already at maximum images
+        if (that.data.imagePreview && that.data.imagePreview.length >= 3) {
+            wx.showToast({
+                title: '最多只能上传3张图片',
+                icon: 'none',
+                duration: 2000
+            });
+            return;
+        }
+    
+        // Calculate remaining allowed images
+        const remainingCount = 3 - (that.data.imagePreview ? that.data.imagePreview.length : 0);
+        
         wx.chooseImage({
-            count: 1,
+            count: remainingCount,
             sizeType: ['compressed'],
             sourceType: ['album', 'camera'],
             success: function (res) {
                 if (!Array.isArray(that.data.imagePreview)) {
                     that.setData({
                         imagePreview: []
-                    }); // 确保imagePreview是数组
+                    });
                 }
-                // 使用that引用页面data，避免this指向问题
                 const newImages = that.data.imagePreview.concat(res.tempFilePaths);
                 that.setData({
                     imagePreview: newImages,
@@ -70,6 +82,7 @@ Page({
             }
         });
     },
+
 
     showDeleteModal: function (e) {
         const that = this; // 保存当前页面的this引用
@@ -95,61 +108,94 @@ Page({
     /**
      * 
      * 确认发布按钮，在服务器创建帖子并存储
+     * TODO: wx.request()方法待完善
      */
 
     //createPost: function(title, content, images) {
-    createPost: function (title, content, images) {
+    // Then modify the createPost function to handle image uploads
+    createPost: function (title, content) {
         const username = wx.getStorageSync('username');
-
-        // 发送请求到服务器，创建帖子
-        wx.request({
-            url: 'http://124.221.96.133:8000/api/users/share/posts', // 修正了URL
-            method: 'POST',
-            // TODO: 传入的参数应该还需要有author的信息，images[]图片数组
-            // example:
-            /*  images: [
-                '../../images/run-icon.png',
-
-            ], */
-            data: {
-                title: title,
-                content: content,
-                username: username,
-                //images: imagePreview,
-            },
-            success: function (res) {
-                if (res.statusCode === 200) {
-                    // 发布成功的处理
-                    wx.showToast({
-                        title: '发布成功',
-                        icon: 'success',
-                        duration: 2000
+        const that = this;
+    
+        if (this.data.imagePreview && this.data.imagePreview.length > 0) {
+            const files = this.data.imagePreview.map((path, index) => ({
+                name: 'images',
+                filePath: path,
+                formData: {
+                    title: title,
+                    content: content,
+                    username: username
+                }
+            }));
+    
+            Promise.all(files.map(file => 
+                new Promise((resolve, reject) => {
+                    wx.uploadFile({
+                        url: global.utils.getAPI(global.utils.serverURL, '/api/users/share/posts'),
+                        filePath: file.filePath,
+                        name: file.name,
+                        formData: file.formData,
+                        success: resolve,
+                        fail: reject
                     });
-                    // 清空输入和图片预览
-                    setTimeout(() => { //延迟发送，防止input沒有清空
-                        this.setData({
+                })
+            )).then(() => {
+                wx.showToast({
+                    title: '发布成功',
+                    icon: 'success',
+                    duration: 2000
+                });
+                that.setData({
+                    titleInput: '',
+                    contentInput: '',
+                    imagePreview: [],
+                });
+                wx.navigateTo({
+                    url: '../share/share',
+                });
+            }).catch(error => {
+                console.error('Upload error:', error);
+                wx.showToast({
+                    title: '发布失败',
+                    icon: 'none',
+                    duration: 2000
+                });
+            });
+        } else {
+            // No images case remains the same
+            wx.request({
+                url: global.utils.getAPI(global.utils.serverURL, '/api/users/share/posts'),
+                method: 'POST',
+                data: {
+                    title: title,
+                    content: content,
+                    username: username,
+                },
+                success: function (res) {
+                    if (res.statusCode === 200) {
+                        wx.showToast({
+                            title: '发布成功',
+                            icon: 'success',
+                            duration: 2000
+                        });
+                        that.setData({
                             titleInput: '',
                             contentInput: '',
                             imagePreview: [],
                         });
-                      }, 100);
-                      wx.navigateTo({
-                        url: '../share/share',
-                      })
-                } else {
-                    // 发布失败的处理
-                    wx.showToast({
-                        title: '发布失败',
-                        icon: 'none',
-                        duration: 2000
-                    });
-                    console.log(res);
-                    console.log(title);
-                    console.log(content);
-                    console.log(username);
+                        wx.navigateTo({
+                            url: '../share/share',
+                        });
+                    } else {
+                        wx.showToast({
+                            title: '发布失败',
+                            icon: 'none',
+                            duration: 2000
+                        });
+                    }
                 }
-            }
-        });
+            });
+        }
     },
 
     /**

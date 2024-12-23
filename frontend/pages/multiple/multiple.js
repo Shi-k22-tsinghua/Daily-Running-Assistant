@@ -3,16 +3,13 @@ const app = require('../../app.js');
 const util = require('../../utils/util.js');
 
 Page({
-
     /**
      * 页面的初始数据
      */
     data: {
         username: '',
-
         roomID: '',
         password: '',
-
         verifiedRoomID: '', // this is the roomID passed onto multipl_run
     },
 
@@ -123,6 +120,7 @@ Page({
                     });
 
                     wx.setStorageSync('verifiedRoomID', roomID),
+                    wx.setStorageSync('verifiedRoomPassword', password),
 
                         // Navigate to the multiple_run room
                         wx.navigateTo({
