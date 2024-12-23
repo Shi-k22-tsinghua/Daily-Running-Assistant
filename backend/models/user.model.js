@@ -38,6 +38,7 @@ const PostSchema = mongoose.Schema({
         default: null
     }],
     
+    commentCount: { type: Number, default: 0 },
     comments: [{
         type: Schema.Types.ObjectId,
         ref: 'Comment'
@@ -92,6 +93,10 @@ UserSchema.set('toJSON', {
 PostSchema.plugin(sequence, { id: 'post_id_counter', inc_field: 'postId' });
 CommentSchema.plugin(sequence, { id: 'commenet_id_counter', inc_field: 'commentId' });
 
+PostSchema.pre('save', function(next) {
+    this.updatedAt = Date.now();
+    next();
+  });
 
 const User = mongoose.model("User", UserSchema);
 const Comment = mongoose.model('Comment', CommentSchema);

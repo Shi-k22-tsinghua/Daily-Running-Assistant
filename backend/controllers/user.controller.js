@@ -47,7 +47,6 @@ const getUser = async (req, res) => {
     }
 };
 
-
 const registerUser = async (req, res) => {
     try {
         const { username, password } = req.body;
@@ -74,25 +73,35 @@ const registerUser = async (req, res) => {
         const readStream = fs.createReadStream(defaultProfilePicture);
         readStream.pipe(uploadStream);
 
-        // Update the user's profilePicture field with the default file ID
-        newUser.profilePicture = uploadStream.id;
-        await newUser.save();
+        // Wait for the upload stream to finish
+        uploadStream.on('finish', async () => {
+            // Update the user's profilePicture field with the default file ID
+            newUser.profilePicture = uploadStream.id;
+            await newUser.save();
 
-        // Generate a token for the new user
-        const token = jwt.sign({
-            id: newUser._id,
-            username: newUser.username,
-            loginTime: loginTime.toISOString() // 将登录时间添加到token的payload中
-        }, SECRET_KEY, {
-            expiresIn: '2h' // 设置token过期时间
+            // Generate a token for the new user
+            const token = jwt.sign({
+                id: newUser._id,
+                username: newUser.username,
+                loginTime: loginTime.toISOString() // 将登录时间添加到token的payload中
+            }, SECRET_KEY, {
+                expiresIn: '2h' // 设置token过期时间
+            });
+
+            res.status(200).json({ message: "Register successful", token, newUser });
         });
 
-        res.status(200).json({ message: "Register successful", token, newUser });
+        uploadStream.on('error', (error) => {
+            console.error('Error uploading profile picture:', error);
+            res.status(500).json({ message: 'Error uploading profile picture' });
+        });
+
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: error.message });
     }
 };
+
 
 const loginUser = async (req, res) => {
     try {
@@ -385,21 +394,15 @@ const getRunRecords = async (req, res) => {
             return res.status(404).json({ message: "User not found" });
         }
 
-        // Optional: Add query parameters for pagination
-        const limit = parseInt(req.query.limit) || 10;
-        const page = parseInt(req.query.page) || 1;
-        const startIndex = (page - 1) * limit;
-        const endIndex = page * limit;
-
-        const records = user.record.slice(startIndex, endIndex);
-        const total = user.record.length;
+        // Get all records
+        const records = user.record;
 
         res.status(200).json({
             records,
             pagination: {
-                total,
-                page,
-                pages: Math.ceil(total / limit)
+                total: records.length,
+                page: 1,
+                pages: 1
             }
         });
     } catch (error) {
@@ -571,6 +574,8 @@ const createPost = async (req, res) => {
             images: imageIds // 将图片文件ID保存到帖子中
         });
 
+
+
         await newPost.save();
         user.posts.push(newPost._id);
         await user.save();
@@ -611,10 +616,7 @@ const getPosts = async (req, res) => {
 
 const getPostById = async (req, res) => {
     try {
-        // 从请求参数中获取postId
         const { postId } = req.params;
-
-        //const post = await Post.findOne({ postId: postId }).populate('author','nickname');
         const post = await Post.findOne({ postId: postId })
         .populate('author','nickname') // 加载作者
         .populate({
@@ -639,7 +641,6 @@ const getPostById = async (req, res) => {
 
 const getPostByUsername = async (req, res) => {
     try {
-        // 从请求参数中获取用户名
         const { username } = req.params;
 
         // 查找具有指定用户名的用户
@@ -686,12 +687,9 @@ const updatePost = async (req, res) => {
         // 更新帖子的字段
         post.title = title;
         post.content = content;
-        //post.images = images; // 假设images是一个数组或者适当的字段格式
-        
+
         // 清空帖子当前的图片
         if (post.images && post.images.length > 0) {
-            // 假设post.images存储的是文件ID数组
-            // 删除存储在GridFS中的图片文件
             for (const imageId of post.images) {
                 await gfs.delete(imageId);
             }
@@ -700,8 +698,6 @@ const updatePost = async (req, res) => {
         // 处理上传的图片
         let imageIds = [];
         if (req.files && req.files.images) {
-            // 如果有多个文件，req.files.images 将是一个数组
-            // 如果只有一个文件，req.files.images 将是一个对象
             const files = Array.isArray(req.files.images) ? req.files.images : [req.files.images];
 
             for (const file of files) {
@@ -720,6 +716,8 @@ const updatePost = async (req, res) => {
 
         // 更新帖子的图片数组
         post.images = imageIds;
+
+        post.updateData = Date.now;
         
         // 保存更新后的帖子到数据库
         await post.save();
@@ -734,10 +732,8 @@ const updatePost = async (req, res) => {
 
 const deletePost = async (req, res) => {
     try {
-        // 从请求参数中获取postId
         const postId = req.params.postId;
 
-        // 使用自定义的postId字段来查找帖子
         const post = await Post.findOne({ postId: postId });
 
         if (!post) {
@@ -780,10 +776,9 @@ const deletePost = async (req, res) => {
 const createComment = async (req, res) => {
     try {
         const postId = req.params.postId;
-        // 从请求体中获取数据
         const {content, username } = req.body;
 
-        // 查找用户，这里假设你有一个 User 模型并且可以通过用户名找到用户
+        // 查找用户
         const user = await User.findOne({ username: username });
 
         if (!user) {
@@ -792,6 +787,8 @@ const createComment = async (req, res) => {
 
         // 查找具有指定 postId 的帖子
         const post = await Post.findOne({ postId: postId });
+
+        post.commentCount += 1;
 
         if (!post) {
             return res.status(404).json({ message: 'Post not found' });
@@ -837,7 +834,6 @@ const getCommentsByPostId = async (req, res) => {
             return res.status(404).json({ message: 'Post not found' });
         }
 
-        // 返回评论数组
         res.status(200).json(post.comments);
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -860,7 +856,10 @@ const deleteComment = async (req, res) => {
         // 从帖子中移除该评论的引用
         await Post.updateOne(
             { postId: deletedComment.postId },
-            { $pull: { comments: deletedComment._id } }
+            { 
+                $pull: { comments: deletedComment._id } ,
+                $inc: { commentCount: -1 }
+            }
         );
 
         // 返回成功删除的评论信息
@@ -868,7 +867,6 @@ const deleteComment = async (req, res) => {
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
-
 };
 
 const likePost = async (req, res) => {
