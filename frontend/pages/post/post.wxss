@@ -1,32 +1,34 @@
 /* pages/post/post.wxss */
 .container {
-    padding-top: 10px;
-    width: 90%;
-    min-height: 100%;
+  padding-top: 10px;
+  width: 100%;
+  min-height: 100%;
 }
 
 .post-editor {
     width: 90%;
 }
 
-.title-input {
-    width: 100%;
-    height: 40px;
-    /* 设置一个更高的高度 */
-    font-size: 24px;
-    /* 增大字体大小 */
-    line-height: 30px;
-    /* 调整行高以匹配字体大小 */
-    margin-bottom: 15px;
-    /* 在输入框下方增加一些间距 */
+.title-input{
+  width: 100%;
+  height: 40px; /* 设置一个更高的高度 */
+  font-size: 24px; /* 增大字体大小 */
+  line-height: 30px; /* 调整行高以匹配字体大小 */
+  margin-bottom: 15px; /* 在输入框下方增加一些间距 */
 }
 
 .image-upload-button,
-.publish-button {
-
-    width: 100%;
-    margin-top: 5px;
-    color: white;
+.publish-button { 
+    padding: 0;
+    margin-top: 20px;
+    height: 90rpx;
+    border-radius: 45rpx;
+    color: #fff;
+    font-size: 40rpx;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     background-color: rgb(49, 128, 111);
 }
 

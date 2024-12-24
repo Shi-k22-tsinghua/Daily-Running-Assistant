@@ -43,6 +43,13 @@
     border-radius: 5px;
 }
 
+.post-content {
+    width: 95%;
+    margin-bottom: 5px;
+    padding: 5px;
+    border-radius: 5px;
+}
+
 .post-image {
     width: 100px;
     height: 100px;

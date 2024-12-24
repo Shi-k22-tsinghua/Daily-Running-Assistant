@@ -40,6 +40,7 @@
     font-size: 18px;
   }
 
+
   .post-image {
     width: 100px;
     height: 100px;
@@ -55,7 +56,7 @@
   
   .comment-count, .like-count {
     color: #888;
-    font-size: 14px;
+    font-size: 16px;
   }
   
   /* 评论区域样式 */

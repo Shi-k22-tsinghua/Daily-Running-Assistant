@@ -11,7 +11,7 @@ Page({
             title: '今日运动记录，12分长跑3千米',
             content: '#我要减肥#俗话说7分吃3分练，每日搭配营养健身餐。',
             author: 'cuber',
-            commentCount: 334,
+
             comments: [{
                     content: "haha",
                     author: 'a commentator',
@@ -54,8 +54,10 @@ Page({
                 }
             ],
             likes: 334,
-            createdAt: '2024-12-17 21:54'
+            createdAt: '2024-12-17 21:54',
+            commentCount: 334, // 评论数
         },
+        isLiked: false // 是否已点赞
     },
 
     onImageError: function (e) {
@@ -70,15 +72,20 @@ Page({
 
     fetchPostDetails: function (postId) {
         wx.request({
+            // 获取帖子
             url: global.utils.getAPI(global.utils.serverURL, '/api/users/share/posts/' + postId),
             method: 'GET',
             success: (res) => {
                 if (res.statusCode === 200) {
                     this.setData({
                         post: res.data.post,
-                        comments: res.data.comments,
+
+                        // comments: res.data.comments, 
+                        // request返回的data中只有data.post，没有comment，（comment已在post.comment中）
                         serverURL: global.utils.serverURL // Add this line
                     });
+                    console.log('get post:', this.data.post);
+                    //console.log(res);
                 } else {
                     wx.showToast({
                         title: '获取帖子详情失败',
@@ -95,6 +102,95 @@ Page({
                 });
             }
         });
+
+        const that = this;
+        const username = wx.getStorageSync('username');
+        wx.request({
+            //获取username对postId是否点赞
+            url: 'http://124.221.96.133:8000/api/users/share/posts/' + postId + '/ifLikedPost',
+            method: 'POST',
+            header: {
+                'content-type': 'application/json' // 设置请求头为application/json
+            },
+            data: JSON.stringify({
+                username: username // 将数据转换为JSON字符串
+            }),
+            success: function (res) {
+                // 成功回调
+                console.log('获取username对postId是否点赞成功');
+                that.setData({
+                    isLiked: res.data.liked
+                });
+                console.log('get isLiked:', that.data.isLiked);
+            },
+            fail: function (err) {
+                // 失败回调
+                console.error('获取username对postId是否点赞失败', err);
+            }
+        });
+    },
+
+
+    // 点赞事件处理函数
+    toggleLike: function (e) {
+        const postId = this.data.postId;
+        const username = wx.getStorageSync('username');
+
+        this.data.isLiked = !this.data.isLiked; // 切换点赞状态
+        console.log('isLiked:', this.data.isLiked);
+        // this.data.post.likes += this.data.isLiked ? 1 : -1; // 更新点赞数
+        // console.log('likes', this.data.post.likes);
+
+        // 调用服务器API更新点赞数
+        this.updateLikeCount(postId, this.data.isLiked, username);
+        // 更新页面
+        setTimeout(() => this.fetchPostDetails(postId), 100);
+
+    },
+
+    // 更新服务器上的点赞数
+    updateLikeCount: function (postId, isLiked, username) {
+        if (isLiked) {
+            // isLiked = true,点赞
+            // 请求服务器API来更新点赞数
+            wx.request({
+                url: 'http://124.221.96.133:8000/api/users/share/posts/' + postId + '/likePost',
+                method: 'POST',
+                header:{
+                    'content-type': 'application/json' // 设置请求头为application/json
+                },
+                data: {
+                    postId: postId,
+                    username: username,
+                },
+                success: function (res) {
+                    // 成功回调
+                    console.log('点赞成功', res);
+                },
+                fail: function (err) {
+                    // 失败回调
+                    console.error('点赞失败', err);
+                }
+            });
+        } else {
+            // isLiked = false,取消点赞
+            wx.request({
+                url: 'http://124.221.96.133:8000/api/users/share/posts/' + postId + '/unlikePost',
+                method: 'POST',
+                data: {
+                    postId: postId,
+                    username: username,
+                },
+                success: function (res) {
+                    // 成功回调
+                    console.log('取消点赞成功',res);
+                },
+                fail: function (err) {
+                    // 失败回调
+                    console.error('取消点赞失败', err);
+                }
+            })
+        }
     },
 
     bindCommentInput: function (e) {
@@ -118,7 +214,7 @@ Page({
     },
 
     createComment: function (postId, commentContent) {
-        console.log(postId);
+        //console.log(postId);
         wx.request({
             url: global.utils.getAPI(global.utils.serverURL, '/api/users/share/posts/' + postId + '/comments'),
             method: 'POST',
@@ -159,7 +255,8 @@ Page({
         this.setData({
             postId: options.id
         });
-        console.log(this.data.postId)
+      
+        console.log('postId:', this.data.postId);
         this.fetchPostDetails(options.id);
     },
 
