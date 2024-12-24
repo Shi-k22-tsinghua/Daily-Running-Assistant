@@ -210,12 +210,12 @@ Page({
                         iconPath: global.api.getProfilePicture(runner.username) || '../../images/my-icon.png',
                         // Add these properties to make the icon appear more circular
                         callout: {
-                            content: runner.nickname || runner.username,
+                            content: `${runner.nickname || runner.username}\n路程：${runner.meters}m\n时间：${Math.floor(runner.seconds/60)}'${(runner.seconds%60).toString().padStart(2,'0')}"\n配速：${runner.meters === 0 ? "0'00\"" : `${Math.floor((runner.seconds/runner.meters*1000)/60)}'${((runner.seconds/runner.meters*1000)%60).toFixed(0).padStart(2,'0')}"`}`,
                             color: '#000000',
                             fontSize: 14,
                             borderRadius: 5,
                             padding: 5,
-                            display: 'ALWAYS',
+                            display: 'BYCLICK',
                             textAlign: 'center',
                             bgColor: '#ffffff'
                         }
