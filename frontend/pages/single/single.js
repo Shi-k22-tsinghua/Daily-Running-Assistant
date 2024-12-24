@@ -200,7 +200,7 @@ Page({
             success: (res) => {
                 console.log('跑步数据上传成功:', res);
                 // 上传成功后跳转到记录页面
-                wx.navigateTo({
+                wx.redirectTo({
                     url: '../singlerecord/singlerecord',
                 });
             },

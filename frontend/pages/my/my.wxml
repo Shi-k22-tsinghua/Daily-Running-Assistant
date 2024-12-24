@@ -57,9 +57,6 @@
     <!-- 退出登录按钮 -->
     <button class="logout-button" bindtap="onLogout">退出登录</button>
 
-    <view class="contact">
-        <text>联系我们：jiayz22@mails.tsinghua.edu.cn</text>
-    </view>
     <view class="tab-bar">
         <navigator class="tab-item" url="../run/run" open-type="redirect">
             <image class="icon" src="../../images/run-icon.png" />

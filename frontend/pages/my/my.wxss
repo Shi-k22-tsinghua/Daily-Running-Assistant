@@ -34,6 +34,8 @@
 
 .modal-content {
     padding: 20px;
+    border: #ddd solid 2rpx;
+    border-radius: 5rpx;
 }
 
 .modal-footer {

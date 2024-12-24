@@ -112,7 +112,7 @@
     background-color: transparent;
     margin: 0 0;
     position: absolute;
-    bottom: 200rpx;
+    bottom: 120rpx;
 }
 
 .run-button {
