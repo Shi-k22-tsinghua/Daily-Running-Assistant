@@ -19,7 +19,7 @@ Page({
         timeFormatted: '', // 格式化时间输出
         startTime: '', // 开始跑步时间
 
-        defaultPicUrl: '../../images/my-icon.png',  // Add this line
+        defaultPicUrl: '../../images/my-icon.png', // Add this line
 
         users: [{
                 profilePic: '../../images/my-icon.png',
@@ -65,13 +65,13 @@ Page({
     },
 
 
-    handleImageError: function(e) {
+    handleImageError: function (e) {
         const index = e.currentTarget.dataset.index;
         const usersArray = this.data.users;
-        
+
         // Update just the profile pic for the user whose image failed to load
         usersArray[index].profilePic = this.data.defaultPicUrl;
-        
+
         this.setData({
             users: usersArray
         });
@@ -163,9 +163,9 @@ Page({
                         latitude: user.latitude,
                         longitude: user.longitude,
                     }));
-            
+
                     console.log('Users:', users);
-            
+
                     that.setData({
                         users: users
                     });
@@ -260,14 +260,14 @@ Page({
             if (!this.interval) {
                 this.interval = setInterval(this.record.bind(this), this.data.interval);
             }
-            
+
             // Set start time if not already set
             if (this.data.startTime === '') {
                 this.setData({
                     startTime: new Date().toISOString()
                 });
             }
-    
+
             // Additional API call to mark run as started
             wx.request({
                 url: global.utils.getAPI(global.utils.serverURL, `/api/runRoom/start`),
@@ -297,11 +297,11 @@ Page({
         }
         const runID = this.data.verifiedRoomID;
         if (!runID) return;
-        
+
         this.setData({
             seconds: this.data.seconds + this.data.interval / 1000
         })
-        
+
         wx.getLocation({
             type: 'gcj02',
         }).then(res => {
@@ -310,10 +310,10 @@ Page({
                 longitude: res.longitude,
                 id: this.data.points.length + 1
             }
-            
+
             let points = Array.isArray(this.data.points) ? this.data.points : [];
             let pace = 0;
-            
+
             if (points.length > 0) {
                 let lastPoint = points.slice(-1)[0]
                 pace = utils.getDistance(lastPoint.latitude, lastPoint.longitude, newPoint.latitude, newPoint.longitude);
@@ -326,7 +326,7 @@ Page({
             } else {
                 points.push(newPoint);
             }
-            
+
             this.setData({
                 latitude: res.latitude,
                 longitude: res.longitude,
@@ -343,7 +343,7 @@ Page({
                 }],
                 meters: parseFloat((this.data.meters + pace).toFixed(1))
             })
-            
+
             this.formatPace();
 
             const updatedData = {
@@ -363,7 +363,7 @@ Page({
                 success: (res) => {
                     if (res.data.message) {
                         console.log('更新位置成功');
-                    }else{
+                    } else {
                         console.log('更新位置失败');
                     }
                 }
@@ -412,7 +412,7 @@ Page({
             data: runData,
             success: (res) => {
                 console.log('跑步数据上传成功:', res);
-                wx.navigateTo({
+                wx.redirectTo({
                     url: '../singlerecord/singlerecord',
                 });
             },
@@ -425,7 +425,7 @@ Page({
                         if (res.confirm) {
                             this.endRun(e);
                         } else {
-                            wx.navigateTo({
+                            wx.redirectTo({
                                 url: '../singlerecord/singlerecord'
                             });
                         }
@@ -436,6 +436,7 @@ Page({
     },
 
     onUnload() {
+        // 清除所有定时器
         if (this.interval) {
             clearInterval(this.interval);
         }
@@ -445,6 +446,61 @@ Page({
         if (this.coordinateInterval) {
             clearInterval(this.coordinateInterval);
         }
+
+        // 检查房间人数并发送相应请求
+        const runID = this.data.verifiedRoomID;
+        if (!runID) return;
+
+        wx.request({
+            url: global.utils.getAPI(global.utils.serverURL, `/api/runRoom/${runID}`),
+            method: 'GET',
+            success: (res) => {
+                if (res.data.success && res.data.code === 'ROOM_FOUND') {
+                    const activeRunners = res.data.data.runners.filter(
+                        runner => runner.in_room === true
+                    );
+
+                    // 根据房间人数决定发送的请求
+                    if (activeRunners.length <= 1) {
+                        // 房间只有一个人，删除房间
+                        wx.request({
+                            url: global.utils.getAPI(global.utils.serverURL, `/api/runRoom/delete`),
+                            method: 'DELETE',
+                            data: {
+                                runID: runID,
+                                password: wx.getStorageSync('verifiedRoomPassword')
+                            },
+                            success: (res) => {
+                                console.log('房间已删除');
+                            },
+                            fail: (error) => {
+                                console.error('删除房间失败:', error);
+                            }
+                        });
+                    } else {
+                        // 房间有多人，离开房间
+                        wx.request({
+                            url: global.utils.getAPI(global.utils.serverURL, `/api/runRoom/leave`),
+                            method: 'POST',
+                            data: {
+                                runID: runID,
+                                username: wx.getStorageSync('username'),
+                                password: wx.getStorageSync('verifiedRoomPassword')
+                            },
+                            success: (res) => {
+                                console.log('已离开房间');
+                            },
+                            fail: (error) => {
+                                console.error('离开房间失败:', error);
+                            }
+                        });
+                    }
+                }
+            },
+            fail: (error) => {
+                console.error('获取房间信息失败:', error);
+            }
+        });
     }
 
 });
