@@ -1,5 +1,6 @@
 <!--pages/postdetail/postdetail.wxml-->
 <view class="container">
+
     <view class="post">
         <view class="post-meta">
             <text class="post-author">{{post.author.nickname}}</text>
@@ -29,8 +30,10 @@
             <text class="comment-text">{{item.content}}</text>
         </view>
     </view>
+
     <view class="comment-input">
-        <input type="text" placeholder="发表评论" bindinput="bindCommentInput" />
+        <input type="text" placeholder="发表评论" bindinput="bindCommentInput" value="{{messageInput}}" />
         <button bindtap="submitComment">评论</button>
     </view>
+
 </view>
