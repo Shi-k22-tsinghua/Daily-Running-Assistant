@@ -30,7 +30,7 @@ Page({
         if (!username) {
             wx.showToast({
                 title: '请输入用户名!',
-                icon: 'none',
+                icon: 'error',
             });
             return;
         }
@@ -38,7 +38,7 @@ Page({
         if (!password) {
             wx.showToast({
                 title: '请输入密码!',
-                icon: 'none',
+                icon: 'error',
             });
             return;
         }
@@ -65,7 +65,7 @@ Page({
 
                     wx.showToast({
                         title: '登录成功!',
-                        icon: 'none',
+                        icon: 'success',
                     });
                     const nicknameFetch = res.data.user.nickname; // Adjust this depending on your response structure
                     wx.setStorageSync('nickname', nicknameFetch);
@@ -76,19 +76,19 @@ Page({
                 } else if (res.statusCode === 404) {
                     wx.showToast({
                         title: '用户不存在',
-                        icon: 'none',
+                        icon: 'error',
                     });
                 } else if (res.statusCode === 401) {
                     wx.showToast({
                         title: '密码错误',
-                        icon: 'none',
+                        icon: 'error',
                     });
                 }
             },
             fail(err) {
                 wx.showToast({
                     title: 'Network Error',
-                    icon: 'none',
+                    icon: 'error',
                 });
                 console.error(err);
             },
@@ -146,7 +146,7 @@ Page({
                         });
                     } else {
                         wx.showToast({
-                            title: '登录过期或无效\n请重新登陆',
+                            title: '登录过期或无效',
                             icon: 'error',
                         });
                         setTimeout(function () {}, 1500);
@@ -156,8 +156,8 @@ Page({
                     console.error('获取受保护数据失败:', err);
                     // 网络错误或其他问题，处理错误
                     wx.showToast({
-                        title: '网络错误或服务器无响应',
-                        icon: 'none'
+                        title: '服务器无响应',
+                        icon: 'error'
                     });
                 },
             });
