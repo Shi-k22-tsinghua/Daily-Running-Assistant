@@ -3,18 +3,18 @@ const util = require('../../utils/util.js')
 const app = require('../../app.js');
 
 Page({
-  data: {
-    logs: []
-  },
-  onLoad() {
-    app.tokenCheck();
-    this.setData({
-      logs: (wx.getStorageSync('logs') || []).map(log => {
-        return {
-          date: util.formatTime(new Date(log)),
-          timeStamp: log
-        }
-      })
-    })
-  }
+    data: {
+        logs: []
+    },
+    onLoad() {
+        app.tokenCheck();
+        this.setData({
+            logs: (wx.getStorageSync('logs') || []).map(log => {
+                return {
+                    date: util.formatTime(new Date(log)),
+                    timeStamp: log
+                }
+            })
+        })
+    }
 })

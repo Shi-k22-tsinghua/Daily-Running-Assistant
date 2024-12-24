@@ -16,6 +16,7 @@ Page({
         polyline: [], // 路线
         userName: '', // 用户名
         paceFormatted: '', // 格式化配速输出
+        timeFormatted: '', // 格式化时间输出
         startTime: '', // 开始跑步时间
 
         defaultPicUrl: '../../images/my-icon.png',  // Add this line
@@ -77,11 +78,18 @@ Page({
     },
 
     formatPace: function () {
+        // 配速计算和格式化
         const pace = (this.data.meters === 0) ? 0 : Math.round(this.data.seconds * 1000 / this.data.meters);
-        const minutes = Math.floor(pace / 60);
-        const seconds = (pace % 60).toString().padStart(2, '0');
+        const paceMinutes = Math.floor(pace / 60);
+        const paceSeconds = (pace % 60).toString().padStart(2, '0');
+
+        // 时间格式化（只显示分钟和秒）
+        const minutes = Math.floor(this.data.seconds / 60);
+        const seconds = this.data.seconds % 60;
+
         this.setData({
-            paceFormatted: `${minutes}'${seconds}"`
+            paceFormatted: `${paceMinutes}'${paceSeconds}"`,
+            timeFormatted: `${minutes}'${seconds.toString().padStart(2, '0')}"`
         });
     },
 

@@ -9,11 +9,7 @@
             <text class="post-title">{{post.title}}</text>
             <text class="post-content">{{post.content}}</text>
             <view wx:for="{{post.images}}" wx:key="index">
-                <image 
-                    class="post-image" 
-                    src="{{serverURL}}/api/users/posts/images/{{item}}"
-                    mode="aspectFill"
-                />
+                <image class="post-image" src="{{serverURL}}/api/users/posts/images/{{item}}" mode="aspectFill" />
             </view>
         </view>
         <view class="post-interaction">
