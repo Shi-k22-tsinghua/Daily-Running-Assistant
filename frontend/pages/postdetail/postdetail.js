@@ -57,7 +57,8 @@ Page({
             createdAt: '2024-12-17 21:54',
             commentCount: 334, // 评论数
         },
-        isLiked: false // 是否已点赞
+        isLiked: false, // 是否已点赞
+        commentContent: ''
     },
 
     onImageError: function (e) {
@@ -86,6 +87,25 @@ Page({
                     });
                     console.log('get post:', this.data.post);
                     //console.log(res);
+                    console.log('before:', this.data.post.createdAt);
+                    const formattedDate = this.convertToBeijingTime(this.data.post.createdAt);
+                    console.log('after:', formattedDate);
+                    this.setData({
+                        'post.createdAt': formattedDate
+                    });
+                    console.log(this.data.post.createdAt);
+                    //转化每个comment.createAt
+                    // 假设this.data.post是你的post对象
+                    let commentsTemp = this.data.post.comments;
+                    commentsTemp.forEach(item => {
+                        // 遍历数组的每个元素，并执行相应的操作
+                        const formattedDate = this.convertToBeijingTime(item.createdAt);
+                        item.createdAt = formattedDate;
+                    });
+                    this.setData({
+                        'post.comments': commentsTemp
+                    });
+
                 } else {
                     wx.showToast({
                         title: '获取帖子详情失败',
@@ -128,6 +148,8 @@ Page({
                 console.error('获取username对postId是否点赞失败', err);
             }
         });
+
+
     },
 
 
@@ -156,7 +178,7 @@ Page({
             wx.request({
                 url: 'http://124.221.96.133:8000/api/users/share/posts/' + postId + '/likePost',
                 method: 'POST',
-                header:{
+                header: {
                     'content-type': 'application/json' // 设置请求头为application/json
                 },
                 data: {
@@ -183,7 +205,7 @@ Page({
                 },
                 success: function (res) {
                     // 成功回调
-                    console.log('取消点赞成功',res);
+                    console.log('取消点赞成功', res);
                 },
                 fail: function (err) {
                     // 失败回调
@@ -211,6 +233,9 @@ Page({
             return;
         }
         this.createComment(postId, commentContent);
+        this.setData({
+            commentContent: ''
+        });
     },
 
     createComment: function (postId, commentContent) {
@@ -248,6 +273,29 @@ Page({
         });
     },
 
+
+    /**
+     * 修改显示时间为北京时间 
+     */
+    convertToBeijingTime: function (UTCTime) {
+        // 原始时间字符串
+        const postCreateAt = UTCTime;
+
+        // 解析时间字符串为Date对象
+        const date = new Date(postCreateAt);
+
+        // 将UTC时间转换为北京时间（东八区，UTC+8）
+        // getUTCHours() 获取UTC时区的小时数，然后加上8小时转换为北京时间
+        const beijingTime = new Date(date.getTime());
+
+        // 调用格式化函数并输出结果
+        const formattedDate = utils.formatDateWithInput(beijingTime);
+        console.log(formattedDate);
+        return formattedDate;
+
+    },
+
+
     /**
      * 生命周期函数--监听页面加载
      */
@@ -255,7 +303,7 @@ Page({
         this.setData({
             postId: options.id
         });
-      
+
         console.log('postId:', this.data.postId);
         this.fetchPostDetails(options.id);
     },

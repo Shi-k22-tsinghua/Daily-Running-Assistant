@@ -20,7 +20,7 @@
     </view>
 
     <view class="input-area">
-        <input class="input-message" placeholder=" 输入您的问题" value="{{messeageInput}}" bindinput="inputMessage" />
+        <input class="input-message" placeholder=" 输入您的问题" value="{{messageInput}}" bindinput="inputMessage" />
         <button class="send-button" bindtap="sendMessage">
             <image class="send-icon" src="../../images/send-icon.png" />
         </button>
