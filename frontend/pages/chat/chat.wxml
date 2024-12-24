@@ -1,7 +1,7 @@
 <!--pages/chat/chat.wxml-->
 
 <view class="container">
-    <view class = "header">
+    <view class="header">
         <text class="username">{{nickname}}</text>
 
         <button class="clear-button" bindtap="clearMessages">
@@ -9,7 +9,7 @@
         </button>
     </view>
 
-    
+
     <view class="chat-container">
         <scroll-view class="chat-box" scroll-y="true">
             <!-- 消息列表 -->
