@@ -57,7 +57,8 @@ Page({
             createdAt: '2024-12-17 21:54',
             commentCount: 334, // 评论数
         },
-        isLiked: false // 是否已点赞
+        isLiked: false, // 是否已点赞
+        messageInput: '' // 评论框里的内容
     },
 
     onImageError: function (e) {
@@ -195,22 +196,24 @@ Page({
 
     bindCommentInput: function (e) {
         this.setData({
-            commentContent: e.detail.value
+            messageInput: e.detail.value
         });
     },
 
     submitComment: function () {
-        const commentContent = this.data.commentContent;
+        const commentContent = this.data.messageInput;
         const postId = this.data.postId;
         if (!commentContent) {
             wx.showToast({
                 title: '评论不能为空',
-                icon: 'none',
-                duration: 2000
+                icon: 'error'
             });
             return;
         }
         this.createComment(postId, commentContent);
+        this.setData({
+            messageInput: ''
+        });
     },
 
     createComment: function (postId, commentContent) {
@@ -260,52 +263,4 @@ Page({
         this.fetchPostDetails(options.id);
     },
 
-    /**
-     * 生命周期函数--监听页面初次渲染完成
-     */
-    onReady() {
-
-    },
-
-    /**
-     * 生命周期函数--监听页面显示
-     */
-    onShow() {
-
-    },
-
-    /**
-     * 生命周期函数--监听页面隐藏
-     */
-    onHide() {
-
-    },
-
-    /**
-     * 生命周期函数--监听页面卸载
-     */
-    onUnload() {
-
-    },
-
-    /**
-     * 页面相关事件处理函数--监听用户下拉动作
-     */
-    onPullDownRefresh() {
-
-    },
-
-    /**
-     * 页面上拉触底事件的处理函数
-     */
-    onReachBottom() {
-
-    },
-
-    /**
-     * 用户点击右上角分享
-     */
-    onShareAppMessage() {
-
-    }
 })
