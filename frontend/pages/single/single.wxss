@@ -1,7 +1,8 @@
 /* pages/single/single.wxss */
 
 .container {
-    height: 100vh; /* 设置容器高度为视口高度 */
+    height: 100vh;
+    /* 设置容器高度为视口高度 */
 }
 
 .map {
@@ -11,7 +12,7 @@
     flex: 1;
 }
 
-.counter{
+.counter {
     width: 710rpx;
     background-color: #fff;
     opacity: 0.8;
@@ -25,7 +26,7 @@
     box-sizing: border-box;
 }
 
-.counter view{
+.counter view {
     flex: 1;
     display: flex;
     flex-direction: column;
@@ -33,12 +34,12 @@
     align-items: center;
 }
 
-.counter text{
+.counter text {
     display: block;
     margin: 5rpx;
 }
 
-.counter image{
+.counter image {
     width: 100rpx;
     height: 100rpx;
 }
@@ -51,7 +52,7 @@
     background-color: transparent;
     margin: 0 0;
     position: absolute;
-    bottom: 200rpx;
+    bottom: 120rpx;
 }
 
 .run-button {
@@ -61,7 +62,7 @@
     background-color: transparent;
 }
 
-.run-button image{
+.run-button image {
     width: 150rpx;
     height: 150rpx;
     border-radius: 50%;

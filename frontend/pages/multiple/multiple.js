@@ -38,7 +38,7 @@ Page({
         if (!roomID) {
             wx.showToast({
                 title: '请输入房间号!',
-                icon: 'none',
+                icon: 'error',
             });
             return;
         }
@@ -46,7 +46,7 @@ Page({
         if (!password) {
             wx.showToast({
                 title: '请输入房间密码!',
-                icon: 'none',
+                icon: 'error',
             });
             return;
         }
@@ -65,7 +65,7 @@ Page({
                 } else {
                     wx.showToast({
                         title: '房间创建失败!',
-                        icon: 'none',
+                        icon: 'error',
                     });
                     console.error('Error creating room:', res.data.error);
                 }
@@ -73,7 +73,7 @@ Page({
             fail: (error) => {
                 wx.showToast({
                     title: '请求失败!',
-                    icon: 'none',
+                    icon: 'error',
                 });
                 console.error('Request failed:', error);
             },
@@ -95,7 +95,7 @@ Page({
         if (!roomID) {
             wx.showToast({
                 title: '请输入房间号!',
-                icon: 'none',
+                icon: 'error',
             });
             return;
         }
@@ -103,7 +103,7 @@ Page({
         if (!password) {
             wx.showToast({
                 title: '请输入房间密码!',
-                icon: 'none',
+                icon: 'error',
             });
             return;
         }
@@ -135,7 +135,7 @@ Page({
                 } else {
                     wx.showToast({
                         title: '加入房间失败!',
-                        icon: 'none',
+                        icon: 'error',
                     });
                     console.error('Error joining room:', res.data.error);
                 }
@@ -143,7 +143,7 @@ Page({
             fail: (error) => {
                 wx.showToast({
                     title: '请求失败!',
-                    icon: 'none',
+                    icon: 'error',
                 });
                 console.error('Request failed:', error);
             },
@@ -190,6 +190,5 @@ Page({
             });
         }
     },
-
 
 })

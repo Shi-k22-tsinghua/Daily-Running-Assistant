@@ -121,7 +121,7 @@ Page({
                 console.error('获取位置失败', error);
                 wx.showToast({
                     title: '无法获取位置信息',
-                    icon: 'none',
+                    icon: 'error',
                 });
             },
         });
@@ -174,7 +174,7 @@ Page({
             fail(err) {
                 wx.showToast({
                     title: '获取数据失败',
-                    icon: 'none'
+                    icon: 'error'
                 });
             }
         });

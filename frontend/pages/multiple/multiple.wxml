@@ -1,15 +1,14 @@
 <view class="container">
 
     <view class="title">多人跑步房间</view>
+
     <view class="picview" url="../multiple/multiple">
         <image src="../../images/group-icon.png" class="pic" />
     </view>
 
-
     <input placeholder="请输入房间号" type="text" class="input-box" bindinput="bindRoomIdInput" />
 
     <input placeholder="请输入房间密码" type="password" class="input-box" bindinput="bindPasswordInput" />
-
 
     <view class="button-box">
         <button class="run-group create-group" bindtap="createGroup">
@@ -20,22 +19,4 @@
         </button>
     </view>
 
-    <view class="tab-bar">
-        <navigator class="tab-item" url="../run/run" style="color: #009688;" open-type="redirect">
-            <image class="icon" src="../../images/run-icon.png" />
-            <text>跑步</text>
-        </navigator>
-        <navigator class="tab-item" url="../share/share" open-type="redirect">
-            <image class="icon" src="../../images/share-icon.png" />
-            <text>分享</text>
-        </navigator>
-        <navigator class="tab-item" url="../chat/chat" open-type="redirect">
-            <image class="icon" src="../../images/chat-icon.png" />
-            <text>助手</text>
-        </navigator>
-        <navigator class="tab-item" url="../my/my" open-type="redirect">
-            <image class="icon" src="../../images/my-icon.png" />
-            <text>我的</text>
-        </navigator>
-    </view>
 </view>
