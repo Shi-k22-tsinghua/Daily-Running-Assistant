@@ -5,7 +5,7 @@
     <view class="post-list">
         <view class="post" wx:for="{{posts}}" wx:key="index">
             <navigator url="../postdetail/postdetail?id={{item.postId}}">
-                <view class="post">
+                <view class="post-content">
                     <view>
                         <text class="post-title">{{item.title}}</text>
                     </view>
