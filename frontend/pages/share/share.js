@@ -37,7 +37,7 @@ Page({
     /**
      * 获取帖子列表
      */
-    fetchPosts: function() {
+    fetchPosts: function () {
         const that = this;
         wx.request({
             url: global.utils.getAPI(global.utils.serverURL, '/api/users/share/posts'),
@@ -46,7 +46,7 @@ Page({
                 if (res.statusCode === 200) {
                     this.setData({
                         posts: res.data.posts.reverse(),
-                        serverURL: global.utils.serverURL  // Add this line
+                        serverURL: global.utils.serverURL // Add this line
                     });
                 } else {
                     wx.showToast({

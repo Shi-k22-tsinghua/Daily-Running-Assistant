@@ -1,9 +1,9 @@
 /* pages/run/run.wxss */
-.container{
+.container {
     padding: 100rpx 10rpx;
 }
 
-.button{
+.button {
     width: 400rpx;
     height: 400rpx;
     background-color: #f8f8f8;
@@ -17,7 +17,7 @@
     color: #009688;
 }
 
-.pic{
+.pic {
     width: 250rpx;
     height: 250rpx;
 }

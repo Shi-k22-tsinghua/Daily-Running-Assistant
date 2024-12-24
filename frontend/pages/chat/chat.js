@@ -63,7 +63,7 @@ Page({
                 // 其他可选参数
             },
             header: {
-                'Content-Type': 'application/json',// 设置请求头
+                'Content-Type': 'application/json', // 设置请求头
                 'Authorization': 'Bearer 0d567b5f2975fe9553b9122af1fb183e.zC8c4UK9yC8nuxmF' //设置api key
             },
             success(res) {

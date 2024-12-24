@@ -6,9 +6,9 @@ Page({
         confirmpassword: '',
     },
 
-    onLoad: function() {
-      // 展示注册页面
-      // console.log('Register page loaded');
+    onLoad: function () {
+        // 展示注册页面
+        // console.log('Register page loaded');
     },
 
     // Handle username input
@@ -35,7 +35,11 @@ Page({
 
     // Register button click handler
     onRegister() {
-        const { username, password, confirmpassword } = this.data;
+        const {
+            username,
+            password,
+            confirmpassword
+        } = this.data;
 
         // Check if inputs are provided
         if (!username || !password || !confirmpassword) {
@@ -59,7 +63,10 @@ Page({
         wx.request({
             url: global.utils.getAPI(global.utils.serverURL, '/api/users'),
             method: 'POST',
-            data: { username, password },
+            data: {
+                username,
+                password
+            },
             header: {
                 'Content-Type': 'application/json',
             },
@@ -68,9 +75,9 @@ Page({
                     wx.showToast({
                         title: 'Registration Successful!',
                     });
-                    setTimeout(function() {
-                      wx.navigateBack();
-                  }, 1000); // 等待1000毫秒（1秒）后执行
+                    setTimeout(function () {
+                        wx.navigateBack();
+                    }, 1000); // 等待1000毫秒（1秒）后执行
                     //wx.navigateBack();
                 } else {
                     wx.showToast({
@@ -88,11 +95,10 @@ Page({
             },
         });
     },
-    
 
 
-    goBack: function() {
+
+    goBack: function () {
         wx.navigateBack();
     }
 });
-  
