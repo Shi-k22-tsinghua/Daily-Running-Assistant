@@ -14,7 +14,8 @@ Page({
         endTime: '',
         meters: '0',
         seconds: '0',
-        pace: '0\'00"',
+        paceFormatted: '0\'00"',
+        timeFormatted: '0\'00"',
         animationTimer: null,
         currentPointIndex: 0,
         isPanelExpanded: false,
@@ -26,8 +27,13 @@ Page({
         const pace = (this.data.meters === 0) ? 0 : Math.round(this.data.seconds * 1000 / this.data.meters);
         const minutes = Math.floor(pace / 60);
         const seconds = (pace % 60).toString().padStart(2, '0');
+
+        const timeminutes = Math.floor(this.data.seconds / 60);
+        const timeseconds = this.data.seconds % 60;
+
         this.setData({
-            pace: `${minutes}'${seconds}"`
+            paceFormatted: `${minutes}'${seconds}"`,
+            timeFormatted: `${timeminutes}'${timeseconds.toString().padStart(2, '0')}"`
         });
     },
 
