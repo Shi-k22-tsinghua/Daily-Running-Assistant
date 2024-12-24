@@ -44,8 +44,8 @@ Page({
         // Check if inputs are provided
         if (!username || !password || !confirmpassword) {
             wx.showToast({
-                title: 'All fields are required!',
-                icon: 'none',
+                title: '您有空没填哦',
+                icon: 'error',
             });
             return;
         }
@@ -53,8 +53,8 @@ Page({
         // Check if passwords match
         if (password !== confirmpassword) {
             wx.showToast({
-                title: 'Passwords do not match!',
-                icon: 'none',
+                title: '两个密码不同',
+                icon: 'error',
             });
             return;
         }
@@ -73,30 +73,28 @@ Page({
             success(res) {
                 if (res.statusCode === 200) {
                     wx.showToast({
-                        title: 'Registration Successful!',
+                        title: '注册成功',
+                        icon: 'success'
                     });
                     setTimeout(function () {
                         wx.navigateBack();
                     }, 1000); // 等待1000毫秒（1秒）后执行
-                    //wx.navigateBack();
                 } else {
                     wx.showToast({
-                        title: 'Registration Failed',
-                        icon: 'none',
+                        title: '注册失败',
+                        icon: 'error',
                     });
                 }
             },
             fail(err) {
                 wx.showToast({
-                    title: 'Network Error',
-                    icon: 'none',
+                    title: '网络不佳',
+                    icon: 'error',
                 });
                 console.error(err);
             },
         });
     },
-
-
 
     goBack: function () {
         wx.navigateBack();
