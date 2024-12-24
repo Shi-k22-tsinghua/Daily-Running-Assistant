@@ -6,7 +6,7 @@
 }
 
 .post-editor {
-  width: 90%;
+    width: 90%;
 }
 
 .title-input{
@@ -15,12 +15,10 @@
   font-size: 24px; /* 增大字体大小 */
   line-height: 30px; /* 调整行高以匹配字体大小 */
   margin-bottom: 15px; /* 在输入框下方增加一些间距 */
-  
 }
 
 .image-upload-button,
-.publish-button {
-  
+.publish-button { 
     padding: 0;
     margin-top: 20px;
     height: 90rpx;
@@ -35,39 +33,49 @@
 }
 
 .content-textarea {
-  width: 100%;
-  height: 200px; /* 可以根据需要调整高度 */
-  margin-top: 10px;
-  border: 1px solid #ccc; /* 增加边框，可以根据您的设计调整颜色 */
-  border-radius: 4px; /* 增加边框圆角 */
-  box-sizing: border-box; /* 确保边框和内边距不会增加额外的宽度 */
+    width: 100%;
+    height: 200px;
+    /* 可以根据需要调整高度 */
+    margin-top: 10px;
+    border: 1px solid #ccc;
+    /* 增加边框，可以根据您的设计调整颜色 */
+    border-radius: 4px;
+    /* 增加边框圆角 */
+    box-sizing: border-box;
+    /* 确保边框和内边距不会增加额外的宽度 */
 }
 
 .separator {
-  height: 10px; /* 分隔线的高度 */
-  background-color: #f2f2f2; /* 分隔线的颜色 */
+    height: 10px;
+    /* 分隔线的高度 */
+    background-color: #f2f2f2;
+    /* 分隔线的颜色 */
 }
 
 .image-upload-area {
-  position: relative;
-  margin-top: 10px;
+    position: relative;
+    margin-top: 10px;
 }
 
 .image-preview {
-  display: flex;
-  flex-wrap: wrap;
-  margin-top: 10px;
+    display: flex;
+    flex-wrap: wrap;
+    margin-top: 10px;
 }
 
 .image-preview-item {
-  width: 100px; /* 图片预览的宽度 */
-  height: 100px; /* 图片预览的高度 */
-  margin-right: 10px;
-  margin-bottom: 10px;
-  object-fit: cover; /* 保持图片比例 */
+    width: 100px;
+    /* 图片预览的宽度 */
+    height: 100px;
+    /* 图片预览的高度 */
+    margin-right: 10px;
+    margin-bottom: 10px;
+    object-fit: cover;
+    /* 保持图片比例 */
 }
 
 .delete-button {
-  display: none; /* 默认隐藏删除按钮 */
-  /* 其他样式... */
+    display: none;
+    /* 默认隐藏删除按钮 */
+    /* 其他样式... */
 }

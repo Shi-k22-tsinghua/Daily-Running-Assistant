@@ -1,65 +1,4 @@
 /**index.wxss**/
-/* page {
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-}
-.scrollarea {
-  flex: 1;
-  overflow-y: hidden;
-}
-
-.userinfo {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  color: #aaa;
-  width: 80%;
-}
-
-.userinfo-avatar {
-  overflow: hidden;
-  width: 128rpx;
-  height: 128rpx;
-  margin: 20rpx;
-  border-radius: 50%;
-}
-
-.usermotto {
-  margin-top: 200px;
-}
-
-.avatar-wrapper {
-  padding: 0;
-  width: 56px !important;
-  border-radius: 8px;
-  margin-top: 40px;
-  margin-bottom: 40px;
-}
-
-.avatar {
-  display: block;
-  width: 56px;
-  height: 56px;
-}
-
-.nickname-wrapper {
-  display: flex;
-  width: 100%;
-  padding: 16px;
-  box-sizing: border-box;
-  border-top: .5px solid rgba(0, 0, 0, 0.1);
-  border-bottom: .5px solid rgba(0, 0, 0, 0.1);
-  color: black;
-}
-
-.nickname-label {
-  width: 105px;
-}
-
-.nickname-input {
-  flex: 1;
-} */
 
 .container {
     display: flex;
@@ -67,7 +6,7 @@
     align-items: center;
     padding: 20rpx;
     height: 100vh;
-    background-color: #0b0531;
+    background-color: #f2f2f2;
 }
 
 .login-title {
@@ -75,7 +14,6 @@
     font-weight: bold;
     margin-top: 50rpx;
     margin-bottom: 50rpx;
-    color: #ddd;
 }
 
 .input-container {
@@ -90,9 +28,8 @@
     padding: 0 20rpx;
     border-radius: 20rpx;
     border: 1px solid #ddd;
-    background-color: #0b0531;
     box-sizing: border-box;
-    color: #ddd;
+    background-color: #fff;
 }
 
 .login-button,
@@ -101,11 +38,8 @@
     margin-top: 10rpx;
     margin-bottom: 10rpx;
     border-radius: 20rpx;
-    border-width: 2rpx;
-    border-color: #009688;
-    border-style: solid;
-    background-color: #0b0531;
-    color: #009688;
+    background-color: #009688;
+    color: #fff;
     font-size: 32rpx;
     font-weight: bold;
 }
@@ -115,8 +49,8 @@
 }
 
 .register-button {
-    border-color: #7aad49;
-    color: #7aad49;
+    background-color: #7aad49;
+    color: #fff;
 }
 
 .wx-login-button {
@@ -132,7 +66,6 @@
     border-width: 2rpx;
     border-color: #07c160;
     border-style: solid;
-    background-color: #0b0531;
     color: #07c160;
     font-size: 32rpx;
 }

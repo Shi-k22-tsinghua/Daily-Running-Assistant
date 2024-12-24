@@ -34,3 +34,20 @@
     height: 50rpx;
     margin-bottom: 5rpx;
 }
+
+button {
+    transition: all 0.3s ease;
+}
+
+button:active {
+    transform: scale(1.2);
+}
+
+.input-box {
+    transition: all 0.3s ease;
+}
+
+.input-box:focus {
+    transform: scale(1.1);
+    border-color: #009688;
+}

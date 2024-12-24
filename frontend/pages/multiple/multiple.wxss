@@ -43,7 +43,6 @@
 
 .input-box:focus {
     transform: scale(1.2);
-    border-color: #009688;
 }
 
 .button-box {

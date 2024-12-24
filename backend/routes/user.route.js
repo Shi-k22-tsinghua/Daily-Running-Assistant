@@ -77,6 +77,8 @@ router.delete('/share/comments/:commentId', userController.deleteComment);
 router.post('/share/posts/:postId/likePost', userController.likePost);
 //取消点赞帖子
 router.post('/share/posts/:postId/unlikePost', userController.unlikePost);
+//查看用户是否点赞帖子
+router.post('/share/posts/:postId/ifLikedPost', userController.checkIfLikedPost);
 // 点赞评论
 router.post('/share/posts/:commentId/likeComment', userController.likeComment);
 // 取消点赞评论

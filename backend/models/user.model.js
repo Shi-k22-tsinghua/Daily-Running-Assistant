@@ -38,6 +38,7 @@ const PostSchema = mongoose.Schema({
         default: null
     }],
     
+    commentCount: { type: Number, default: 0 },
     comments: [{
         type: Schema.Types.ObjectId,
         ref: 'Comment'
@@ -49,7 +50,8 @@ const PostSchema = mongoose.Schema({
 }, { timestamps: true });
 
 const UserSchema = mongoose.Schema({
-    username: { type: String, required: [true, "Please enter username"] },
+    //userId: { type: Number, unique: true },
+    username: { type: String, required: [true, "Please enter username"], unique: true },
     password: { type: String, required: [true, "Please enter password"] },
     nickname: { type: String, default: function() { return this.username; } },
     profilePicture: {
@@ -77,6 +79,12 @@ const UserSchema = mongoose.Schema({
     }]
 });
 
+const LikeSchema = mongoose.Schema({
+    user: { type: Schema.Types.ObjectId, ref: 'User' },
+    post: { type: Schema.Types.ObjectId, ref: 'Post' },
+    createdAt: { type: Date, default: Date.now }
+});
+
 // Keep the existing toJSON transform
 UserSchema.set('toJSON', {
     transform: (doc, ret, options) => {
@@ -92,14 +100,20 @@ UserSchema.set('toJSON', {
 PostSchema.plugin(sequence, { id: 'post_id_counter', inc_field: 'postId' });
 CommentSchema.plugin(sequence, { id: 'commenet_id_counter', inc_field: 'commentId' });
 
+PostSchema.pre('save', function(next) {
+    this.updatedAt = Date.now();
+    next();
+  });
 
 const User = mongoose.model("User", UserSchema);
 const Comment = mongoose.model('Comment', CommentSchema);
 const Post = mongoose.model('Post', PostSchema);
+const Like = mongoose.model('Like', LikeSchema);
 
 // 导出模型
 module.exports = {
     User,
     Post,
-    Comment
+    Comment,
+    Like
 };

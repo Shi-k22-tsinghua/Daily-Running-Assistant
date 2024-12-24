@@ -16,11 +16,11 @@
     justify-content: space-between;
     background-color: transparent;
     border-top: 1px solid #ccc;
-    border-bottom:10px solid ;
+    border-bottom: 10px solid;
     padding: 5rpx 0;
 }
 
-.username{
+.username {
     font-size: 20px;
     color: rgb(78, 73, 73);
     margin-left: 1%;
@@ -36,7 +36,7 @@
     padding-left: 3%;
 }
 
-.clear-icon{
+.clear-icon {
     width: 30px;
     height: 30px;
     padding-bottom: 5rpx;
@@ -127,7 +127,7 @@
     padding-right: 5%;
 }
 
-.send-icon{
+.send-icon {
     width: 30px;
     height: 30px;
     padding-right: 5rpx;

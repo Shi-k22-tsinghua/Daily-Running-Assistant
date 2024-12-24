@@ -79,6 +79,7 @@ Page({
                 if (res.statusCode === 200) {
                     this.setData({
                         post: res.data.post,
+
                         // comments: res.data.comments, 
                         // request返回的data中只有data.post，没有comment，（comment已在post.comment中）
                         serverURL: global.utils.serverURL // Add this line
@@ -254,6 +255,7 @@ Page({
         this.setData({
             postId: options.id
         });
+      
         console.log('postId:', this.data.postId);
         this.fetchPostDetails(options.id);
     },

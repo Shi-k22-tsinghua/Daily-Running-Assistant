@@ -2,6 +2,7 @@
 const utils = require('../../utils/util.js')
 const app = require('../../app.js');
 
+
 Page({
 
     /**
@@ -25,7 +26,7 @@ Page({
             titleInput: e.detail.value,
         });
     },
-    inputContent: function(e) {
+    inputContent: function (e) {
         this.setData({
             contentInput: e.detail.value,
         });
@@ -36,7 +37,7 @@ Page({
      */
     publishPost: function () {
         // 获取标题和正文
-        const title = this.data.titleInput; 
+        const title = this.data.titleInput;
         const content = this.data.contentInput;
 
         // 获取图片URL数组
@@ -60,10 +61,10 @@ Page({
             });
             return;
         }
-    
+
         // Calculate remaining allowed images
         const remainingCount = 3 - (that.data.imagePreview ? that.data.imagePreview.length : 0);
-        
+
         wx.chooseImage({
             count: remainingCount,
             sizeType: ['compressed'],
@@ -115,7 +116,7 @@ Page({
     createPost: function (title, content) {
         const username = wx.getStorageSync('username');
         const that = this;
-    
+
         if (this.data.imagePreview && this.data.imagePreview.length > 0) {
             const files = this.data.imagePreview.map((path, index) => ({
                 name: 'images',
@@ -126,8 +127,8 @@ Page({
                     username: username
                 }
             }));
-    
-            Promise.all(files.map(file => 
+
+            Promise.all(files.map(file =>
                 new Promise((resolve, reject) => {
                     wx.uploadFile({
                         url: global.utils.getAPI(global.utils.serverURL, '/api/users/share/posts'),

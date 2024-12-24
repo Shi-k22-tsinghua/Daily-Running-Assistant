@@ -8,13 +8,11 @@
         <view class="post-content">
             <text class="post-title">{{post.title}}</text>
             <text class="post-content">{{post.content}}</text>
-            <block wx:for="{{post.images}}" wx:key="index">
-                <image 
-                    class="post-image" 
-                    src="{{serverURL}}/api/users/posts/images/{{item}}"
-                    mode="aspectFill"
-                />
-            </block>
+
+            <view wx:for="{{post.images}}" wx:key="index">
+                <image class="post-image" src="{{serverURL}}/api/users/posts/images/{{item}}" mode="aspectFill" />
+            </view>
+
         </view>
         <view class="post-interaction">
             <text class="comment-count">💬 {{post.commentCount}}</text>
