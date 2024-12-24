@@ -109,10 +109,10 @@ Page({
         });
     },
 
-    onRecordClick: function(e) {
+    onRecordClick: function (e) {
         // 获取点击的记录数据
         const record = e.currentTarget.dataset.record;
-        
+
         // 构造 runData 对象
         const runData = {
             username: wx.getStorageSync('username'),
@@ -124,11 +124,11 @@ Page({
                 end: record.end
             }
         };
-        
+
         // 设置全局数据
         const app = getApp();
         app.globalData.currentRunData = runData;
-        
+
         // 跳转到详情页
         wx.navigateTo({
             url: '../singlerecord/singlerecord'

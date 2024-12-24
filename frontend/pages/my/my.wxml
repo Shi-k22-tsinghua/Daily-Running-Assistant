@@ -3,15 +3,10 @@
 <view class="container">
     <view class="profile">
         <!-- <image class="profile-pic" src = "../../images/my-icon.png"/> -->
-        <image 
-            class="profile-pic" 
-            src="{{profilePicUrl || defaultPicUrl}}" 
-            mode="aspectFill"
-            binderror="handleImageError"
-        />
+        <image class="profile-pic" src="{{profilePicUrl || defaultPicUrl}}" mode="aspectFill" binderror="handleImageError" />
         <text class="username">{{nickname}}</text>
     </view>
-    
+
     <!-- 新增的菜单栏 -->
     <view class="menu-bar">
         <navigator class="menu-item" url='../runrecord/runrecord'>
@@ -30,33 +25,33 @@
 
     <!-- 弹窗组件 -->
     <view class="modal-back" wx:if="{{showModal}}">
-    <view class="custom-modal" >
-        <view class="modal-content">
-            <block wx:if="{{currentAction === 'nickname'}}">
-                <input type="text" placeholder="请输入新昵称" bindinput="inputNickname" value="{{nicknameInput}}"/>
-            </block>
-            <block wx:if="{{currentAction === 'avatar'}}">
-                <view class="image-preview" wx:if="{{imagePreview.length > 0}}">
-                    <block wx:for="{{imagePreview}}" wx:key="{{item}}" wx:for-index="idx">
-                        <view class="image-container" bindlongpress="showDeleteModal" data-index="{{idx}}">
-                            <image class="image-preview-item" src="{{item}}" />
-                        </view>
-                    </block>
-                </view>
-                <view bindtap="chooseAvatar">选择头像</view>
-            </block>
-            <block wx:if="{{currentAction === 'profile'}}">
-                <view><text>用户名: {{username}}</text></view>
-                <view><text>昵称: {{nickname}}</text></view>
-            </block>
+        <view class="custom-modal">
+            <view class="modal-content">
+                <block wx:if="{{currentAction === 'nickname'}}">
+                    <input type="text" placeholder="请输入新昵称" bindinput="inputNickname" value="{{nicknameInput}}" />
+                </block>
+                <block wx:if="{{currentAction === 'avatar'}}">
+                    <view class="image-preview" wx:if="{{imagePreview.length > 0}}">
+                        <block wx:for="{{imagePreview}}" wx:key="{{item}}" wx:for-index="idx">
+                            <view class="image-container" bindlongpress="showDeleteModal" data-index="{{idx}}">
+                                <image class="image-preview-item" src="{{item}}" />
+                            </view>
+                        </block>
+                    </view>
+                    <view bindtap="chooseAvatar">选择头像</view>
+                </block>
+                <block wx:if="{{currentAction === 'profile'}}">
+                    <view><text>用户名: {{username}}</text></view>
+                    <view><text>昵称: {{nickname}}</text></view>
+                </block>
+            </view>
+            <view class="modal-footer">
+                <button bindtap="onModalSuccess">确定</button>
+                <block wx:if="{{currentAction !== 'profile'}}">
+                    <button bindtap="onModalFail">取消</button>
+                </block>
+            </view>
         </view>
-        <view class="modal-footer">
-            <button bindtap="onModalSuccess">确定</button>
-            <block wx:if="{{currentAction !== 'profile'}}">
-                <button bindtap="onModalFail">取消</button>
-            </block>
-        </view>
-    </view>
     </view>
 
     <!-- 退出登录按钮 -->

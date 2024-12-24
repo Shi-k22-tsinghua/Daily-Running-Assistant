@@ -6,35 +6,65 @@ Page({
 
     data: {
         postId: 0, //存储所要获取帖子的postId
-        post: 
-            {
-                images: ['../../images/run-icon.png'],
-                title: '今日运动记录，12分长跑3千米',
-                content: '#我要减肥#俗话说7分吃3分练，每日搭配营养健身餐。',
-                author: 'cuber',
-                commentCount: 334,
-                comments: [
-                    {content: "haha", author: 'a commentator', createdAt: '2024-12-18 14:49'},
-                    {content: "this is another comment", author: 'some commentator', createdAt: '2024-12-18 14:50'},
-                    {content: "this is another comment", author: 'some commentator', createdAt: '2024-12-18 14:51'},
-                    {content: "this is another comment", author: 'some commentator', createdAt: '2024-12-18 14:52'},
-                    {content: "this is another comment", author: 'some commentator', createdAt: '2024-12-18 14:53'},
-                    {content: "this is another comment", author: 'some commentator', createdAt: '2024-12-18 14:54'},
-                    {content: "this is another comment", author: 'some commentator', createdAt: '2024-12-18 14:55'},
-                    {content: "this is another another another another another comment", author: 'another commentator', createdAt: '2024-12-18 14:56'}
-                ],
-                likes: 334,
-                createdAt: '2024-12-17 21:54'
-            },
+        post: {
+            images: ['../../images/run-icon.png'],
+            title: '今日运动记录，12分长跑3千米',
+            content: '#我要减肥#俗话说7分吃3分练，每日搭配营养健身餐。',
+            author: 'cuber',
+            commentCount: 334,
+            comments: [{
+                    content: "haha",
+                    author: 'a commentator',
+                    createdAt: '2024-12-18 14:49'
+                },
+                {
+                    content: "this is another comment",
+                    author: 'some commentator',
+                    createdAt: '2024-12-18 14:50'
+                },
+                {
+                    content: "this is another comment",
+                    author: 'some commentator',
+                    createdAt: '2024-12-18 14:51'
+                },
+                {
+                    content: "this is another comment",
+                    author: 'some commentator',
+                    createdAt: '2024-12-18 14:52'
+                },
+                {
+                    content: "this is another comment",
+                    author: 'some commentator',
+                    createdAt: '2024-12-18 14:53'
+                },
+                {
+                    content: "this is another comment",
+                    author: 'some commentator',
+                    createdAt: '2024-12-18 14:54'
+                },
+                {
+                    content: "this is another comment",
+                    author: 'some commentator',
+                    createdAt: '2024-12-18 14:55'
+                },
+                {
+                    content: "this is another another another another another comment",
+                    author: 'another commentator',
+                    createdAt: '2024-12-18 14:56'
+                }
+            ],
+            likes: 334,
+            createdAt: '2024-12-17 21:54'
+        },
     },
 
-    onImageError: function(e) {
+    onImageError: function (e) {
         console.error('Image load error:', e);
         const index = e.currentTarget.dataset.index;
         console.log('Failed to load image at index:', index);
     },
-    
-    onImageLoad: function(e) {
+
+    onImageLoad: function (e) {
         console.log('Image loaded successfully:', e);
     },
 
@@ -47,7 +77,7 @@ Page({
                     this.setData({
                         post: res.data.post,
                         comments: res.data.comments,
-                        serverURL: global.utils.serverURL  // Add this line
+                        serverURL: global.utils.serverURL // Add this line
                     });
                 } else {
                     wx.showToast({
@@ -128,7 +158,7 @@ Page({
     onLoad: function (options) {
         this.setData({
             postId: options.id
-          });
+        });
         console.log(this.data.postId)
         this.fetchPostDetails(options.id);
     },

@@ -33,11 +33,11 @@
         </view>
         <view>
             <image src="../../images/clock-icon.png" mode="" />
-            <text>时间: {{seconds}}s </text>
+            <text>时间: {{timeFormatted}} </text>
         </view>
         <view>
             <image src="../../images/pace-icon.png" mode="" />
-            <text>配速: {{pace}}</text>
+            <text>配速: {{paceFormatted}}</text>
         </view>
     </view>
 

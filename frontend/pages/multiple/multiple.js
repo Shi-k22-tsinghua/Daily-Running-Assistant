@@ -120,7 +120,7 @@ Page({
                     });
 
                     wx.setStorageSync('verifiedRoomID', roomID),
-                    wx.setStorageSync('verifiedRoomPassword', password),
+                        wx.setStorageSync('verifiedRoomPassword', password),
 
                         // Navigate to the multiple_run room
                         wx.navigateTo({

@@ -5,24 +5,27 @@ Page({
     data: {
         username: '',
         nickname: '',
-        profilepicture:'',
+        profilepicture: '',
         password: ''
     },
-  
-    bindUsernameInput: function(e) {
+
+    bindUsernameInput: function (e) {
         this.setData({
             username: e.detail.value
         });
     },
-  
-    bindPasswordInput: function(e) {
+
+    bindPasswordInput: function (e) {
         this.setData({
             password: e.detail.value
         });
     },
 
     onLogin() {
-        const { username, password } = this.data;
+        const {
+            username,
+            password
+        } = this.data;
 
         if (!username) {
             wx.showToast({
@@ -40,14 +43,17 @@ Page({
             return;
         }
 
-        const data = { username, password };
+        const data = {
+            username,
+            password
+        };
 
         wx.request({
             url: global.utils.getAPI(global.utils.serverURL, '/api/users/login'),
             method: 'POST',
             data: JSON.stringify(data),
             header: {
-                'Content-Type': 'application/json', 
+                'Content-Type': 'application/json',
             },
             success(res) {
                 if (res.statusCode === 200) {
@@ -67,12 +73,12 @@ Page({
                     wx.navigateTo({
                         url: '../run/run'
                     });
-                } else if(res.statusCode === 404){
+                } else if (res.statusCode === 404) {
                     wx.showToast({
                         title: '用户不存在',
                         icon: 'none',
                     });
-                }else if(res.statusCode === 401){
+                } else if (res.statusCode === 401) {
                     wx.showToast({
                         title: '密码错误',
                         icon: 'none',
@@ -88,20 +94,20 @@ Page({
             },
         });
     },
-  
-    onRegister: function() {
+
+    onRegister: function () {
         wx.navigateTo({
             url: '../register/register'
         });
     },
-  
-    onWeChatLogin: function(e) {
+
+    onWeChatLogin: function (e) {
         if (e.detail.userInfo) {
             wx.showToast({
                 title: '微信登录成功',
                 icon: 'success'
             });
-          
+
             // 使用 Promise 来模拟 sleep
             sleep(1000).then(() => {
                 wx.navigateTo({
@@ -114,48 +120,47 @@ Page({
                 icon: 'none'
             });
         }
+
         function sleep(ms) {
             return new Promise(resolve => setTimeout(resolve, ms));
         }
     },
 
     onLoad(options) {
-      const token = wx.getStorageSync('token'); // 从本地存储中获取 token
-    
-      if (token) {
-          wx.request({
-            url: 'http://124.221.96.133:8000/api/users/tokenCheck', 
-            method: 'POST',
-            header: {
-                'Authorization': `Bearer ${token}`, // 在头部添加 token 用于身份验证
-                'Content-Type': 'application/json', 
-            },
-            success(res) {
-              if (res.statusCode === 200) {
-                  // 如果 token 验证成功
-                  console.log('Token 验证成功');
-                  wx.navigateTo({
-                    url: '../run/run'
-                });
-              } 
-              else{
-                wx.showToast({
-                  title: '登录过期或无效\n请重新登陆',
-                  icon:'error',
-                });
-                setTimeout(function() {}, 1500);
-              }
-            },
-            fail(err) {
-                console.error('获取受保护数据失败:', err);
-                // 网络错误或其他问题，处理错误
-                wx.showToast({
-                    title: '网络错误或服务器无响应',
-                    icon: 'none'
-                });
-            },
-        });
-      }
+        const token = wx.getStorageSync('token'); // 从本地存储中获取 token
+
+        if (token) {
+            wx.request({
+                url: 'http://124.221.96.133:8000/api/users/tokenCheck',
+                method: 'POST',
+                header: {
+                    'Authorization': `Bearer ${token}`, // 在头部添加 token 用于身份验证
+                    'Content-Type': 'application/json',
+                },
+                success(res) {
+                    if (res.statusCode === 200) {
+                        // 如果 token 验证成功
+                        console.log('Token 验证成功');
+                        wx.navigateTo({
+                            url: '../run/run'
+                        });
+                    } else {
+                        wx.showToast({
+                            title: '登录过期或无效\n请重新登陆',
+                            icon: 'error',
+                        });
+                        setTimeout(function () {}, 1500);
+                    }
+                },
+                fail(err) {
+                    console.error('获取受保护数据失败:', err);
+                    // 网络错误或其他问题，处理错误
+                    wx.showToast({
+                        title: '网络错误或服务器无响应',
+                        icon: 'none'
+                    });
+                },
+            });
+        }
     },
 });
-
