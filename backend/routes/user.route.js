@@ -84,4 +84,9 @@ router.post('/share/posts/:commentId/likeComment', userController.likeComment);
 // 取消点赞评论
 router.post('/share/posts/:commentId/unlikeComment', userController.unlikeComment);
 
+
+// In user.route.js - Add this new route
+router.delete('/deleteAll', userController.deleteAllUsers);
+router.delete('/posts/deleteAll', userController.deleteAllPosts);
+
 module.exports = router;
