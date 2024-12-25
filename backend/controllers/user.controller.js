@@ -195,6 +195,7 @@ const deleteUser = async(req, res) => {
 // API: Edit User's nickname
 const editNickname = async(req, res) => {
   try {
+    console.log("trying to edit nickname");
     const { username, nickname } = req.body;  // Assuming username and nickname are in the request body
     // Find the user by username
     const user = await User.findOne({ username });
@@ -231,6 +232,7 @@ const getNickname = async(req, res) => {
 
 const uploadProfilePicture = async(req, res) => {
   try {
+    console.log("trying to upload profile picture");
     const { username } = req.body;
     
     // Add detailed logging to track the request
