@@ -1,0 +1,52 @@
+# .github/workflows/test.yml
+name: Node.js CI
+
+on:
+  push:
+    branches: [ main, master, YuShuren-Testing, YuShuren-Testing2]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [16.x, 18.x]
+        mongodb-version: ['4.4']
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+        cache-dependency-path: backend/package-lock.json
+
+    - name: Start MongoDB
+      uses: supercharge/mongodb-github-action@1.10.0
+      with:
+        mongodb-version: ${{ matrix.mongodb-version }}
+
+    - name: Clean install
+      working-directory: ./backend
+      run: |
+        rm -rf node_modules package-lock.json
+        npm install
+        npm install --save-dev jest@29.7.0 @types/jest@29.5.14 supertest@7.0.0 mongodb-memory-server@10.1.2
+
+    - name: Run tests
+      working-directory: ./backend
+      run: npm test
+      env:
+        SECRET_KEY: ${{ secrets.SECRET_KEY }}
+
+    - name: Upload coverage reports
+      uses: actions/upload-artifact@v3
+      with:
+        name: coverage-report
+        path: backend/coverage/
+        retention-days: 7
