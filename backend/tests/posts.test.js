@@ -314,3 +314,162 @@ describe('Posts API Tests', () => {
         });
     });
 });
+
+// Add to posts.test.js
+describe('Error Handling for Posts and Comments', () => {
+    let authToken;
+    let testUser;
+    let testPost;
+    
+    beforeEach(async () => {
+      await User.deleteMany({});
+      await Post.deleteMany({});
+      await Comment.deleteMany({});
+      
+      testUser = await User.create({
+        username: 'testuser',
+        password: 'testpass'
+      });
+      
+      const loginRes = await request(app)
+        .post('/api/users/login')
+        .send({
+          username: 'testuser',
+          password: 'testpass'
+        });
+      authToken = loginRes.body.token;
+      
+      testPost = await Post.create({
+        title: 'Test Post',
+        content: 'Test Content',
+        author: testUser._id,
+        postId: 123
+      });
+    });
+  
+    describe('Post Creation Edge Cases', () => {
+      it('should handle multiple parallel uploads for same post', async () => {
+        const testImagePath = path.join(__dirname, '../images/my-icon.png');
+        
+        // Create two parallel upload requests
+        const [res1, res2] = await Promise.all([
+          request(app)
+            .post('/api/users/share/posts')
+            .set('Authorization', `Bearer ${authToken}`)
+            .attach('images', testImagePath)
+            .field('title', 'Parallel Post')
+            .field('content', 'Test Content')
+            .field('username', 'testuser'),
+            
+          request(app)
+            .post('/api/users/share/posts')
+            .set('Authorization', `Bearer ${authToken}`)
+            .attach('images', testImagePath)
+            .field('title', 'Parallel Post')
+            .field('content', 'Test Content')
+            .field('username', 'testuser')
+        ]);
+  
+        expect(res1.statusCode).toBe(200);
+        expect(res2.statusCode).toBe(200);
+      });
+    });
+  
+    describe('Comment System Edge Cases', () => {
+      it('should handle comment creation with missing content', async () => {
+        const res = await request(app)
+          .post(`/api/users/share/posts/${testPost.postId}/comments`)
+          .set('Authorization', `Bearer ${authToken}`)
+          .send({
+            username: 'testuser'
+            // Missing content field
+          });
+  
+        expect(res.statusCode).toBe(500);
+      });
+  
+      it('should handle deletion of already deleted comment', async () => {
+        // Create and delete a comment
+        const comment = await Comment.create({
+          content: 'Test Comment',
+          author: testUser._id,
+          post: testPost._id,
+          commentId: 456
+        });
+  
+        await Comment.deleteOne({ _id: comment._id });
+  
+        const res = await request(app)
+          .delete(`/api/users/share/comments/${comment.commentId}`)
+          .set('Authorization', `Bearer ${authToken}`);
+  
+        expect(res.statusCode).toBe(404);
+      });
+    });
+  
+    describe('Post Management Edge Cases', () => {
+      it('should handle update of non-existent post', async () => {
+        const res = await request(app)
+          .put('/api/users/share/posts/999')
+          .set('Authorization', `Bearer ${authToken}`)
+          .send({
+            title: 'Updated Title',
+            content: 'Updated Content'
+          });
+  
+        expect(res.statusCode).toBe(404);
+      });
+  
+    });
+  });
+  
+  // Add to users.test.js
+  describe('User Preferences Edge Cases', () => {
+    let testUser;
+    let authToken;
+  
+    beforeEach(async () => {
+      await User.deleteMany({});
+      
+      testUser = await User.create({
+        username: 'testuser',
+        password: 'testpass'
+      });
+  
+      const loginRes = await request(app)
+        .post('/api/users/login')
+        .send({
+          username: 'testuser',
+          password: 'testpass'
+        });
+      authToken = loginRes.body.token;
+    });
+  
+    it('should handle partial preference updates', async () => {
+      const res = await request(app)
+        .put(`/api/users/${testUser.username}/preferences`)
+        .set('Authorization', `Bearer ${authToken}`)
+        .send({ theme: 'dark' });
+  
+      expect(res.statusCode).toBe(200);
+      expect(res.body.preferences.theme).toBe('dark');
+      expect(res.body.preferences.notifications).toBe(true); // Default value
+      expect(res.body.preferences.language).toBe('en'); // Default value
+    });
+  
+    it('should handle multiple rapid preference updates', async () => {
+      const updates = ['light', 'dark', 'system'].map(theme =>
+        request(app)
+          .put(`/api/users/${testUser.username}/preferences`)
+          .set('Authorization', `Bearer ${authToken}`)
+          .send({ theme })
+      );
+  
+      const results = await Promise.all(updates);
+      const finalRes = results[results.length - 1];
+  
+      expect(finalRes.statusCode).toBe(200);
+      expect(finalRes.body.preferences.theme).toBe('system');
+    });
+  
+  });

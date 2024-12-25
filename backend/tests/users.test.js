@@ -2,7 +2,7 @@
 const request = require("supertest");
 const express = require("express");
 const mongoose = require("mongoose");
-const { User } = require("../models/user.model");
+const { User, Post, Comment, Like } = require("../models/user.model");
 const userRoutes = require("../routes/user.route");
 const path = require("path");
 const fs = require("fs");
@@ -589,4 +589,213 @@ describe("Input Validation", () => {
     expect(res.statusCode).toBe(500);
     expect(res.body.message).toContain("User validation failed");
   });
+
 });
+
+describe('Additional User Controller Tests', () => {
+  let authToken;
+  let testUser;
+  let originalGridFS;
+
+  beforeEach(async () => {
+    await User.deleteMany({});
+    testUser = await User.create({
+      username: 'testuser',
+      password: 'testpass',
+      nickname: 'Test User'
+    });
+
+    const loginRes = await request(app)
+      .post('/api/users/login')
+      .send({
+        username: 'testuser',
+        password: 'testpass'
+      });
+    authToken = loginRes.body.token;
+    
+    // Store original GridFS
+    originalGridFS = mongoose.mongo.GridFSBucket;
+  });
+
+  afterEach(() => {
+    // Restore original GridFS after each test
+    mongoose.mongo.GridFSBucket = originalGridFS;
+  });
+
+  describe('Post Image Upload Error Handling', () => {
+    it('should handle missing file in post image upload', async () => {
+      const res = await request(app)
+        .post('/api/users/share/posts/image')
+        .set('Authorization', `Bearer ${authToken}`)
+        .field('username', 'testuser');
+
+      expect(res.statusCode).toBe(400);
+      expect(res.body).toHaveProperty('message', 'No file uploaded');
+    });
+  });
+
+  describe('Comment System Error Handling', () => {
+    let testPost;
+
+    beforeEach(async () => {
+      testPost = await Post.create({
+        title: 'Test Post',
+        content: 'Test Content',
+        author: testUser._id,
+        postId: 123
+      });
+    });
+
+    it('should handle invalid data when creating comment', async () => {
+      const res = await request(app)
+        .post(`/api/users/share/posts/${testPost.postId}/comments`)
+        .set('Authorization', `Bearer ${authToken}`)
+        .send({
+          content: '',
+          username: 'testuser'
+        });
+
+      expect(res.statusCode).toBe(500);
+    });
+
+    it('should handle errors when deleting non-existent comment', async () => {
+      const res = await request(app)
+        .delete('/api/users/share/comments/999')
+        .set('Authorization', `Bearer ${authToken}`);
+
+      expect(res.statusCode).toBe(404);
+      expect(res.body).toHaveProperty('message', 'Comment not found');
+    });
+  });
+
+  describe('Like System Error Handling', () => {
+    let testPost;
+
+    beforeEach(async () => {
+      testPost = await Post.create({
+        title: 'Test Post',
+        content: 'Test Content',
+        author: testUser._id,
+        postId: 123
+      });
+    });
+
+    it('should handle duplicate likes on post', async () => {
+      await Like.create({
+        user: testUser._id,
+        post: testPost._id
+      });
+
+      const res = await request(app)
+        .post(`/api/users/share/posts/${testPost.postId}/likePost`)
+        .set('Authorization', `Bearer ${authToken}`)
+        .send({ username: 'testuser' });
+
+      expect(res.statusCode).toBe(400);
+      expect(res.body).toHaveProperty('message', 'Post already liked by user');
+    });
+
+    it('should handle unlike on non-liked post', async () => {
+      const res = await request(app)
+        .post(`/api/users/share/posts/${testPost.postId}/unlikePost`)
+        .set('Authorization', `Bearer ${authToken}`)
+        .send({ username: 'testuser' });
+
+      expect(res.statusCode).toBe(400);
+      expect(res.body).toHaveProperty('message', 'Post not liked by user');
+    });
+  });
+});
+
+describe('User Preferences Tests', () => {
+  let testUser;
+  let authToken;
+
+  beforeEach(async () => {
+      await User.deleteMany({});
+      
+      testUser = await User.create({
+          username: 'testuser',
+          password: 'testpass'
+      });
+
+      const loginRes = await request(app)
+          .post('/api/users/login')
+          .send({
+              username: 'testuser',
+              password: 'testpass'
+          });
+      authToken = loginRes.body.token;
+  });
+
+  describe('Update User Preferences', () => {
+      it('should return 404 for non-existent user', async () => {
+          const res = await request(app)
+              .put('/api/users/nonexistent/preferences')
+              .set('Authorization', `Bearer ${authToken}`)
+              .send({ theme: 'dark' });
+
+          expect(res.statusCode).toBe(404);
+          expect(res.body.success).toBe(false);
+      });
+
+      it('should reject invalid theme', async () => {
+          const res = await request(app)
+              .put(`/api/users/${testUser.username}/preferences`)
+              .set('Authorization', `Bearer ${authToken}`)
+              .send({ theme: 'invalid' });
+
+          expect(res.statusCode).toBe(400);
+          expect(res.body.success).toBe(false);
+      });
+
+      it('should reject invalid language', async () => {
+          const res = await request(app)
+              .put(`/api/users/${testUser.username}/preferences`)
+              .set('Authorization', `Bearer ${authToken}`)
+              .send({ language: 'invalid' });
+
+          expect(res.statusCode).toBe(400);
+          expect(res.body.success).toBe(false);
+      });
+
+      it('should use default values for missing preferences', async () => {
+          const res = await request(app)
+              .put(`/api/users/${testUser.username}/preferences`)
+              .set('Authorization', `Bearer ${authToken}`)
+              .send({});
+
+          expect(res.statusCode).toBe(200);
+          expect(res.body.preferences).toEqual({
+              theme: 'system',
+              notifications: true,
+              language: 'en'
+          });
+      });
+  });
+
+  describe('Get User Preferences', () => {
+      it('should return default preferences for user without preferences', async () => {
+          const res = await request(app)
+              .get(`/api/users/${testUser.username}/preferences`)
+              .set('Authorization', `Bearer ${authToken}`);
+
+          expect(res.statusCode).toBe(200);
+          expect(res.body.preferences).toEqual({
+              theme: 'system',
+              notifications: true,
+              language: 'en'
+          });
+      });
+
+      it('should return 404 for non-existent user', async () => {
+          const res = await request(app)
+              .get('/api/users/nonexistent/preferences')
+              .set('Authorization', `Bearer ${authToken}`);
+
+          expect(res.statusCode).toBe(404);
+          expect(res.body.success).toBe(false);
+      });
+  });
+});
+
