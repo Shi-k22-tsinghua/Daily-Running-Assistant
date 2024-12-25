@@ -26,22 +26,4 @@
         </button>
     </view>
 
-    <view class="tab-bar">
-        <navigator class="tab-item" url="../run/run" open-type="redirect">
-            <image class="icon" src="../../images/run-icon.png" />
-            <text>跑步</text>
-        </navigator>
-        <navigator class="tab-item" url="../share/share" open-type="redirect">
-            <image class="icon" src="../../images/share-icon.png" />
-            <text>分享</text>
-        </navigator>
-        <navigator class="tab-item" url="" style="color: #009688;" open-type="redirect">
-            <image class="icon" src="../../images/chat-icon.png" />
-            <text>助手</text>
-        </navigator>
-        <navigator class="tab-item" url="../my/my" open-type="redirect">
-            <image class="icon" src="../../images/my-icon.png" />
-            <text>我的</text>
-        </navigator>
-    </view>
 </view>

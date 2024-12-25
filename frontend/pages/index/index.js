@@ -70,7 +70,7 @@ Page({
                     const nicknameFetch = res.data.user.nickname; // Adjust this depending on your response structure
                     wx.setStorageSync('nickname', nicknameFetch);
                     //console.log('nickname fetched: ' + wx.getStorageSync('nickname'));
-                    wx.navigateTo({
+                    wx.switchTab({
                         url: '../run/run'
                     });
                 } else if (res.statusCode === 404) {
@@ -141,7 +141,7 @@ Page({
                     if (res.statusCode === 200) {
                         // 如果 token 验证成功
                         console.log('Token 验证成功');
-                        wx.navigateTo({
+                        wx.switchTab({
                             url: '../run/run'
                         });
                     } else {
