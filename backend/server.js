@@ -11,11 +11,10 @@ const app = express();
 console.log('Loaded SECRET_KEY:', process.env.SECRET_KEY);
 
 if (!process.env.SECRET_KEY) {
-    console.error('WARNING: SECRET_KEY is not set in Node process environment');
+  console.error('WARNING: SECRET_KEY is not set in Node process environment');
 }
 
-
-//middleware
+// middleware
 app.use(express.json());
 
 // MongoDB connection
@@ -23,26 +22,26 @@ const mongoURI = 'mongodb://DatabaseAccess:DatabaseAccess@127.0.0.1:27017?authSo
 mongoConnectionStatus = 'MongoDB is not connected :(';
 
 mongoose.connect(mongoURI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
+  useNewUrlParser: true,
+  useUnifiedTopology: true
 })
-.then(() => {
+  .then(() => {
     console.log('Connected to MongoDB!');
     mongoConnectionStatus = 'MongoDB is connected!';
-})
-.catch((err) => {
+  })
+  .catch((err) => {
     console.error('Error connecting to MongoDB:', err);
-});
+  });
 
-//routes
-app.use("/api/users", userRoute);
-app.use("/api/runRoom", runRoomRoute);
+// routes
+app.use('/api/users', userRoute);
+app.use('/api/runRoom', runRoomRoute);
 
 app.get('/', (request, response) => {
-    response.send('This is server.js running, ' + mongoConnectionStatus);
+  response.send('This is server.js running, ' + mongoConnectionStatus);
 });
 
 const PORT = process.env.PORT || 8000;
 app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
+  console.log(`Server is running on port ${PORT}`);
 });

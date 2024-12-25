@@ -1,8 +1,8 @@
-const express = require("express");
-const User = require("../models/user.model");
+const express = require('express');
+const User = require('../models/user.model');
 const router = express.Router();
 
-const runRoomController = require("../controllers/runRoom.controller");
+const runRoomController = require('../controllers/runRoom.controller');
 const multer = require('multer');
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
