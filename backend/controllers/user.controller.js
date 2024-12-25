@@ -1,10 +1,9 @@
 require('dotenv').config();
 const mongoose = require('mongoose');
-const { User, Post, Comment, Like } = require('../models/user.model');
+const { User, Post, Comment, Like  } = require('../models/user.model');
 const jwt = require('jsonwebtoken');
 const fs = require('fs');
 const path = require('path');
-
 const multer = require('multer');
 const upload = multer().array('images[]', 3); // Allow up to 3 images
 
