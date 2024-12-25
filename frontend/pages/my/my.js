@@ -175,21 +175,21 @@ Page({
             console.log('新昵称:', this.data.nickname);
         } else if (this.data.currentAction === 'avatar' && this.data.tempImagePath) {
             const username = wx.getStorageSync('username');
-
+    
             wx.showLoading({
                 title: '上传中...'
             });
-
-            // 调用api上传选择的图片头像
+    
             global.api.updateProfilePicture(username, this.data.tempImagePath)
                 .then(() => {
-                    // Get the new profile picture URL
                     const newProfilePicUrl = global.api.getProfilePicture(username);
-                    wx.setStorageSync('profilePicUrl', newProfilePicUrl)
+                    wx.setStorageSync('profilePicUrl', newProfilePicUrl);
+                    
+                    // Add timestamp to force image refresh
                     this.setData({
                         profilePicUrl: newProfilePicUrl + '?t=' + new Date().getTime()
                     });
-
+    
                     wx.showToast({
                         title: '头像已更新',
                         icon: 'success',
@@ -197,6 +197,7 @@ Page({
                     });
                 })
                 .catch((error) => {
+                    console.error('Profile picture update failed:', error);
                     wx.showToast({
                         title: error.message || '上传失败',
                         icon: 'none',

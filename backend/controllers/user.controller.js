@@ -229,10 +229,20 @@ const getNickname = async(req, res) => {
   }
 };
 
-// Upload profile picture
 const uploadProfilePicture = async(req, res) => {
   try {
     const { username } = req.body;
+    
+    // Add detailed logging to track the request
+    console.log('Upload request received:', {
+      username,
+      filePresent: !!req.file,
+      fileDetails: req.file ? {
+        mimetype: req.file.mimetype,
+        size: req.file.size
+      } : null
+    });
+
     if (!req.file) {
       console.log('No file uploaded');
       return res.status(400).json({ message: 'No file uploaded' });
@@ -244,30 +254,50 @@ const uploadProfilePicture = async(req, res) => {
       return res.status(404).json({ message: 'User not found' });
     }
 
-    // Delete old profile picture if it exists
+    // Add file size validation
+    const maxSize = 5 * 1024 * 1024; // 5MB
+    if (req.file.size > maxSize) {
+      return res.status(400).json({ message: 'File size exceeds limit' });
+    }
+
+    // Delete old profile picture with error handling
     if (user.profilePicture) {
       try {
         await gfs.delete(new mongoose.Types.ObjectId(user.profilePicture));
       } catch (error) {
         console.log('Error deleting old profile picture:', error);
+        // Continue with upload even if deletion fails
       }
     }
 
-    // Create upload stream
+    // Create upload stream with error handling
     const uploadStream = gfs.openUploadStream(username + '-profile-picture', {
       contentType: req.file.mimetype
+    });
+
+    // Add error handler for upload stream
+    uploadStream.on('error', (error) => {
+      console.error('Upload stream error:', error);
+      return res.status(500).json({ message: 'Error uploading file' });
     });
 
     // Write file to GridFS
     uploadStream.end(req.file.buffer);
 
-    // Update user's profilePicture field with the new file ID
+    // Update user's profilePicture field
     user.profilePicture = uploadStream.id;
     await user.save();
 
-    res.status(200).json({ message: 'Profile picture uploaded successfully' });
+    res.status(200).json({ 
+      message: 'Profile picture uploaded successfully',
+      profilePictureId: uploadStream.id
+    });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error('Upload error:', error);
+    res.status(500).json({ 
+      message: 'Error uploading profile picture',
+      error: error.message 
+    });
   }
 };
 
