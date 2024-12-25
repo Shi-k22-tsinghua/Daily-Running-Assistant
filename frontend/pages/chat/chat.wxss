@@ -108,6 +108,8 @@
     align-items: center;
     padding-bottom: 10px;
     background-color: transparent;
+    padding-top: 5rpx;
+    border-top: #ccc solid 2rpx;
 }
 
 .input-message {
