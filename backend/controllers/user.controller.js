@@ -1,6 +1,6 @@
 require('dotenv').config();
 const mongoose = require('mongoose');
-const { User, Post, Comment, Like  } = require('../models/user.model');
+const { User, Post, Comment, Like } = require('../models/user.model');
 const jwt = require('jsonwebtoken');
 const fs = require('fs');
 const path = require('path');
@@ -26,7 +26,7 @@ const getUsers = async (req, res) => {
         const users = await User.find({});
         res.status(200).json(users);
     } catch (error) {
-        res.status(500).json({message: error.message});
+        res.status(500).json({ message: error.message });
     }
 }
 
@@ -217,18 +217,18 @@ const editNickname = async (req, res) => {
 // API: Get User's nickname
 const getNickname = async (req, res) => {
     try {
-      const { username } = req.params; // Assuming username is passed as a URL parameter
-  
-      // Find the user by username
-      const user = await User.findOne({ username });
-  
-      if (!user) {
-        return res.status(404).json({ message: "User not found" });
-      }
-  
-      res.status(200).json({ nickname: user.nickname });
+        const { username } = req.params; // Assuming username is passed as a URL parameter
+
+        // Find the user by username
+        const user = await User.findOne({ username });
+
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        res.status(200).json({ nickname: user.nickname });
     } catch (error) {
-      res.status(500).json({ message: error.message });
+        res.status(500).json({ message: error.message });
     }
 };
 
@@ -300,7 +300,7 @@ const getProfilePicture = async (req, res) => {
 const saveRunRecord = async (req, res) => {
     try {
         const { username, runRecord } = req.body;
-        
+
         // Find and update atomically to prevent race conditions
         const user = await User.findOneAndUpdate(
             { username },
@@ -328,9 +328,9 @@ const saveRunRecord = async (req, res) => {
             }
         );
 
-        res.status(200).json({ 
-            message: "Run record saved successfully", 
-            record: newRecord 
+        res.status(200).json({
+            message: "Run record saved successfully",
+            record: newRecord
         });
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -342,7 +342,7 @@ const getRunRecordById = async (req, res) => {
     try {
         const { username } = req.params;
         const recordId = parseInt(req.params.recordId);
-        
+
         const user = await User.findOne({ username });
         if (!user) {
             return res.status(404).json({ message: "User not found" });
@@ -362,34 +362,34 @@ const getRunRecordById = async (req, res) => {
 // Token检测函数
 const tokenCheck = async (req, res) => {
     try {
-      const token = req.headers['authorization']; // 假设token直接在authorization头部
-      if (!token) {
-        return res.status(401).json({ message: "No token provided" });
-      }
-  
-      // 移除Bearer前缀（如果存在）
-      const cleanToken = token.startsWith('Bearer ') ? token.slice(7) : token;
-  
-      // 验证token
-      jwt.verify(cleanToken, SECRET_KEY, (err, decoded) => {
-        if (err) {
-          return res.status(403).json({ message: "Token is invalid or has expired" });
+        const token = req.headers['authorization']; // 假设token直接在authorization头部
+        if (!token) {
+            return res.status(401).json({ message: "No token provided" });
         }
-  
-        // Token验证成功，可以在这里添加额外的逻辑，例如返回用户信息
-        res.status(200).json({ message: "Token is valid", decoded });
-      });
+
+        // 移除Bearer前缀（如果存在）
+        const cleanToken = token.startsWith('Bearer ') ? token.slice(7) : token;
+
+        // 验证token
+        jwt.verify(cleanToken, SECRET_KEY, (err, decoded) => {
+            if (err) {
+                return res.status(403).json({ message: "Token is invalid or has expired" });
+            }
+
+            // Token验证成功，可以在这里添加额外的逻辑，例如返回用户信息
+            res.status(200).json({ message: "Token is valid", decoded });
+        });
     } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: error.message });
+        console.error(error);
+        res.status(500).json({ message: error.message });
     }
-  };
+};
 
 // Get all run records
 const getRunRecords = async (req, res) => {
     try {
         const { username } = req.params;
-        
+
         // Find the user
         const user = await User.findOne({ username });
         if (!user) {
@@ -416,7 +416,7 @@ const getRunRecords = async (req, res) => {
 const updateRunData = async (req, res) => {
     try {
         const { username, runData } = req.body;
-        
+
         // Find the user
         const user = await User.findOne({ username });
         if (!user) {
@@ -440,7 +440,7 @@ const updateRunData = async (req, res) => {
 const getCurrentRunData = async (req, res) => {
     try {
         const { username } = req.params;
-        
+
         // Find the user
         const user = await User.findOne({ username });
         if (!user) {
@@ -460,7 +460,7 @@ const updateRunRecord = async (req, res) => {
         const { username } = req.params;
         const recordId = parseInt(req.params.recordId);
         const updateData = req.body;
-        
+
         const user = await User.findOne({ username });
         if (!user) {
             return res.status(404).json({ message: "User not found" });
@@ -493,7 +493,7 @@ const deleteRunRecord = async (req, res) => {
     try {
         const { username } = req.params;
         const recordId = parseInt(req.params.recordId);
-        
+
         const user = await User.findOne({ username });
 
         if (!user) {
@@ -546,16 +546,16 @@ const createPost = async (req, res) => {
 
         // Create a unique key for this post
         const postKey = `${username}-${title}-${content}`;
-        
+
         // If there's an ongoing upload for this post, wait for it
         if (uploadPromises.has(postKey)) {
             console.log('Adding images to existing post...');
             const existingPost = await uploadPromises.get(postKey);
-            
+
             if (existingPost && req.files && req.files.length > 0) {
                 // Get the current post from the database to ensure we have the latest version
                 const currentPost = await Post.findById(existingPost._id);
-                
+
                 // Add new images
                 const newImageIds = [];
                 for (const file of req.files) {
@@ -627,7 +627,7 @@ const createPost = async (req, res) => {
 const uploadPostImage = async (req, res) => {
     try {
         const { username } = req.body;
-        
+
         if (!req.file) {
             return res.status(400).json({ message: "No file uploaded" });
         }
@@ -636,7 +636,7 @@ const uploadPostImage = async (req, res) => {
             contentType: req.file.mimetype
         });
         uploadStream.end(req.file.buffer);
-        
+
         return res.json({ imageId: uploadStream.id });
     } catch (error) {
         console.error('Error uploading image:', error);
@@ -667,7 +667,7 @@ const getPosts = async (req, res) => {
         //const posts = await Post.find({}).populate('author', 'username'); // 假设我们需要返回作者的username
 
         const posts = await Post.find({})
-            .populate('author','nickname') // 加载作者
+            .populate('author', 'nickname') // 加载作者
             .populate({
                 path: 'comments', // 加载帖子的评论
                 populate: {
@@ -675,7 +675,7 @@ const getPosts = async (req, res) => {
                     select: 'nickname'
                 }
             });
-        
+
         // 如果没有找到帖子，返回404状态
         if (!posts || posts.length === 0) {
             return res.status(404).json({ message: "No posts found" });
@@ -693,14 +693,14 @@ const getPostById = async (req, res) => {
     try {
         const { postId } = req.params;
         const post = await Post.findOne({ postId: postId })
-        .populate('author','nickname') // 加载作者
-        .populate({
-            path: 'comments', // 加载帖子的评论
-            populate: {
-                path: 'author', // 加载评论的作者信息
-                select: 'nickname'
-            }
-        });
+            .populate('author', 'nickname') // 加载作者
+            .populate({
+                path: 'comments', // 加载帖子的评论
+                populate: {
+                    path: 'author', // 加载评论的作者信息
+                    select: 'nickname'
+                }
+            });
         // 如果没有找到帖子，返回404状态
         if (!post) {
             return res.status(404).json({ message: "Post not found" });
@@ -726,7 +726,7 @@ const getPostByUsername = async (req, res) => {
 
         // 查找所有属于该用户的帖子，并填充作者信息
         const posts = await Post.find({ author: user._id })
-            .populate('author','nickname') // 加载作者
+            .populate('author', 'nickname') // 加载作者
             .populate({
                 path: 'comments', // 加载帖子的评论
                 populate: {
@@ -748,7 +748,7 @@ const updatePost = async (req, res) => {
         const postId = req.params.postId;
 
         // 从请求体中获取更新数据
-        const { title, content} = req.body;
+        const { title, content } = req.body;
 
         // 查询数据库中的帖子
         const post = await Post.findOne({ postId: postId });
@@ -792,7 +792,7 @@ const updatePost = async (req, res) => {
         post.images = imageIds;
 
         post.updateData = Date.now;
-        
+
         // 保存更新后的帖子到数据库
         await post.save();
 
@@ -823,8 +823,8 @@ const deletePost = async (req, res) => {
 
         // 从用户的posts数组中移除该帖子的_id
         await User.updateOne(
-        { _id: authorId },
-        { $pull: { posts: post._id } }
+            { _id: authorId },
+            { $pull: { posts: post._id } }
         );
 
         // 如果帖子包含图片，也需要从GridFS中删除这些图片
@@ -837,7 +837,7 @@ const deletePost = async (req, res) => {
 
         // 删除帖子
         await Post.deleteOne({ _id: post._id });
-        
+
         // 如果帖子被成功删除，返回成功消息
         res.json({ message: 'Post deleted successfully' });
     } catch (error) {
@@ -850,7 +850,7 @@ const deletePost = async (req, res) => {
 const createComment = async (req, res) => {
     try {
         const postId = req.params.postId;
-        const {content, username } = req.body;
+        const { content, username } = req.body;
 
         // 查找用户
         const user = await User.findOne({ username: username });
@@ -930,8 +930,8 @@ const deleteComment = async (req, res) => {
         // 从帖子中移除该评论的引用
         await Post.updateOne(
             { postId: deletedComment.postId },
-            { 
-                $pull: { comments: deletedComment._id } ,
+            {
+                $pull: { comments: deletedComment._id },
                 $inc: { commentCount: -1 }
             }
         );
@@ -947,7 +947,7 @@ const likePost = async (req, res) => {
     try {
         const postId = req.params.postId;
         const { username } = req.body;
-  
+
         // 查找具有指定 username 的用户
         const user = await User.findOne({ username: username });
         if (!user) {
@@ -972,15 +972,15 @@ const likePost = async (req, res) => {
 
         post.likes += 1;
         await post.save();
-  
+
         // 返回200状态码和更新后的帖子信息
         res.status(200).json({ message: 'Post liked successfully', post });
     } catch (error) {
-      // 如果发生错误，返回500状态码和错误消息
-      res.status(500).json({ message: error.message });
+        // 如果发生错误，返回500状态码和错误消息
+        res.status(500).json({ message: error.message });
     }
-  };
-  
+};
+
 
 const unlikePost = async (req, res) => {
     try {
@@ -1050,54 +1050,54 @@ const checkIfLikedPost = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
-  
+
 const likeComment = async (req, res) => {
     try {
-      // 从请求参数中获取 commentId
-      const commentId = req.params.commentId;
-  
-      // 查找具有指定 commentId 的评论并增加点赞数
-      const comment = await Comment.findOneAndUpdate(
-        { commentId: commentId }, // 查询条件，使用 MongoDB 默认的 _id 字段
-        { $inc: { likes: 1 } }, // 使用$inc 操作符来增加 likes 字段的值
-        { new: true, useFindAndModify: false } // 返回更新后的文档，不使用过时的 findAndModify
-      );
-  
-      // 如果评论不存在，返回404状态码和错误消息
-      if (!comment) {
-        return res.status(404).json({ message: 'Comment not found' });
-      }
-  
-      // 返回200状态码和更新后的评论信息
-      res.status(200).json({ message: 'Comment liked successfully', comment });
+        // 从请求参数中获取 commentId
+        const commentId = req.params.commentId;
+
+        // 查找具有指定 commentId 的评论并增加点赞数
+        const comment = await Comment.findOneAndUpdate(
+            { commentId: commentId }, // 查询条件，使用 MongoDB 默认的 _id 字段
+            { $inc: { likes: 1 } }, // 使用$inc 操作符来增加 likes 字段的值
+            { new: true, useFindAndModify: false } // 返回更新后的文档，不使用过时的 findAndModify
+        );
+
+        // 如果评论不存在，返回404状态码和错误消息
+        if (!comment) {
+            return res.status(404).json({ message: 'Comment not found' });
+        }
+
+        // 返回200状态码和更新后的评论信息
+        res.status(200).json({ message: 'Comment liked successfully', comment });
     } catch (error) {
-      // 如果发生错误，返回500状态码和错误消息
-      res.status(500).json({ message: error.message });
+        // 如果发生错误，返回500状态码和错误消息
+        res.status(500).json({ message: error.message });
     }
 };
 
 const unlikeComment = async (req, res) => {
     try {
-      // 从请求参数中获取 commentId
-      const commentId = req.params.commentId;
-  
-      // 查找具有指定 commentId 的评论并减少点赞数
-      const comment = await Comment.findOneAndUpdate(
-        { commentId: commentId }, // 查询条件，使用 MongoDB 默认的 _id 字段
-        { $inc: { likes: -1 }}, // 使用$inc 操作符来减少 likes 字段的值
-        { new: true, useFindAndModify: false } // 返回更新后的文档，不使用过时的 findAndModify
-      );
-  
-      // 如果评论不存在，返回404状态码和错误消息
-      if (!comment) {
-        return res.status(404).json({ message: 'Comment not found' });
-      }
-  
-      // 返回200状态码和更新后的评论信息
-      res.status(200).json({ message: 'Comment unliked successfully', comment });
+        // 从请求参数中获取 commentId
+        const commentId = req.params.commentId;
+
+        // 查找具有指定 commentId 的评论并减少点赞数
+        const comment = await Comment.findOneAndUpdate(
+            { commentId: commentId }, // 查询条件，使用 MongoDB 默认的 _id 字段
+            { $inc: { likes: -1 } }, // 使用$inc 操作符来减少 likes 字段的值
+            { new: true, useFindAndModify: false } // 返回更新后的文档，不使用过时的 findAndModify
+        );
+
+        // 如果评论不存在，返回404状态码和错误消息
+        if (!comment) {
+            return res.status(404).json({ message: 'Comment not found' });
+        }
+
+        // 返回200状态码和更新后的评论信息
+        res.status(200).json({ message: 'Comment unliked successfully', comment });
     } catch (error) {
-      // 如果发生错误，返回500状态码和错误消息
-      res.status(500).json({ message: error.message });
+        // 如果发生错误，返回500状态码和错误消息
+        res.status(500).json({ message: error.message });
     }
 };
 
@@ -1176,7 +1176,7 @@ const deleteAllPosts = async (req, res) => {
 module.exports = {
     getUsers,
     getUser, //deprecated
-    
+
     registerUser,
     loginUser,
 

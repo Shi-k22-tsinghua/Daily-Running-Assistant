@@ -7,7 +7,7 @@ Page({
     data: {
         postId: 0, //存储所要获取帖子的postId
         post: {
-            images: ['../../images/run-icon.png'],
+            // images: ['../../images/run-icon.png'],
             title: '今日运动记录，12分长跑3千米',
             content: '#我要减肥#俗话说7分吃3分练，每日搭配营养健身餐。',
             author: 'cuber',
@@ -86,15 +86,11 @@ Page({
                         serverURL: global.utils.serverURL // Add this line
                     });
                     console.log('get post:', this.data.post);
-                    //console.log(res);
-                    console.log('before:', this.data.post.createdAt);
                     const formattedDate = this.convertToBeijingTime(this.data.post.createdAt);
-                    console.log('after:', formattedDate);
                     this.setData({
                         'post.createdAt': formattedDate
                     });
-                    console.log(this.data.post.createdAt);
-                    //转化每个comment.createAt
+                    // 转化每个comment.createAt
                     // 假设this.data.post是你的post对象
                     let commentsTemp = this.data.post.comments;
                     commentsTemp.forEach(item => {
@@ -125,23 +121,21 @@ Page({
 
         const that = this;
         const username = wx.getStorageSync('username');
+        console.log(username);
         wx.request({
             //获取username对postId是否点赞
             url: global.utils.getAPI(global.utils.serverURL, '/api/users/share/posts/' + postId + '/ifLikedPost'),
             method: 'POST',
-            header: {
-                'content-type': 'application/json' // 设置请求头为application/json
+            data: {
+                'username': username // 将数据转换为JSON字符串
             },
-            data: JSON.stringify({
-                username: username // 将数据转换为JSON字符串
-            }),
             success: function (res) {
                 // 成功回调
                 console.log('获取username对postId是否点赞成功');
                 that.setData({
                     isLiked: res.data.liked
                 });
-                console.log('get isLiked:', that.data.isLiked);
+                console.log(res.data);
             },
             fail: function (err) {
                 // 失败回调
@@ -174,7 +168,7 @@ Page({
             // isLiked = true,点赞
             // 请求服务器API来更新点赞数
             wx.request({
-                url: global.utils.getAPI(global.utils.serverURL, '/api/users/share/posts'+postId+'/likePost'),
+                url: global.utils.getAPI(global.utils.serverURL, '/api/users/share/posts/'+postId+'/likePost'),
                 method: 'POST',
                 header: {
                     'content-type': 'application/json' // 设置请求头为application/json
