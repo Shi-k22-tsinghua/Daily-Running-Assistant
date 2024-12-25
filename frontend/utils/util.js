@@ -1,5 +1,7 @@
 //const serverURL = "http://localhost:8000"; //for local testing
-const serverURL = "http://124.221.96.133:8000"; //for deployment testing
+//const serverURL = "http://124.221.96.133:8000"; //for deployment testing
+//const serverURL = "http://dra.xulincaigou.online:8000"
+const serverURL = "https//dra.xulincaigou.online"
 
 function getAPI(prefix, suffix) {
     // Ensure the prefix ends with a slash and the suffix doesn't start with one
