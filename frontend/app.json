@@ -58,6 +58,7 @@
                 "iconPath": "images/my-icon.png",
                 "selectedIconPath": "images/my-icon.png"
             }
-        ]
+        ],
+        "selectedColor": "#009688"
     }
 }
