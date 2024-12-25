@@ -45,15 +45,15 @@
 }
 
 .login-button {
-    margin-top: 100rpx;
+    margin-top: 80rpx;
 }
 
 .register-button {
     background-color: #7aad49;
-    color: #fff;
+    margin-bottom: 80rpx;
 }
 
-.wx-login-button {
+.bottom {
     height: 80rpx;
     margin-top: 10rpx;
     margin-bottom: 100rpx;
@@ -62,16 +62,12 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 20rpx;
-    border-width: 2rpx;
-    border-color: #07c160;
-    border-style: solid;
-    color: #07c160;
-    font-size: 32rpx;
+    color: #009688;
+    font-size: 50rpx;
 }
 
-.wechat-icon {
-    width: 50rpx;
-    height: 50rpx;
+.bottom-image {
+    width: 100rpx;
+    height: 100rpx;
     margin-right: 20rpx;
 }
