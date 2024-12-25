@@ -3,7 +3,7 @@ name: Node.js CI
 
 on:
   push:
-    branches: [ main, master, YuShuren-Testing, YuShuren-Testing2]
+    branches: [ main, master, YuShuren-Testing, YuShuren-Testing2, YuShuren-Testing3]
   pull_request:
     branches: [ main, master ]
 
