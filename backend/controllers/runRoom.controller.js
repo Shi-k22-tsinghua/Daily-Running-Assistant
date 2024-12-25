@@ -6,7 +6,6 @@ const jwt = require('jsonwebtoken');
 const SECRET_KEY = process.env.SECRET_KEY;
 
 const serverURL = "http://124.221.96.133:8000"; //for deployment testing
-//const serverURL = "http://localhost:8000"; //for local testing
 
 // Initialize GridFS
 let gfs;
