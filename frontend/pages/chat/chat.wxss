@@ -1,4 +1,4 @@
-/* pages/AIchat/AIchat.wxss */
+/* pages/chat/chat.wxss */
 .container {
     display: flex;
     flex-direction: column;
@@ -15,8 +15,7 @@
     flex-direction: row;
     justify-content: space-between;
     background-color: transparent;
-    border-top: 1px solid #ccc;
-    border-bottom: 10px solid;
+    border-bottom: 4rpx solid #ccc;
     padding: 5rpx 0;
 }
 
@@ -31,15 +30,15 @@
     right: -30%;
     height: 35px;
     max-width: 45px;
-    background-color: white;
+    background-color: transparent;
     color: white;
     padding-left: 3%;
+    padding-top: 5rpx;
 }
 
 .clear-icon {
     width: 30px;
     height: 30px;
-    padding-bottom: 5rpx;
 }
 
 .title {
@@ -108,23 +107,23 @@
     flex-direction: row;
     align-items: center;
     padding-bottom: 10px;
-    background-color: #f0f0f0;
+    background-color: transparent;
 }
-
-
 
 .input-message {
     flex-grow: 1;
     height: 40px;
-    margin-right: 10px;
+    border: 2rpx solid #ddd;
+    border-radius: 20px;
+    padding-left: 15px;
 }
 
 .send-button {
     height: 40px;
     max-width: min-content;
-    background-color: white;
-    color: white;
-    padding-right: 5%;
+    background-color: transparent;
+    padding: 10rpx;
+    margin-left: 20rpx;
 }
 
 .send-icon {

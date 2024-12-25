@@ -231,7 +231,7 @@ Page({
      */
     onLogout: function () {
         wx.clearStorageSync('token');
-        wx.navigateTo({
+        wx.redirectTo({
             url: '../index/index',
         });
     },

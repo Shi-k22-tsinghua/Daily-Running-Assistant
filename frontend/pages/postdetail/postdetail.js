@@ -58,7 +58,7 @@ Page({
             commentCount: 334, // 评论数
         },
         isLiked: false, // 是否已点赞
-        commentContent: ''
+        messageInput: '' // 评论框里的内容
     },
 
     onImageError: function (e) {
@@ -149,9 +149,7 @@ Page({
             }
         });
 
-
     },
-
 
     // 点赞事件处理函数
     toggleLike: function (e) {
@@ -217,24 +215,23 @@ Page({
 
     bindCommentInput: function (e) {
         this.setData({
-            commentContent: e.detail.value
+            messageInput: e.detail.value
         });
     },
 
     submitComment: function () {
-        const commentContent = this.data.commentContent;
+        const commentContent = this.data.messageInput;
         const postId = this.data.postId;
         if (!commentContent) {
             wx.showToast({
                 title: '评论不能为空',
-                icon: 'none',
-                duration: 2000
+                icon: 'error'
             });
             return;
         }
         this.createComment(postId, commentContent);
         this.setData({
-            commentContent: ''
+            messageInput: ''
         });
     },
 
@@ -297,6 +294,27 @@ Page({
 
 
     /**
+     * 修改显示时间为北京时间 
+     */
+    convertToBeijingTime: function (UTCTime) {
+        // 原始时间字符串
+        const postCreateAt = UTCTime;
+
+        // 解析时间字符串为Date对象
+        const date = new Date(postCreateAt);
+
+        // 将UTC时间转换为北京时间（东八区，UTC+8）
+        // getUTCHours() 获取UTC时区的小时数，然后加上8小时转换为北京时间
+        const beijingTime = new Date(date.getTime());
+
+        // 调用格式化函数并输出结果
+        const formattedDate = utils.formatDateWithInput(beijingTime);
+        console.log(formattedDate);
+        return formattedDate;
+
+    },
+
+    /**
      * 生命周期函数--监听页面加载
      */
     onLoad: function (options) {
@@ -308,52 +326,4 @@ Page({
         this.fetchPostDetails(options.id);
     },
 
-    /**
-     * 生命周期函数--监听页面初次渲染完成
-     */
-    onReady() {
-
-    },
-
-    /**
-     * 生命周期函数--监听页面显示
-     */
-    onShow() {
-
-    },
-
-    /**
-     * 生命周期函数--监听页面隐藏
-     */
-    onHide() {
-
-    },
-
-    /**
-     * 生命周期函数--监听页面卸载
-     */
-    onUnload() {
-
-    },
-
-    /**
-     * 页面相关事件处理函数--监听用户下拉动作
-     */
-    onPullDownRefresh() {
-
-    },
-
-    /**
-     * 页面上拉触底事件的处理函数
-     */
-    onReachBottom() {
-
-    },
-
-    /**
-     * 用户点击右上角分享
-     */
-    onShareAppMessage() {
-
-    }
 })
