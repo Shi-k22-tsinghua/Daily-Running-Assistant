@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* pages/AIchat/AIchat.wxss */
+=======
+/* pages/chat/chat.wxss */
+>>>>>>> d6bb237743e6f4066442911546827900a5233234
 .container {
     display: flex;
     flex-direction: column;
@@ -15,8 +19,12 @@
     flex-direction: row;
     justify-content: space-between;
     background-color: transparent;
+<<<<<<< HEAD
     border-top: 1px solid #ccc;
     border-bottom: 10px solid;
+=======
+    border-bottom: 4rpx solid #ccc;
+>>>>>>> d6bb237743e6f4066442911546827900a5233234
     padding: 5rpx 0;
 }
 
@@ -31,15 +39,25 @@
     right: -30%;
     height: 35px;
     max-width: 45px;
+<<<<<<< HEAD
     background-color: white;
     color: white;
     padding-left: 3%;
+=======
+    background-color: transparent;
+    color: white;
+    padding-left: 3%;
+    padding-top: 5rpx;
+>>>>>>> d6bb237743e6f4066442911546827900a5233234
 }
 
 .clear-icon {
     width: 30px;
     height: 30px;
+<<<<<<< HEAD
     padding-bottom: 5rpx;
+=======
+>>>>>>> d6bb237743e6f4066442911546827900a5233234
 }
 
 .title {
@@ -104,6 +122,7 @@
     width: 100%;
     position: fixed;
     display: flex;
+<<<<<<< HEAD
     bottom: 50px;
     flex-direction: row;
     align-items: center;
@@ -117,14 +136,37 @@
     flex-grow: 1;
     height: 40px;
     margin-right: 10px;
+=======
+    bottom: 0;
+    flex-direction: row;
+    align-items: center;
+    padding-bottom: 10px;
+    background-color: transparent;
+    padding-top: 10rpx;
+    border-top: #ccc solid 2rpx;
+}
+
+.input-message {
+    flex-grow: 1;
+    height: 40px;
+    border: 2rpx solid #ddd;
+    border-radius: 20px;
+    padding-left: 15px;
+>>>>>>> d6bb237743e6f4066442911546827900a5233234
 }
 
 .send-button {
     height: 40px;
     max-width: min-content;
+<<<<<<< HEAD
     background-color: white;
     color: white;
     padding-right: 5%;
+=======
+    background-color: transparent;
+    padding: 10rpx;
+    margin-left: 20rpx;
+>>>>>>> d6bb237743e6f4066442911546827900a5233234
 }
 
 .send-icon {

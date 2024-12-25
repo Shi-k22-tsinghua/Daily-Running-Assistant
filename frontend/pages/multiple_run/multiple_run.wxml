@@ -49,6 +49,7 @@
         </view>
     </view>
 
+<<<<<<< HEAD
     <view class="tab-bar">
         <navigator class="tab-item" url="../run/run" style="color: #009688;" open-type="redirect">
             <image class="icon" src="../../images/run-icon.png" />
@@ -68,4 +69,6 @@
         </navigator>
     </view>
 
+=======
+>>>>>>> d6bb237743e6f4066442911546827900a5233234
 </view>

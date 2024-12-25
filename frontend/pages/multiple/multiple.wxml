@@ -1,16 +1,26 @@
 <view class="container">
 
     <view class="title">多人跑步房间</view>
+<<<<<<< HEAD
+=======
+
+>>>>>>> d6bb237743e6f4066442911546827900a5233234
     <view class="picview" url="../multiple/multiple">
         <image src="../../images/group-icon.png" class="pic" />
     </view>
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> d6bb237743e6f4066442911546827900a5233234
     <input placeholder="请输入房间号" type="text" class="input-box" bindinput="bindRoomIdInput" />
 
     <input placeholder="请输入房间密码" type="password" class="input-box" bindinput="bindPasswordInput" />
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> d6bb237743e6f4066442911546827900a5233234
     <view class="button-box">
         <button class="run-group create-group" bindtap="createGroup">
             <text>创建</text>
@@ -20,6 +30,7 @@
         </button>
     </view>
 
+<<<<<<< HEAD
     <view class="tab-bar">
         <navigator class="tab-item" url="../run/run" style="color: #009688;" open-type="redirect">
             <image class="icon" src="../../images/run-icon.png" />
@@ -38,4 +49,6 @@
             <text>我的</text>
         </navigator>
     </view>
+=======
+>>>>>>> d6bb237743e6f4066442911546827900a5233234
 </view>

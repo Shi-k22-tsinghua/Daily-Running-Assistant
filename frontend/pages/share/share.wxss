@@ -43,6 +43,16 @@
     border-radius: 5px;
 }
 
+<<<<<<< HEAD
+=======
+.post-content {
+    width: 95%;
+    margin-bottom: 5px;
+    padding: 5px;
+    border-radius: 5px;
+}
+
+>>>>>>> d6bb237743e6f4066442911546827900a5233234
 .post-image {
     width: 100px;
     height: 100px;

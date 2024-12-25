@@ -150,7 +150,11 @@ Page({
                     contentInput: '',
                     imagePreview: [],
                 });
+<<<<<<< HEAD
                 wx.navigateTo({
+=======
+                wx.switchTab({
+>>>>>>> d6bb237743e6f4066442911546827900a5233234
                     url: '../share/share',
                 });
             }).catch(error => {
@@ -183,7 +187,11 @@ Page({
                             contentInput: '',
                             imagePreview: [],
                         });
+<<<<<<< HEAD
                         wx.navigateTo({
+=======
+                        wx.switchTab({
+>>>>>>> d6bb237743e6f4066442911546827900a5233234
                             url: '../share/share',
                         });
                     } else {
@@ -205,6 +213,7 @@ Page({
         app.tokenCheck();
     },
 
+<<<<<<< HEAD
     /**
      * 生命周期函数--监听页面初次渲染完成
      */
@@ -253,4 +262,6 @@ Page({
     onShareAppMessage() {
 
     }
+=======
+>>>>>>> d6bb237743e6f4066442911546827900a5233234
 })

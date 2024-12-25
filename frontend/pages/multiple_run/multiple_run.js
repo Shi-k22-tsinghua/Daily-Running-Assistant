@@ -19,7 +19,11 @@ Page({
         timeFormatted: '', // 格式化时间输出
         startTime: '', // 开始跑步时间
 
+<<<<<<< HEAD
         defaultPicUrl: '../../images/my-icon.png',  // Add this line
+=======
+        defaultPicUrl: '../../images/my-icon.png', // Add this line
+>>>>>>> d6bb237743e6f4066442911546827900a5233234
 
         users: [{
                 profilePic: '../../images/my-icon.png',
@@ -64,6 +68,7 @@ Page({
         lastUpdateTime: null, // 上次更新时间
     },
 
+<<<<<<< HEAD
 
     handleImageError: function(e) {
         const index = e.currentTarget.dataset.index;
@@ -72,6 +77,15 @@ Page({
         // Update just the profile pic for the user whose image failed to load
         usersArray[index].profilePic = this.data.defaultPicUrl;
         
+=======
+    handleImageError: function (e) {
+        const index = e.currentTarget.dataset.index;
+        const usersArray = this.data.users;
+
+        // Update just the profile pic for the user whose image failed to load
+        usersArray[index].profilePic = this.data.defaultPicUrl;
+
+>>>>>>> d6bb237743e6f4066442911546827900a5233234
         this.setData({
             users: usersArray
         });
@@ -112,16 +126,24 @@ Page({
                     showMap: true,
                 });
 
+<<<<<<< HEAD
                 this.coordinateInterval = setInterval(this.record.bind(this), 10000); // Every 10 seconds
                 this.updateOtherRunners();
 
 
+=======
+                this.updateOtherRunners();
+>>>>>>> d6bb237743e6f4066442911546827900a5233234
             },
             fail: (error) => {
                 console.error('获取位置失败', error);
                 wx.showToast({
                     title: '无法获取位置信息',
+<<<<<<< HEAD
                     icon: 'none',
+=======
+                    icon: 'error',
+>>>>>>> d6bb237743e6f4066442911546827900a5233234
                 });
             },
         });
@@ -163,9 +185,15 @@ Page({
                         latitude: user.latitude,
                         longitude: user.longitude,
                     }));
+<<<<<<< HEAD
             
                     console.log('Users:', users);
             
+=======
+
+                    console.log('Users:', users);
+
+>>>>>>> d6bb237743e6f4066442911546827900a5233234
                     that.setData({
                         users: users
                     });
@@ -174,15 +202,24 @@ Page({
             fail(err) {
                 wx.showToast({
                     title: '获取数据失败',
+<<<<<<< HEAD
                     icon: 'none'
+=======
+                    icon: 'error'
+>>>>>>> d6bb237743e6f4066442911546827900a5233234
                 });
             }
         });
 
+<<<<<<< HEAD
 
         //record(); //为了初始化坐标
 
         this.formatPace();
+=======
+        this.formatPace();
+        this.updateLocation();
+>>>>>>> d6bb237743e6f4066442911546827900a5233234
         this.otherRunnersInterval = setInterval(this.updateOtherRunners.bind(this), 5000);
     },
 
@@ -208,14 +245,29 @@ Page({
                         width: 30,
                         height: 30,
                         iconPath: global.api.getProfilePicture(runner.username) || '../../images/my-icon.png',
+<<<<<<< HEAD
                         // Add these properties to make the icon appear more circular
                         callout: {
                             content: runner.nickname || runner.username,
+=======
+                        // 添加以下属性使图标显示为圆形
+                        borderRadius: 15, // 设置为宽高的一半
+                        anchor: {
+                            x: 0.5,
+                            y: 0.5
+                        },
+                        callout: {
+                            content: `${runner.nickname || runner.username}\n路程：${runner.meters}m\n时间：${Math.floor(runner.seconds/60)}'${(runner.seconds%60).toString().padStart(2,'0')}"\n配速：${runner.meters === 0 ? "0'00\"" : `${Math.floor((runner.seconds/runner.meters*1000)/60)}'${((runner.seconds/runner.meters*1000)%60).toFixed(0).padStart(2,'0')}"`}`,
+>>>>>>> d6bb237743e6f4066442911546827900a5233234
                             color: '#000000',
                             fontSize: 14,
                             borderRadius: 5,
                             padding: 5,
+<<<<<<< HEAD
                             display: 'ALWAYS',
+=======
+                            display: 'BYCLICK',
+>>>>>>> d6bb237743e6f4066442911546827900a5233234
                             textAlign: 'center',
                             bgColor: '#ffffff'
                         }
@@ -260,14 +312,22 @@ Page({
             if (!this.interval) {
                 this.interval = setInterval(this.record.bind(this), this.data.interval);
             }
+<<<<<<< HEAD
             
+=======
+
+>>>>>>> d6bb237743e6f4066442911546827900a5233234
             // Set start time if not already set
             if (this.data.startTime === '') {
                 this.setData({
                     startTime: new Date().toISOString()
                 });
             }
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> d6bb237743e6f4066442911546827900a5233234
             // Additional API call to mark run as started
             wx.request({
                 url: global.utils.getAPI(global.utils.serverURL, `/api/runRoom/start`),
@@ -291,17 +351,53 @@ Page({
         }
     },
 
+<<<<<<< HEAD
+=======
+    updateLocation: function () {
+        const updatedData = {
+            runID: wx.getStorageSync('verifiedRoomID'),
+            password: wx.getStorageSync('verifiedRoomPassword'),
+            username: wx.getStorageSync('username'),
+            longitude: this.data.longitude,
+            latitude: this.data.latitude,
+        }
+
+        console.log('更新位置:', updatedData);
+
+        wx.request({
+            url: global.utils.getAPI(global.utils.serverURL, `/api/runRoom/update`),
+            method: 'POST',
+            data: updatedData,
+            success: (res) => {
+                if (res.data.message) {
+                    console.log('更新位置成功');
+                } else {
+                    console.log('更新位置失败');
+                }
+            }
+        });
+    },
+
+>>>>>>> d6bb237743e6f4066442911546827900a5233234
     record() {
         if (!this.data.running) {
             return
         }
         const runID = this.data.verifiedRoomID;
         if (!runID) return;
+<<<<<<< HEAD
         
         this.setData({
             seconds: this.data.seconds + this.data.interval / 1000
         })
         
+=======
+
+        this.setData({
+            seconds: this.data.seconds + this.data.interval / 1000
+        })
+
+>>>>>>> d6bb237743e6f4066442911546827900a5233234
         wx.getLocation({
             type: 'gcj02',
         }).then(res => {
@@ -310,10 +406,17 @@ Page({
                 longitude: res.longitude,
                 id: this.data.points.length + 1
             }
+<<<<<<< HEAD
             
             let points = Array.isArray(this.data.points) ? this.data.points : [];
             let pace = 0;
             
+=======
+
+            let points = Array.isArray(this.data.points) ? this.data.points : [];
+            let pace = 0;
+
+>>>>>>> d6bb237743e6f4066442911546827900a5233234
             if (points.length > 0) {
                 let lastPoint = points.slice(-1)[0]
                 pace = utils.getDistance(lastPoint.latitude, lastPoint.longitude, newPoint.latitude, newPoint.longitude);
@@ -326,7 +429,11 @@ Page({
             } else {
                 points.push(newPoint);
             }
+<<<<<<< HEAD
             
+=======
+
+>>>>>>> d6bb237743e6f4066442911546827900a5233234
             this.setData({
                 latitude: res.latitude,
                 longitude: res.longitude,
@@ -343,6 +450,7 @@ Page({
                 }],
                 meters: parseFloat((this.data.meters + pace).toFixed(1))
             })
+<<<<<<< HEAD
             
             this.formatPace();
 
@@ -370,6 +478,11 @@ Page({
             });
 
             wx.request
+=======
+
+            this.formatPace();
+            this.updateLocation();
+>>>>>>> d6bb237743e6f4066442911546827900a5233234
         })
     },
 
@@ -412,7 +525,11 @@ Page({
             data: runData,
             success: (res) => {
                 console.log('跑步数据上传成功:', res);
+<<<<<<< HEAD
                 wx.navigateTo({
+=======
+                wx.redirectTo({
+>>>>>>> d6bb237743e6f4066442911546827900a5233234
                     url: '../singlerecord/singlerecord',
                 });
             },
@@ -425,7 +542,11 @@ Page({
                         if (res.confirm) {
                             this.endRun(e);
                         } else {
+<<<<<<< HEAD
                             wx.navigateTo({
+=======
+                            wx.redirectTo({
+>>>>>>> d6bb237743e6f4066442911546827900a5233234
                                 url: '../singlerecord/singlerecord'
                             });
                         }
@@ -436,15 +557,77 @@ Page({
     },
 
     onUnload() {
+<<<<<<< HEAD
+=======
+        // 清除所有定时器
+>>>>>>> d6bb237743e6f4066442911546827900a5233234
         if (this.interval) {
             clearInterval(this.interval);
         }
         if (this.otherRunnersInterval) {
             clearInterval(this.otherRunnersInterval);
         }
+<<<<<<< HEAD
         if (this.coordinateInterval) {
             clearInterval(this.coordinateInterval);
         }
+=======
+
+        // 检查房间人数并发送相应请求
+        const runID = this.data.verifiedRoomID;
+        if (!runID) return;
+
+        wx.request({
+            url: global.utils.getAPI(global.utils.serverURL, `/api/runRoom/${runID}`),
+            method: 'GET',
+            success: (res) => {
+                if (res.data.success && res.data.code === 'ROOM_FOUND') {
+                    const activeRunners = res.data.data.runners.filter(
+                        runner => runner.in_room === true
+                    );
+
+                    // 根据房间人数决定发送的请求
+                    if (activeRunners.length <= 1) {
+                        // 房间只有一个人，删除房间
+                        wx.request({
+                            url: global.utils.getAPI(global.utils.serverURL, `/api/runRoom/delete`),
+                            method: 'DELETE',
+                            data: {
+                                runID: runID,
+                                password: wx.getStorageSync('verifiedRoomPassword')
+                            },
+                            success: (res) => {
+                                console.log('房间已删除');
+                            },
+                            fail: (error) => {
+                                console.error('删除房间失败:', error);
+                            }
+                        });
+                    } else {
+                        // 房间有多人，离开房间
+                        wx.request({
+                            url: global.utils.getAPI(global.utils.serverURL, `/api/runRoom/leave`),
+                            method: 'POST',
+                            data: {
+                                runID: runID,
+                                username: wx.getStorageSync('username'),
+                                password: wx.getStorageSync('verifiedRoomPassword')
+                            },
+                            success: (res) => {
+                                console.log('已离开房间');
+                            },
+                            fail: (error) => {
+                                console.error('离开房间失败:', error);
+                            }
+                        });
+                    }
+                }
+            },
+            fail: (error) => {
+                console.error('获取房间信息失败:', error);
+            }
+        });
+>>>>>>> d6bb237743e6f4066442911546827900a5233234
     }
 
 });

@@ -1,7 +1,12 @@
 /* pages/single/single.wxss */
 
 .container {
+<<<<<<< HEAD
     height: 100vh; /* 设置容器高度为视口高度 */
+=======
+    height: 100vh;
+    /* 设置容器高度为视口高度 */
+>>>>>>> d6bb237743e6f4066442911546827900a5233234
 }
 
 .map {
@@ -11,7 +16,11 @@
     flex: 1;
 }
 
+<<<<<<< HEAD
 .counter{
+=======
+.counter {
+>>>>>>> d6bb237743e6f4066442911546827900a5233234
     width: 710rpx;
     background-color: #fff;
     opacity: 0.8;
@@ -25,7 +34,11 @@
     box-sizing: border-box;
 }
 
+<<<<<<< HEAD
 .counter view{
+=======
+.counter view {
+>>>>>>> d6bb237743e6f4066442911546827900a5233234
     flex: 1;
     display: flex;
     flex-direction: column;
@@ -33,12 +46,20 @@
     align-items: center;
 }
 
+<<<<<<< HEAD
 .counter text{
+=======
+.counter text {
+>>>>>>> d6bb237743e6f4066442911546827900a5233234
     display: block;
     margin: 5rpx;
 }
 
+<<<<<<< HEAD
 .counter image{
+=======
+.counter image {
+>>>>>>> d6bb237743e6f4066442911546827900a5233234
     width: 100rpx;
     height: 100rpx;
 }
@@ -51,7 +72,11 @@
     background-color: transparent;
     margin: 0 0;
     position: absolute;
+<<<<<<< HEAD
     bottom: 200rpx;
+=======
+    bottom: 120rpx;
+>>>>>>> d6bb237743e6f4066442911546827900a5233234
 }
 
 .run-button {
@@ -61,8 +86,16 @@
     background-color: transparent;
 }
 
+<<<<<<< HEAD
 .run-button image{
     width: 150rpx;
     height: 150rpx;
     border-radius: 50%;
 }
+=======
+.run-button image {
+    width: 150rpx;
+    height: 150rpx;
+    border-radius: 50%;
+}
+>>>>>>> d6bb237743e6f4066442911546827900a5233234

@@ -200,7 +200,11 @@ Page({
             success: (res) => {
                 console.log('跑步数据上传成功:', res);
                 // 上传成功后跳转到记录页面
+<<<<<<< HEAD
                 wx.navigateTo({
+=======
+                wx.redirectTo({
+>>>>>>> d6bb237743e6f4066442911546827900a5233234
                     url: '../singlerecord/singlerecord',
                 });
             },

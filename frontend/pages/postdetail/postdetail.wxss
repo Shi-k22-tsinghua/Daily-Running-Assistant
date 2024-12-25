@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /* pages/postdetail/postdetail.wxss */
 .container {
     padding: 10px;
@@ -5,11 +6,20 @@
   
   /* 帖子样式 */
   .post {
+=======
+.container {
+    padding: 10px;
+}
+
+/* 帖子部分 */
+.post {
+>>>>>>> d6bb237743e6f4066442911546827900a5233234
     width: 100%;
     margin-bottom: 20px;
     padding: 3px;
     border: 1px solid #e0e0e0;
     border-radius: 5px;
+<<<<<<< HEAD
   }
   
   .post-meta {
@@ -27,11 +37,38 @@
   
 
   .post-title {
+=======
+}
+
+.post-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.post-author,
+.post-time,
+.commentator,
+.comment-time {
+    font-size: 16px;
+    color: #666;
+}
+
+.post-content {
+    display: block;
+    margin-bottom: 10px;
+    font-size: 18px;
+}
+
+.post-title {
+>>>>>>> d6bb237743e6f4066442911546827900a5233234
     display: block;
     font-size: 24px;
     font-weight: bolder;
     margin-bottom: 5px;
     color: #333;
+<<<<<<< HEAD
   }
   
   .post-content {
@@ -47,10 +84,23 @@
     border-radius: 5px;
   }
   .post-interaction {
+=======
+}
+
+.post-image {
+    width: 100%;
+    height: 200px;
+    border-radius: 8px;
+    margin: 5px 0;
+}
+
+.post-interaction {
+>>>>>>> d6bb237743e6f4066442911546827900a5233234
     display: flex;
     align-items: center;
     justify-content: space-between;
     margin-top: 10px;
+<<<<<<< HEAD
   }
   
   .comment-count, .like-count {
@@ -60,26 +110,51 @@
   
   /* 评论区域样式 */
   .comments-section {
+=======
+}
+
+.comment-count,
+.like-count {
+    color: #888;
+    font-size: 16px;
+}
+
+/* 评论部分 */
+.comments-section {
+>>>>>>> d6bb237743e6f4066442911546827900a5233234
     width: 100%;
     border: 1px solid #e0e0e0;
     border-radius: 5px;
     bottom: 50px;
     margin-bottom: 50px;
+<<<<<<< HEAD
   }
   
   .comment {
+=======
+}
+
+.comment {
+>>>>>>> d6bb237743e6f4066442911546827900a5233234
     width: 95%;
     margin-bottom: 10px;
     padding: 10px;
     background-color: #f8f8f8;
     border-radius: 4px;
+<<<<<<< HEAD
   }
   
   .comment-meta {
+=======
+}
+
+.comment-meta {
+>>>>>>> d6bb237743e6f4066442911546827900a5233234
     display: flex;
     justify-content: space-between;
     align-items: center;
     font-size: 14px;
+<<<<<<< HEAD
     margin-bottom: 10px; /* 根据需要调整间距 */
   }
   
@@ -96,23 +171,48 @@
   .comment-input {
     position: fixed;
     bottom: 20px;
+=======
+    margin-bottom: 10px;
+}
+
+.comment-text {
+    font-size: 16px;
+}
+
+.comment-input {
+    position: fixed;
+    bottom: 0rpx;
+    padding-bottom: 20rpx;
+>>>>>>> d6bb237743e6f4066442911546827900a5233234
     width: 95%;
     display: flex;
     align-items: center;
     margin-top: 20px;
     z-index: 10;
     background-color: white;
+<<<<<<< HEAD
   }
   
   input[type="text"] {
+=======
+}
+
+input[type="text"] {
+>>>>>>> d6bb237743e6f4066442911546827900a5233234
     flex: 1;
     padding: 10px;
     border: 1px solid #ddd;
     border-radius: 4px;
     margin-right: 10px;
+<<<<<<< HEAD
   }
   
   button {
+=======
+}
+
+button {
+>>>>>>> d6bb237743e6f4066442911546827900a5233234
     padding: 10px 20px;
     max-width: 100px;
     background-color: #49bbb5;
@@ -120,6 +220,7 @@
     border: none;
     border-radius: 4px;
     font-size: 16px;
+<<<<<<< HEAD
   }
   
   button:active {
@@ -136,4 +237,10 @@
 .image-container {
     width: 100%;
     margin: 5px 0;
+=======
+}
+
+button:active {
+    background-color: #179B16;
+>>>>>>> d6bb237743e6f4066442911546827900a5233234
 }

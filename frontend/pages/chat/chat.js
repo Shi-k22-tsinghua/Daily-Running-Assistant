@@ -1,4 +1,9 @@
+<<<<<<< HEAD
 // pages/AIchat/AIchat.js
+=======
+
+// pages/chat/chat.js
+>>>>>>> d6bb237743e6f4066442911546827900a5233234
 const app = require('../../app.js');
 
 Page({
@@ -100,9 +105,12 @@ Page({
         });
     },
 
+<<<<<<< HEAD
     /**
      * 生命周期函数--监听页面加载
      */
+=======
+>>>>>>> d6bb237743e6f4066442911546827900a5233234
     onLoad(options) {
         const nickname = wx.getStorageSync('nickname');
         if (nickname) {
@@ -112,6 +120,7 @@ Page({
         }
     },
 
+<<<<<<< HEAD
     /**
      * 生命周期函数--监听页面初次渲染完成
      */
@@ -160,4 +169,6 @@ Page({
     onShareAppMessage() {
 
     }
+=======
+>>>>>>> d6bb237743e6f4066442911546827900a5233234
 })

@@ -1,6 +1,7 @@
 // pages/run/run.js
 const app = require('../../app.js');
 Page({
+<<<<<<< HEAD
 
     /**
      * 页面的初始数据
@@ -63,5 +64,9 @@ Page({
      */
     onShareAppMessage() {
 
+=======
+    onLoad(options) {
+        app.tokenCheck();
+>>>>>>> d6bb237743e6f4066442911546827900a5233234
     }
 })

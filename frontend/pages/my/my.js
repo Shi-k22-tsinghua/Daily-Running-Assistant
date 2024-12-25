@@ -231,7 +231,11 @@ Page({
      */
     onLogout: function () {
         wx.clearStorageSync('token');
+<<<<<<< HEAD
         wx.navigateTo({
+=======
+        wx.redirectTo({
+>>>>>>> d6bb237743e6f4066442911546827900a5233234
             url: '../index/index',
         });
     },

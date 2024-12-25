@@ -20,12 +20,17 @@
     </view>
 
     <view class="input-area">
+<<<<<<< HEAD
         <input class="input-message" placeholder=" 输入您的问题" value="{{messeageInput}}" bindinput="inputMessage" />
+=======
+        <input class="input-message" placeholder="请输入您的问题" value="{{messageInput}}" bindinput="inputMessage" />
+>>>>>>> d6bb237743e6f4066442911546827900a5233234
         <button class="send-button" bindtap="sendMessage">
             <image class="send-icon" src="../../images/send-icon.png" />
         </button>
     </view>
 
+<<<<<<< HEAD
     <view class="tab-bar">
         <navigator class="tab-item" url="../run/run" open-type="redirect">
             <image class="icon" src="../../images/run-icon.png" />
@@ -44,4 +49,6 @@
             <text>我的</text>
         </navigator>
     </view>
+=======
+>>>>>>> d6bb237743e6f4066442911546827900a5233234
 </view>

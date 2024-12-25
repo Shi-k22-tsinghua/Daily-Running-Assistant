@@ -57,6 +57,7 @@
     <!-- 退出登录按钮 -->
     <button class="logout-button" bindtap="onLogout">退出登录</button>
 
+<<<<<<< HEAD
     <view class="contact">
         <text>联系我们：jiayz22@mails.tsinghua.edu.cn</text>
     </view>
@@ -78,4 +79,6 @@
             <text>我的</text>
         </navigator>
     </view>
+=======
+>>>>>>> d6bb237743e6f4066442911546827900a5233234
 </view>

@@ -24,6 +24,7 @@
         </view>
     </view>
 
+<<<<<<< HEAD
     <!-- 底栏 -->
     <view class="tab-bar">
         <navigator class="tab-item" url="../run/run" open-type="redirect">
@@ -43,4 +44,6 @@
             <text>我的</text>
         </navigator>
     </view>
+=======
+>>>>>>> d6bb237743e6f4066442911546827900a5233234
 </view>

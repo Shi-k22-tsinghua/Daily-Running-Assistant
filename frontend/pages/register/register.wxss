@@ -37,7 +37,11 @@
     height: 80rpx;
     margin-top: 100rpx;
     margin-bottom: 20rpx;
+<<<<<<< HEAD
     border-radius: 20rpx;
+=======
+    border-radius: 40rpx;
+>>>>>>> d6bb237743e6f4066442911546827900a5233234
     border: none;
     background-color: #009688;
     color: #fff;
@@ -50,7 +54,11 @@
     height: 80rpx;
     margin-top: 20rpx;
     margin-bottom: 100rpx;
+<<<<<<< HEAD
     border-radius: 20rpx;
+=======
+    border-radius: 40rpx;
+>>>>>>> d6bb237743e6f4066442911546827900a5233234
     border: none;
     background-color: #7aad49;
     color: #fff;

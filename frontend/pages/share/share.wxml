@@ -5,7 +5,11 @@
     <view class="post-list">
         <view class="post" wx:for="{{posts}}" wx:key="index">
             <navigator url="../postdetail/postdetail?id={{item.postId}}">
+<<<<<<< HEAD
                 <view class="post">
+=======
+                <view class="post-content">
+>>>>>>> d6bb237743e6f4066442911546827900a5233234
                     <view>
                         <text class="post-title">{{item.title}}</text>
                     </view>
@@ -30,6 +34,7 @@
         <button bindtap="navigateToPost">+</button>
     </view>
 
+<<<<<<< HEAD
     <view class="tab-bar">
         <navigator class="tab-item" url="../run/run" open-type="redirect">
             <image class="icon" src="../../images/run-icon.png" />
@@ -48,4 +53,6 @@
             <text>我的</text>
         </navigator>
     </view>
+=======
+>>>>>>> d6bb237743e6f4066442911546827900a5233234
 </view>
