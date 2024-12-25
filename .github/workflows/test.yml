@@ -31,9 +31,12 @@ jobs:
       with:
         mongodb-version: ${{ matrix.mongodb-version }}
 
-    - name: Install dependencies
+    - name: Clean install
       working-directory: ./backend
-      run: npm ci
+      run: |
+        rm -rf node_modules package-lock.json
+        npm install
+        npm install --save-dev jest@29.7.0 @types/jest@29.5.14 supertest@7.0.0 mongodb-memory-server@10.1.2
 
     - name: Run tests
       working-directory: ./backend
