@@ -2,26 +2,14 @@
   "name": "backend",
   "version": "1.0.0",
   "main": "index.js",
-
   "scripts": {
     "dev": "node server",
     "test": "jest --coverage",
     "test:ci": "jest --coverage --ci",
-    "test:watch": "jest --watch"
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage --coverageDirectory=coverage",
+    "test:coverage:detail": "jest --coverage --verbose --coverageReporters='text-summary' --coverageReporters='text'"
   },
-
-  "jest": {
-    "testEnvironment": "node",
-    "coveragePathIgnorePatterns": [
-      "/node_modules/"
-    ],
-    "setupFilesAfterEnv": ["./tests/setup.js"],
-    "testTimeout": 30000,
-    "verbose": true,
-    "detectOpenHandles": true,
-    "forceExit": true
-  },
-
   "keywords": [],
   "author": "",
   "license": "ISC",
