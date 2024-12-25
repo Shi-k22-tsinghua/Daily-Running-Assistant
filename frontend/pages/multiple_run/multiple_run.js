@@ -110,8 +110,30 @@ Page({
                     longitude: res.longitude,
                     showMap: true,
                 });
-
-                this.updateOtherRunners();
+    
+                // Send initial join/update to mark as in room
+                wx.request({
+                    url: global.utils.getAPI(global.utils.serverURL, `/api/runRoom/update`),
+                    method: 'POST',
+                    data: {
+                        runID: wx.getStorageSync('verifiedRoomID'),
+                        password: wx.getStorageSync('verifiedRoomPassword'),
+                        username: wx.getStorageSync('username'),
+                        longitude: res.longitude,
+                        latitude: res.latitude,
+                        meters: 0,
+                        seconds: 0,
+                        running: false,
+                        in_room: true
+                    },
+                    success: (res) => {
+                        console.log('初始房间状态更新成功');
+                        this.updateOtherRunners();  // Update after successful join
+                    },
+                    fail: (error) => {
+                        console.error('初始房间状态更新失败:', error);
+                    }
+                });
             },
             fail: (error) => {
                 console.error('获取位置失败', error);
@@ -176,7 +198,25 @@ Page({
         });
 
         this.formatPace();
-        this.updateLocation();
+
+        // Start location updates immediately
+        this.locationUpdateInterval = setInterval(() => {
+            wx.getLocation({
+                type: 'gcj02',
+                success: (res) => {
+                    this.setData({
+                        latitude: res.latitude,
+                        longitude: res.longitude,
+                    });
+                    this.updateLocation();
+                },
+                fail: (error) => {
+                    console.error('获取位置失败', error);
+                }
+            });
+        }, this.data.interval);
+
+        // Keep the other runners update interval
         this.otherRunnersInterval = setInterval(this.updateOtherRunners.bind(this), 5000);
     },
 
@@ -259,14 +299,14 @@ Page({
             if (!this.interval) {
                 this.interval = setInterval(this.record.bind(this), this.data.interval);
             }
-
+    
             // Set start time if not already set
             if (this.data.startTime === '') {
                 this.setData({
                     startTime: new Date().toISOString()
                 });
             }
-
+    
             // Additional API call to mark run as started
             wx.request({
                 url: global.utils.getAPI(global.utils.serverURL, `/api/runRoom/start`),
@@ -284,48 +324,104 @@ Page({
             });
         } else {
             console.log("暂停/结束跑步")
-            // You might want to keep tracking, just mark as not actively running
+            // Update running status in backend
+            wx.request({
+                url: global.utils.getAPI(global.utils.serverURL, `/api/runRoom/update`),
+                method: 'POST',
+                data: {
+                    runID: this.data.verifiedRoomID,
+                    password: wx.getStorageSync('verifiedRoomPassword'),
+                    username: wx.getStorageSync('username'),
+                    longitude: this.data.longitude,
+                    latitude: this.data.latitude,
+                    meters: this.data.meters,
+                    seconds: this.data.seconds,
+                    running: false
+                },
+                success: (res) => {
+                    console.log('暂停状态更新成功');
+                },
+                fail: (error) => {
+                    console.error('暂停状态更新失败:', error);
+                }
+            });
             clearInterval(this.interval);
             this.interval = null;
         }
     },
 
     updateLocation: function () {
+        // Keep this function focused only on location updates
         const updatedData = {
             runID: wx.getStorageSync('verifiedRoomID'),
             password: wx.getStorageSync('verifiedRoomPassword'),
             username: wx.getStorageSync('username'),
             longitude: this.data.longitude,
             latitude: this.data.latitude,
+            in_room: true
         }
-
-        console.log('更新位置:', updatedData);
-
+    
+        console.log('更新位置数据:', updatedData);
+    
         wx.request({
             url: global.utils.getAPI(global.utils.serverURL, `/api/runRoom/update`),
             method: 'POST',
             data: updatedData,
             success: (res) => {
                 if (res.data.message) {
-                    console.log('更新位置成功');
+                    console.log('位置更新成功');
                 } else {
-                    console.log('更新位置失败');
+                    console.log('位置更新失败');
                 }
+            },
+            fail: (error) => {
+                console.error('位置更新失败:', error);
+            }
+        });
+    },
+    
+    updateRunningStatus: function() {
+        // This function handles running-related updates
+        if (!this.data.running) return;
+    
+        const runData = {
+            runID: wx.getStorageSync('verifiedRoomID'),
+            password: wx.getStorageSync('verifiedRoomPassword'),
+            username: wx.getStorageSync('username'),
+            meters: this.data.meters,
+            seconds: this.data.seconds,
+            running: this.data.running
+        }
+    
+        wx.request({
+            url: global.utils.getAPI(global.utils.serverURL, `/api/runRoom/update`),
+            method: 'POST',
+            data: runData,
+            success: (res) => {
+                if (res.data.message) {
+                    console.log('跑步数据更新成功');
+                } else {
+                    console.log('跑步数据更新失败');
+                }
+            },
+            fail: (error) => {
+                console.error('跑步数据更新失败:', error);
             }
         });
     },
 
     record() {
         if (!this.data.running) {
-            return
+            return;
         }
         const runID = this.data.verifiedRoomID;
         if (!runID) return;
-
+    
         this.setData({
             seconds: this.data.seconds + this.data.interval / 1000
-        })
-
+        });
+    
+        // Only handle distance tracking and points when running
         wx.getLocation({
             type: 'gcj02',
         }).then(res => {
@@ -334,10 +430,10 @@ Page({
                 longitude: res.longitude,
                 id: this.data.points.length + 1
             }
-
+    
             let points = Array.isArray(this.data.points) ? this.data.points : [];
             let pace = 0;
-
+    
             if (points.length > 0) {
                 let lastPoint = points.slice(-1)[0]
                 pace = utils.getDistance(lastPoint.latitude, lastPoint.longitude, newPoint.latitude, newPoint.longitude);
@@ -350,10 +446,8 @@ Page({
             } else {
                 points.push(newPoint);
             }
-
+    
             this.setData({
-                latitude: res.latitude,
-                longitude: res.longitude,
                 points,
                 polyline: [{
                     points: points.map(point => ({
@@ -366,11 +460,11 @@ Page({
                     arrowLine: false
                 }],
                 meters: parseFloat((this.data.meters + pace).toFixed(1))
-            })
-
+            });
+    
             this.formatPace();
-            this.updateLocation();
-        })
+            this.updateRunningStatus(); // Update running stats instead of location
+        });
     },
 
     endRun: function (e) {
@@ -436,9 +530,12 @@ Page({
     },
 
     onUnload() {
-        // 清除所有定时器
+        // Clear all intervals
         if (this.interval) {
             clearInterval(this.interval);
+        }
+        if (this.locationUpdateInterval) {
+            clearInterval(this.locationUpdateInterval);
         }
         if (this.otherRunnersInterval) {
             clearInterval(this.otherRunnersInterval);

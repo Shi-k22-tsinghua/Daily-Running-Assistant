@@ -5,8 +5,6 @@ const { User } = require('../models/user.model');
 const jwt = require('jsonwebtoken');
 const SECRET_KEY = process.env.SECRET_KEY;
 
-const serverURL = 'http://124.221.96.133:8000'; // for deployment testing
-
 // Initialize GridFS
 let gfs;
 const conn = mongoose.connection;
@@ -237,7 +235,7 @@ const leaveRoom = async(req, res) => {
 
 const updateRoom = async(req, res) => {
   try {
-    const { runID, password, username, longitude, latitude } = req.body;
+    const { runID, password, username, longitude, latitude, meters, seconds } = req.body;
 
     // Validate required fields
     if (!runID || !password || !username || longitude === undefined || latitude === undefined) {
@@ -265,9 +263,11 @@ const updateRoom = async(req, res) => {
       return res.status(404).json({ error: 'Runner not found in the room' });
     }
 
-    // Update the runner's longitude and latitude
+    // Update the runner's location, meters, and seconds
     runner.longitude = longitude;
     runner.latitude = latitude;
+    if (meters !== undefined) runner.meters = meters;
+    if (seconds !== undefined) runner.seconds = seconds;
 
     // Save the updated room
     await room.save();
