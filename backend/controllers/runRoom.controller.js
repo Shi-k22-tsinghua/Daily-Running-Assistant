@@ -315,6 +315,25 @@ const deleteRoom = async (req, res) => {
     }
 };
 
+// Delete all run rooms
+const deleteAllRooms = async (req, res) => {
+    try {
+        // Delete all run rooms
+        await RunRoom.deleteMany({});
+
+        res.status(200).json({
+            success: true,
+            message: "All run rooms have been deleted successfully"
+        });
+    } catch (error) {
+        console.error('Error in deleteAllRooms:', error);
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+};
+
 module.exports = {
     getRoom,
     getAllRooms,
@@ -324,4 +343,6 @@ module.exports = {
     leaveRoom,
     updateRoom,
     deleteRoom,
+
+    deleteAllRooms
 }

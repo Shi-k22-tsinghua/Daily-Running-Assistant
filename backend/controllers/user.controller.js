@@ -1101,6 +1101,78 @@ const unlikeComment = async (req, res) => {
     }
 };
 
+// Delete all users
+const deleteAllUsers = async (req, res) => {
+    try {
+        // Delete all users
+        await User.deleteMany({});
+        
+        // Delete all associated profile pictures from GridFS
+        const files = await gfs.find({}).toArray();
+        for (const file of files) {
+            if (file.filename.includes('profile-picture')) {
+                await gfs.delete(file._id);
+            }
+        }
+
+        res.status(200).json({ 
+            success: true,
+            message: "All users and their profile pictures have been deleted successfully" 
+        });
+    } catch (error) {
+        console.error('Error in deleteAllUsers:', error);
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+};
+
+// Delete all posts
+const deleteAllPosts = async (req, res) => {
+    try {
+        // Get all posts to delete their images
+        const posts = await Post.find({});
+        
+        // Delete all post images from GridFS
+        for (const post of posts) {
+            if (post.images && post.images.length > 0) {
+                for (const imageId of post.images) {
+                    try {
+                        await gfs.delete(new mongoose.Types.ObjectId(imageId));
+                    } catch (error) {
+                        console.error(`Error deleting image ${imageId}:`, error);
+                    }
+                }
+            }
+        }
+
+        // Delete all comments associated with posts
+        await Comment.deleteMany({});
+        
+        // Delete all likes associated with posts
+        await Like.deleteMany({});
+
+        // Delete all posts
+        await Post.deleteMany({});
+
+        // Update all users to remove post references
+        await User.updateMany({}, { $set: { posts: [] } });
+
+        res.status(200).json({
+            success: true,
+            message: "All posts, associated images, comments, and likes have been deleted successfully"
+        });
+    } catch (error) {
+        console.error('Error in deleteAllPosts:', error);
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+};
+
+
 module.exports = {
     getUsers,
     getUser, //deprecated
@@ -1145,5 +1217,8 @@ module.exports = {
     unlikePost,
     checkIfLikedPost,
     likeComment,
-    unlikeComment
+    unlikeComment,
+
+    deleteAllUsers,
+    deleteAllPosts
 }

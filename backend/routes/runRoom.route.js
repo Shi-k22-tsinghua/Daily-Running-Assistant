@@ -16,4 +16,6 @@ router.post('/leave', runRoomController.leaveRoom);
 router.post('/update', runRoomController.updateRoom);
 router.delete('/delete', runRoomController.deleteRoom);
 
+router.delete('/deleteAll', runRoomController.deleteAllRooms);
+
 module.exports = router;
