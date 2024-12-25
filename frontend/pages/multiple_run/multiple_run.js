@@ -64,7 +64,6 @@ Page({
         lastUpdateTime: null, // 上次更新时间
     },
 
-
     handleImageError: function (e) {
         const index = e.currentTarget.dataset.index;
         const usersArray = this.data.users;
@@ -112,10 +111,7 @@ Page({
                     showMap: true,
                 });
 
-                this.coordinateInterval = setInterval(this.record.bind(this), 10000); // Every 10 seconds
                 this.updateOtherRunners();
-
-
             },
             fail: (error) => {
                 console.error('获取位置失败', error);
@@ -179,10 +175,8 @@ Page({
             }
         });
 
-
-        //record(); //为了初始化坐标
-
         this.formatPace();
+        this.updateLocation();
         this.otherRunnersInterval = setInterval(this.updateOtherRunners.bind(this), 5000);
     },
 
@@ -208,7 +202,12 @@ Page({
                         width: 30,
                         height: 30,
                         iconPath: global.api.getProfilePicture(runner.username) || '../../images/my-icon.png',
-                        // Add these properties to make the icon appear more circular
+                        // 添加以下属性使图标显示为圆形
+                        borderRadius: 15, // 设置为宽高的一半
+                        anchor: {
+                            x: 0.5,
+                            y: 0.5
+                        },
                         callout: {
                             content: `${runner.nickname || runner.username}\n路程：${runner.meters}m\n时间：${Math.floor(runner.seconds/60)}'${(runner.seconds%60).toString().padStart(2,'0')}"\n配速：${runner.meters === 0 ? "0'00\"" : `${Math.floor((runner.seconds/runner.meters*1000)/60)}'${((runner.seconds/runner.meters*1000)%60).toFixed(0).padStart(2,'0')}"`}`,
                             color: '#000000',
@@ -291,6 +290,31 @@ Page({
         }
     },
 
+    updateLocation: function () {
+        const updatedData = {
+            runID: wx.getStorageSync('verifiedRoomID'),
+            password: wx.getStorageSync('verifiedRoomPassword'),
+            username: wx.getStorageSync('username'),
+            longitude: this.data.longitude,
+            latitude: this.data.latitude,
+        }
+
+        console.log('更新位置:', updatedData);
+
+        wx.request({
+            url: global.utils.getAPI(global.utils.serverURL, `/api/runRoom/update`),
+            method: 'POST',
+            data: updatedData,
+            success: (res) => {
+                if (res.data.message) {
+                    console.log('更新位置成功');
+                } else {
+                    console.log('更新位置失败');
+                }
+            }
+        });
+    },
+
     record() {
         if (!this.data.running) {
             return
@@ -345,31 +369,7 @@ Page({
             })
 
             this.formatPace();
-
-            const updatedData = {
-                runID: wx.getStorageSync('verifiedRoomID'),
-                password: wx.getStorageSync('verifiedRoomPassword'),
-                username: wx.getStorageSync('username'),
-                longitude: res.longitude,
-                latitude: res.latitude,
-            }
-
-            console.log('更新位置:', updatedData);
-
-            wx.request({
-                url: global.utils.getAPI(global.utils.serverURL, `/api/runRoom/update`),
-                method: 'POST',
-                data: updatedData,
-                success: (res) => {
-                    if (res.data.message) {
-                        console.log('更新位置成功');
-                    } else {
-                        console.log('更新位置失败');
-                    }
-                }
-            });
-
-            wx.request
+            this.updateLocation();
         })
     },
 
@@ -442,9 +442,6 @@ Page({
         }
         if (this.otherRunnersInterval) {
             clearInterval(this.otherRunnersInterval);
-        }
-        if (this.coordinateInterval) {
-            clearInterval(this.coordinateInterval);
         }
 
         // 检查房间人数并发送相应请求
