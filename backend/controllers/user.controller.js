@@ -682,32 +682,31 @@ const getPosts = async(req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
-
-// Function to retrieve a post by its ID
 const getPostById = async(req, res) => {
   try {
     const { postId } = req.params;
-    // Find a post by postId and populate author's nickname and comments with their authors' nicknames
-    const post = await Post.findOne({ _id: postId })
-      .populate('author', 'nickname') // Populate author's nickname
+    
+    const post = await Post.findOne({ postId: parseInt(postId, 10) })
+      .populate('author', 'nickname')
       .populate({
-        path: 'comments', // Populate comments
+        path: 'comments',
         populate: {
-          path: 'author', // Populate comment authors
+          path: 'author',
           select: 'nickname'
         }
       });
 
-    // If no post is found, return a 404 status
     if (!post) {
       return res.status(404).json({ message: 'Post not found' });
     }
 
-    // If a post is found, return a 200 status with the post data
     res.status(200).json({ message: 'Post retrieved successfully', post });
   } catch (error) {
-    // If an error occurs, return a 500 status with the error message
-    res.status(500).json({ message: error.message });
+    console.error('Error in getPostById:', error);
+    res.status(500).json({ 
+      message: 'Error retrieving post',
+      error: error.message
+    });
   }
 };
 
@@ -850,36 +849,28 @@ const createComment = async(req, res) => {
     const postId = req.params.postId;
     const { content, username } = req.body;
 
-    // Find the user by username
     const user = await User.findOne({ username });
-
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
 
-    // Find the post by postId
-    const post = await Post.findOne({ _id: postId });
-
+    // Updated to find post by postId instead of _id
+    const post = await Post.findOne({ postId: parseInt(postId, 10) });
     if (!post) {
       return res.status(404).json({ message: 'Post not found' });
     }
 
-    // Increment the comment count on the post
     post.commentCount += 1;
 
-    // Create a new comment object
     const newComment = new Comment({
       content,
-      author: user._id, // Set the author field to the user's _id
-      post: post._id, // Set the post field to the post's _id
+      author: user._id,
+      post: post._id,
       createdAt: new Date(),
       updatedAt: new Date()
     });
 
-    // Save the new comment to the database
     await newComment.save();
-
-    // Add the new comment's _id to the post's comments array
     post.comments.push(newComment._id);
     await post.save();
 
@@ -888,7 +879,6 @@ const createComment = async(req, res) => {
       comment: newComment
     });
   } catch (error) {
-    // If an error occurs, return 500 with error message
     res.status(500).json({ message: error.message });
   }
 };
@@ -948,34 +938,28 @@ const deleteComment = async(req, res) => {
 // Function to like a post by its ID
 const likePost = async(req, res) => {
   try {
-    // Extract postId from request parameters
     const postId = req.params.postId;
-    // Extract username from request body
     const { username } = req.body;
 
-    // Find the user by username
-    const user = await User.findOne({ username: username });
+    const user = await User.findOne({ username });
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
 
-    // Find the post by postId
-    const post = await Post.findOne({ _id: postId });
+    // Updated to find post by postId instead of _id
+    const post = await Post.findOne({ postId: parseInt(postId, 10) });
     if (!post) {
       return res.status(404).json({ message: 'Post not found' });
     }
 
-    // Check if the user has already liked the post
     const existingLike = await Like.findOne({ user: user._id, post: post._id });
     if (existingLike) {
       return res.status(400).json({ message: 'Post already liked by user' });
     }
 
-    // Create a new like record
     const newLike = new Like({ user: user._id, post: post._id });
     await newLike.save();
 
-    // Increment the like count on the post
     post.likes += 1;
     await post.save();
 
@@ -998,7 +982,7 @@ const unlikePost = async(req, res) => {
     }
 
     // Find the post by postId
-    const post = await Post.findOne({ _id: postId });
+    const post = await Post.findOne({ postId: parseInt(postId, 10) });
     if (!post) {
       return res.status(404).json({ message: 'Post not found' });
     }

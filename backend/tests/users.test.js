@@ -796,3 +796,4 @@ describe('User Preferences Tests', () => {
   });
 });
 
+});
