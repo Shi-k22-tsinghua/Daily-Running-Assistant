@@ -103,11 +103,13 @@
     width: 100%;
     position: fixed;
     display: flex;
-    bottom: 50px;
+    bottom: 0;
     flex-direction: row;
     align-items: center;
     padding-bottom: 10px;
     background-color: transparent;
+    padding-top: 10rpx;
+    border-top: #ccc solid 2rpx;
 }
 
 .input-message {

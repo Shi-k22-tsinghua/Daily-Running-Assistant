@@ -31,5 +31,33 @@
     "style": "v2",
     "componentFramework": "glass-easel",
     "sitemapLocation": "sitemap.json",
-    "lazyCodeLoading": "requiredComponents"
+    "lazyCodeLoading": "requiredComponents",
+    "tabBar": {
+        "list": [
+            {
+                "pagePath": "pages/run/run",
+                "text": "跑步",
+                "iconPath": "images/run-icon.png",
+                "selectedIconPath": "images/run-icon.png"
+            },
+            {
+                "pagePath": "pages/share/share",
+                "text": "分享",
+                "iconPath": "images/share-icon.png",
+                "selectedIconPath": "images/share-icon.png"
+            },
+            {
+                "pagePath": "pages/chat/chat",
+                "text": "助手",
+                "iconPath": "images/chat-icon.png",
+                "selectedIconPath": "images/chat-icon.png"
+            },
+            {
+                "pagePath": "pages/my/my",
+                "text": "我的",
+                "iconPath": "images/my-icon.png",
+                "selectedIconPath": "images/my-icon.png"
+            }
+        ]
+    }
 }
