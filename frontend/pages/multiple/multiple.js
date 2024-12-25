@@ -38,11 +38,7 @@ Page({
         if (!roomID) {
             wx.showToast({
                 title: '请输入房间号!',
-<<<<<<< HEAD
-                icon: 'none',
-=======
                 icon: 'error',
->>>>>>> d6bb237743e6f4066442911546827900a5233234
             });
             return;
         }
@@ -50,11 +46,7 @@ Page({
         if (!password) {
             wx.showToast({
                 title: '请输入房间密码!',
-<<<<<<< HEAD
-                icon: 'none',
-=======
                 icon: 'error',
->>>>>>> d6bb237743e6f4066442911546827900a5233234
             });
             return;
         }
@@ -73,11 +65,7 @@ Page({
                 } else {
                     wx.showToast({
                         title: '房间创建失败!',
-<<<<<<< HEAD
-                        icon: 'none',
-=======
                         icon: 'error',
->>>>>>> d6bb237743e6f4066442911546827900a5233234
                     });
                     console.error('Error creating room:', res.data.error);
                 }
@@ -85,11 +73,7 @@ Page({
             fail: (error) => {
                 wx.showToast({
                     title: '请求失败!',
-<<<<<<< HEAD
-                    icon: 'none',
-=======
                     icon: 'error',
->>>>>>> d6bb237743e6f4066442911546827900a5233234
                 });
                 console.error('Request failed:', error);
             },
@@ -111,11 +95,7 @@ Page({
         if (!roomID) {
             wx.showToast({
                 title: '请输入房间号!',
-<<<<<<< HEAD
-                icon: 'none',
-=======
                 icon: 'error',
->>>>>>> d6bb237743e6f4066442911546827900a5233234
             });
             return;
         }
@@ -123,11 +103,7 @@ Page({
         if (!password) {
             wx.showToast({
                 title: '请输入房间密码!',
-<<<<<<< HEAD
-                icon: 'none',
-=======
                 icon: 'error',
->>>>>>> d6bb237743e6f4066442911546827900a5233234
             });
             return;
         }
@@ -159,11 +135,7 @@ Page({
                 } else {
                     wx.showToast({
                         title: '加入房间失败!',
-<<<<<<< HEAD
-                        icon: 'none',
-=======
                         icon: 'error',
->>>>>>> d6bb237743e6f4066442911546827900a5233234
                     });
                     console.error('Error joining room:', res.data.error);
                 }
@@ -171,11 +143,7 @@ Page({
             fail: (error) => {
                 wx.showToast({
                     title: '请求失败!',
-<<<<<<< HEAD
-                    icon: 'none',
-=======
                     icon: 'error',
->>>>>>> d6bb237743e6f4066442911546827900a5233234
                 });
                 console.error('Request failed:', error);
             },
@@ -223,8 +191,4 @@ Page({
         }
     },
 
-<<<<<<< HEAD
-
-=======
->>>>>>> d6bb237743e6f4066442911546827900a5233234
 })

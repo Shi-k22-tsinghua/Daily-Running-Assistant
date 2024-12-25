@@ -34,11 +34,8 @@
 
 .modal-content {
     padding: 20px;
-<<<<<<< HEAD
-=======
     border: #ddd solid 2rpx;
     border-radius: 5rpx;
->>>>>>> d6bb237743e6f4066442911546827900a5233234
 }
 
 .modal-footer {
@@ -165,15 +162,6 @@
 }
 
 .logout-button {
-<<<<<<< HEAD
-    margin-top: 20px;
-    padding: 10px;
-    background-color: rgb(107, 158, 154);
-    color: white;
-    border: none;
-    border-radius: 5px;
-    text-align: center;
-=======
     padding: 0;
     margin-top: 20px;
     height: 100rpx;
@@ -185,7 +173,6 @@
     align-items: center;
     justify-content: center;
     background-color: rgb(107, 158, 154);
->>>>>>> d6bb237743e6f4066442911546827900a5233234
 }
 
 .contact {

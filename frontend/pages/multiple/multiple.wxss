@@ -2,10 +2,6 @@
 
 .container {
     height: 100vh;
-<<<<<<< HEAD
-    padding-bottom: 120rpx;
-=======
->>>>>>> d6bb237743e6f4066442911546827900a5233234
 }
 
 .title {
@@ -53,11 +49,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-<<<<<<< HEAD
-    margin-bottom: 50rpx;
-=======
     margin-bottom: 100rpx;
->>>>>>> d6bb237743e6f4066442911546827900a5233234
     gap: 30rpx;
 }
 

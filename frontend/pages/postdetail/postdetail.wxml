@@ -1,9 +1,6 @@
 <!--pages/postdetail/postdetail.wxml-->
 <view class="container">
-<<<<<<< HEAD
-=======
 
->>>>>>> d6bb237743e6f4066442911546827900a5233234
     <view class="post">
         <view class="post-meta">
             <text class="post-author">{{post.author.nickname}}</text>
@@ -12,15 +9,6 @@
         <view class="post-content">
             <text class="post-title">{{post.title}}</text>
             <text class="post-content">{{post.content}}</text>
-<<<<<<< HEAD
-            <view wx:for="{{post.images}}" wx:key="index">
-                <image class="post-image" src="{{serverURL}}/api/users/posts/images/{{item}}" mode="aspectFill" />
-            </view>
-        </view>
-        <view class="post-interaction">
-            <text class="comment-count">💬 {{post.commentCount}}</text>
-            <text class="like-count">❤️ {{post.likes}}</text>
-=======
 
             <view wx:for="{{post.images}}" wx:key="index">
                 <image class="post-image" src="{{serverURL}}/api/users/posts/images/{{item}}" mode="aspectFill" />
@@ -30,7 +18,6 @@
         <view class="post-interaction">
             <text class="comment-count">💬 {{post.commentCount}}</text>
             <text class="like-count" bindtap="toggleLike">{{isLiked ? '❤️' : '♡'}} {{post.likes}}</text>
->>>>>>> d6bb237743e6f4066442911546827900a5233234
         </view>
     </view>
 
@@ -43,17 +30,10 @@
             <text class="comment-text">{{item.content}}</text>
         </view>
     </view>
-<<<<<<< HEAD
-    <view class="comment-input">
-        <input type="text" placeholder="发表评论" bindinput="bindCommentInput" />
-        <button bindtap="submitComment">评论</button>
-    </view>
-=======
 
     <view class="comment-input">
         <input type="text" placeholder="发表评论" bindinput="bindCommentInput" value="{{messageInput}}" />
         <button bindtap="submitComment">评论</button>
     </view>
 
->>>>>>> d6bb237743e6f4066442911546827900a5233234
 </view>

@@ -11,11 +11,7 @@ Page({
             title: '今日运动记录，12分长跑3千米',
             content: '#我要减肥#俗话说7分吃3分练，每日搭配营养健身餐。',
             author: 'cuber',
-<<<<<<< HEAD
-            commentCount: 334,
-=======
 
->>>>>>> d6bb237743e6f4066442911546827900a5233234
             comments: [{
                     content: "haha",
                     author: 'a commentator',
@@ -58,16 +54,11 @@ Page({
                 }
             ],
             likes: 334,
-<<<<<<< HEAD
-            createdAt: '2024-12-17 21:54'
-        },
-=======
             createdAt: '2024-12-17 21:54',
             commentCount: 334, // 评论数
         },
         isLiked: false, // 是否已点赞
         messageInput: '' // 评论框里的内容
->>>>>>> d6bb237743e6f4066442911546827900a5233234
     },
 
     onImageError: function (e) {
@@ -82,21 +73,13 @@ Page({
 
     fetchPostDetails: function (postId) {
         wx.request({
-<<<<<<< HEAD
-=======
             // 获取帖子
->>>>>>> d6bb237743e6f4066442911546827900a5233234
             url: global.utils.getAPI(global.utils.serverURL, '/api/users/share/posts/' + postId),
             method: 'GET',
             success: (res) => {
                 if (res.statusCode === 200) {
                     this.setData({
                         post: res.data.post,
-<<<<<<< HEAD
-                        comments: res.data.comments,
-                        serverURL: global.utils.serverURL // Add this line
-                    });
-=======
 
                         // comments: res.data.comments, 
                         // request返回的data中只有data.post，没有comment，（comment已在post.comment中）
@@ -123,7 +106,6 @@ Page({
                         'post.comments': commentsTemp
                     });
 
->>>>>>> d6bb237743e6f4066442911546827900a5233234
                 } else {
                     wx.showToast({
                         title: '获取帖子详情失败',
@@ -140,8 +122,6 @@ Page({
                 });
             }
         });
-<<<<<<< HEAD
-=======
 
         const that = this;
         const username = wx.getStorageSync('username');
@@ -231,45 +211,25 @@ Page({
                 }
             })
         }
->>>>>>> d6bb237743e6f4066442911546827900a5233234
     },
 
     bindCommentInput: function (e) {
         this.setData({
-<<<<<<< HEAD
-            commentContent: e.detail.value
-=======
             messageInput: e.detail.value
->>>>>>> d6bb237743e6f4066442911546827900a5233234
         });
     },
 
     submitComment: function () {
-<<<<<<< HEAD
-        const commentContent = this.data.commentContent;
-=======
         const commentContent = this.data.messageInput;
->>>>>>> d6bb237743e6f4066442911546827900a5233234
         const postId = this.data.postId;
         if (!commentContent) {
             wx.showToast({
                 title: '评论不能为空',
-<<<<<<< HEAD
-                icon: 'none',
-                duration: 2000
-=======
                 icon: 'error'
->>>>>>> d6bb237743e6f4066442911546827900a5233234
             });
             return;
         }
         this.createComment(postId, commentContent);
-<<<<<<< HEAD
-    },
-
-    createComment: function (postId, commentContent) {
-        console.log(postId);
-=======
         this.setData({
             messageInput: ''
         });
@@ -277,7 +237,6 @@ Page({
 
     createComment: function (postId, commentContent) {
         //console.log(postId);
->>>>>>> d6bb237743e6f4066442911546827900a5233234
         wx.request({
             url: global.utils.getAPI(global.utils.serverURL, '/api/users/share/posts/' + postId + '/comments'),
             method: 'POST',
@@ -311,51 +270,6 @@ Page({
         });
     },
 
-<<<<<<< HEAD
-    /**
-     * 生命周期函数--监听页面加载
-     */
-    onLoad: function (options) {
-        this.setData({
-            postId: options.id
-        });
-        console.log(this.data.postId)
-        this.fetchPostDetails(options.id);
-    },
-
-    /**
-     * 生命周期函数--监听页面初次渲染完成
-     */
-    onReady() {
-
-    },
-
-    /**
-     * 生命周期函数--监听页面显示
-     */
-    onShow() {
-
-    },
-
-    /**
-     * 生命周期函数--监听页面隐藏
-     */
-    onHide() {
-
-    },
-
-    /**
-     * 生命周期函数--监听页面卸载
-     */
-    onUnload() {
-
-    },
-
-    /**
-     * 页面相关事件处理函数--监听用户下拉动作
-     */
-    onPullDownRefresh() {
-=======
 
     /**
      * 修改显示时间为北京时间 
@@ -397,25 +311,10 @@ Page({
         const formattedDate = utils.formatDateWithInput(beijingTime);
         console.log(formattedDate);
         return formattedDate;
->>>>>>> d6bb237743e6f4066442911546827900a5233234
 
     },
 
     /**
-<<<<<<< HEAD
-     * 页面上拉触底事件的处理函数
-     */
-    onReachBottom() {
-
-    },
-
-    /**
-     * 用户点击右上角分享
-     */
-    onShareAppMessage() {
-
-    }
-=======
      * 生命周期函数--监听页面加载
      */
     onLoad: function (options) {
@@ -427,5 +326,4 @@ Page({
         this.fetchPostDetails(options.id);
     },
 
->>>>>>> d6bb237743e6f4066442911546827900a5233234
 })

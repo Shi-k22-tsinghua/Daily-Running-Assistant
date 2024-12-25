@@ -49,26 +49,4 @@
         </view>
     </view>
 
-<<<<<<< HEAD
-    <view class="tab-bar">
-        <navigator class="tab-item" url="../run/run" style="color: #009688;" open-type="redirect">
-            <image class="icon" src="../../images/run-icon.png" />
-            <text>跑步</text>
-        </navigator>
-        <navigator class="tab-item" url="../share/share" open-type="redirect">
-            <image class="icon" src="../../images/share-icon.png" />
-            <text>分享</text>
-        </navigator>
-        <navigator class="tab-item" url="../chat/chat" open-type="redirect">
-            <image class="icon" src="../../images/chat-icon.png" />
-            <text>助手</text>
-        </navigator>
-        <navigator class="tab-item" url="../my/my" open-type="redirect">
-            <image class="icon" src="../../images/my-icon.png" />
-            <text>我的</text>
-        </navigator>
-    </view>
-
-=======
->>>>>>> d6bb237743e6f4066442911546827900a5233234
 </view>

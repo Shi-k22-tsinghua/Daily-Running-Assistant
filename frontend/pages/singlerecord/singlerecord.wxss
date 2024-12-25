@@ -1,10 +1,6 @@
 /* pages/singlerecord/singlerecord.wxss */
 .container {
     height: 100vh;
-<<<<<<< HEAD
-    padding-bottom: 120rpx;
-=======
->>>>>>> d6bb237743e6f4066442911546827900a5233234
 }
 
 .map {
@@ -17,11 +13,7 @@
     width: 710rpx;
     box-sizing: border-box;
     position: fixed;
-<<<<<<< HEAD
-    bottom: 120rpx;
-=======
     bottom: 0rpx;
->>>>>>> d6bb237743e6f4066442911546827900a5233234
     opacity: 0.8;
     display: flex;
     flex-direction: column;

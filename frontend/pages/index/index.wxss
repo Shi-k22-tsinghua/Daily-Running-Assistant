@@ -37,11 +37,7 @@
     height: 80rpx;
     margin-top: 10rpx;
     margin-bottom: 10rpx;
-<<<<<<< HEAD
-    border-radius: 20rpx;
-=======
     border-radius: 40rpx;
->>>>>>> d6bb237743e6f4066442911546827900a5233234
     background-color: #009688;
     color: #fff;
     font-size: 32rpx;
@@ -49,26 +45,15 @@
 }
 
 .login-button {
-<<<<<<< HEAD
-    margin-top: 100rpx;
-=======
     margin-top: 80rpx;
->>>>>>> d6bb237743e6f4066442911546827900a5233234
 }
 
 .register-button {
     background-color: #7aad49;
-<<<<<<< HEAD
-    color: #fff;
-}
-
-.wx-login-button {
-=======
     margin-bottom: 80rpx;
 }
 
 .bottom {
->>>>>>> d6bb237743e6f4066442911546827900a5233234
     height: 80rpx;
     margin-top: 10rpx;
     margin-bottom: 100rpx;
@@ -77,19 +62,6 @@
     display: flex;
     align-items: center;
     justify-content: center;
-<<<<<<< HEAD
-    border-radius: 20rpx;
-    border-width: 2rpx;
-    border-color: #07c160;
-    border-style: solid;
-    color: #07c160;
-    font-size: 32rpx;
-}
-
-.wechat-icon {
-    width: 50rpx;
-    height: 50rpx;
-=======
     color: #009688;
     font-size: 50rpx;
 }
@@ -97,6 +69,5 @@
 .bottom-image {
     width: 100rpx;
     height: 100rpx;
->>>>>>> d6bb237743e6f4066442911546827900a5233234
     margin-right: 20rpx;
 }
