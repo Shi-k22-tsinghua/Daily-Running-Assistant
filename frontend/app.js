@@ -36,7 +36,7 @@ function tokenCheck() {
     }
 
     wx.request({
-        url: 'http://124.221.96.133:8000/api/users/tokenCheck',
+        url: 'https://dra.xulincaigou.online/api/users/tokenCheck',
         method: 'POST',
         header: {
             'Authorization': `Bearer ${token}`, // 在头部添加 token 用于身份验证

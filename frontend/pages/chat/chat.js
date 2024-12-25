@@ -1,4 +1,3 @@
-
 // pages/chat/chat.js
 const app = require('../../app.js');
 
