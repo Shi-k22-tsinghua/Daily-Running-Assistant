@@ -88,4 +88,7 @@ router.post('/share/posts/:commentId/unlikeComment', userController.unlikeCommen
 router.delete('/deleteAll', userController.deleteAllUsers);
 router.delete('/posts/deleteAll', userController.deleteAllPosts);
 
+router.put('/:username/preferences', userController.updateUserPreferences);
+router.get('/:username/preferences', userController.getUserPreferences);
+
 module.exports = router;

@@ -1161,6 +1161,70 @@ const deleteAllPosts = async(req, res) => {
   }
 };
 
+// Add to user.controller.js
+
+const updateUserPreferences = async(req, res) => {
+  try {
+    const { username } = req.params;
+    const { theme, notifications, language } = req.body;
+
+    const user = await User.findOne({ username });
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+
+    // Validate theme
+    const validThemes = ['light', 'dark', 'system'];
+    if (theme && !validThemes.includes(theme)) {
+      return res.status(400).json({ success: false, message: 'Invalid theme' });
+    }
+
+    // Validate language
+    const validLanguages = ['en', 'es', 'fr', 'zh'];
+    if (language && !validLanguages.includes(language)) {
+      return res.status(400).json({ success: false, message: 'Invalid language' });
+    }
+
+    user.preferences = {
+      ...user.preferences,
+      theme: theme || user.preferences?.theme || 'system',
+      notifications: notifications !== undefined ? notifications : user.preferences?.notifications || true,
+      language: language || user.preferences?.language || 'en'
+    };
+
+    await user.save();
+    res.status(200).json({ success: true, preferences: user.preferences });
+
+  } catch (error) {
+    console.error('Error updating preferences:', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+const getUserPreferences = async(req, res) => {
+  try {
+    const { username } = req.params;
+
+    const user = await User.findOne({ username });
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+
+    res.status(200).json({
+      success: true,
+      preferences: user.preferences || {
+        theme: 'system',
+        notifications: true,
+        language: 'en'
+      }
+    });
+
+  } catch (error) {
+    console.error('Error getting preferences:', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 module.exports = {
   // User profile
   getUsers,
@@ -1173,6 +1237,9 @@ module.exports = {
   editNickname,
   getNickname,
   deleteAllUsers,
+
+  updateUserPreferences,
+  getUserPreferences,
 
   uploadProfilePicture, // Upload user's profile picture
   getProfilePicture, // Retrieve user's profile picture
