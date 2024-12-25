@@ -127,7 +127,7 @@ Page({
         const username = wx.getStorageSync('username');
         wx.request({
             //获取username对postId是否点赞
-            url: 'http://124.221.96.133:8000/api/users/share/posts/' + postId + '/ifLikedPost',
+            url: global.utils.getAPI(global.utils.serverURL, '/api/users/share/posts/' + postId + '/ifLikedPost'),
             method: 'POST',
             header: {
                 'content-type': 'application/json' // 设置请求头为application/json
@@ -174,7 +174,7 @@ Page({
             // isLiked = true,点赞
             // 请求服务器API来更新点赞数
             wx.request({
-                url: 'http://124.221.96.133:8000/api/users/share/posts/' + postId + '/likePost',
+                url: global.utils.getAPI(global.utils.serverURL, '/api/users/share/posts'+postId+'/likePost'),
                 method: 'POST',
                 header: {
                     'content-type': 'application/json' // 设置请求头为application/json
@@ -195,7 +195,7 @@ Page({
         } else {
             // isLiked = false,取消点赞
             wx.request({
-                url: 'http://124.221.96.133:8000/api/users/share/posts/' + postId + '/unlikePost',
+                url: global.utils.getAPI(global.utils.serverURL, '/api/users/share/posts'+postId+'/unlikePost'),
                 method: 'POST',
                 data: {
                     postId: postId,

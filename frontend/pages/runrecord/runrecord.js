@@ -25,7 +25,7 @@ Page({
         });
 
         wx.request({
-            url: `http://124.221.96.133:8000/api/users/run/records/${username}`,
+            url: global.utils.getAPI(global.utils.serverURL, `/api/users/run/records/${username}`),
             method: 'GET',
             success: function (res) {
                 if (res.data && res.data.records && res.data.records.length > 0) {

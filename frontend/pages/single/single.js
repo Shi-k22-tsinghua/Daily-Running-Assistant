@@ -194,7 +194,7 @@ Page({
 
         // 发送请求到后端
         wx.request({
-            url: 'http://124.221.96.133:8000/api/users/run/record',
+            url: global.utils.getAPI(global.utils.serverURL, `/api/users/run/record`),
             method: 'POST',
             data: runData,
             success: (res) => {
