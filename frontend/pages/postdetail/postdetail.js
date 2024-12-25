@@ -270,6 +270,29 @@ Page({
         });
     },
 
+
+    /**
+     * 修改显示时间为北京时间 
+     */
+    convertToBeijingTime: function (UTCTime) {
+        // 原始时间字符串
+        const postCreateAt = UTCTime;
+
+        // 解析时间字符串为Date对象
+        const date = new Date(postCreateAt);
+
+        // 将UTC时间转换为北京时间（东八区，UTC+8）
+        // getUTCHours() 获取UTC时区的小时数，然后加上8小时转换为北京时间
+        const beijingTime = new Date(date.getTime());
+
+        // 调用格式化函数并输出结果
+        const formattedDate = utils.formatDateWithInput(beijingTime);
+        console.log(formattedDate);
+        return formattedDate;
+
+    },
+
+
     /**
      * 修改显示时间为北京时间 
      */
