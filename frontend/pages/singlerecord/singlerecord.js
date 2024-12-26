@@ -52,35 +52,32 @@ Page({
         let exertionScore = 0;
 
         // 1. 基于速度的评分 (40分)
-        if (speed >= 12) exertionScore += 40; // 配速 5分钟/公里
+        if (speed >= 15) exertionScore += 45; // 配速 4分钟/公里
+        else if (speed >= 12) exertionScore += 40; // 配速 5分钟/公里
         else if (speed >= 10) exertionScore += 35; // 配速 6分钟/公里
         else if (speed >= 8) exertionScore += 30; // 配速 7.5分钟/公里
         else if (speed >= 6) exertionScore += 25; // 配速 10分钟/公里
         else exertionScore += 20;
 
-        // 2. 基于距离的评分 (40分)
-        if (distance >= 10) exertionScore += 40;
-        else if (distance >= 5) exertionScore += 35;
-        else if (distance >= 3) exertionScore += 30;
-        else if (distance >= 1) exertionScore += 25;
+        // 2. 基于距离的评分 (60分)
+        if (distance >= 10) exertionScore += 70;
+        else if (distance >= 5) exertionScore += 60;
+        else if (distance >= 3) exertionScore += 50;
+        else if (distance >= 1) exertionScore += 40;
+        else if (distance >= 0.5) exertionScore += 30;
         else exertionScore += 20;
-
-        // 3. 基于持续时间的评分 (20分)
-        if (duration >= 60) exertionScore += 20; // 1小时以上
-        else if (duration >= 45) exertionScore += 18; // 45分钟以上
-        else if (duration >= 30) exertionScore += 15; // 30分钟以上
-        else if (duration >= 15) exertionScore += 12; // 15分钟以上
-        else exertionScore += 10;
 
         // 评估结果 (总分100分)
         let level = 0;
-        if (exertionScore >= 90) {
+        if (exertionScore >= 95) {
+            level = 6;
+        } else if (exertionScore >= 85) {
             level = 5;
         } else if (exertionScore >= 75) {
             level = 4;
-        } else if (exertionScore >= 60) {
+        } else if (exertionScore >= 65) {
             level = 3;
-        } else if (exertionScore >= 45) {
+        } else if (exertionScore >= 55) {
             level = 2;
         } else {
             level = 1;
@@ -168,14 +165,17 @@ Page({
         let suggestion = '';
 
         switch (exertionLevel) {
-            case 5:
+            case 6:
                 suggestion = "建议休息48-72小时。请保证睡眠质量（8-9小时），补充蛋白质和碳水化合物，进行轻度拉伸，可以冷敷或冰浴缓解肌肉疲劳。避免高强度运动，以恢复性训练为主。";
                 break;
+            case 5:
+                suggestion = "建议休息24-48小时。请保证充足睡眠（7-8小时），注意补充营养，可以进行适当的拉伸但不要过度劳累。适度按摩或泡温水澡有助于帮助恢复。";
+                break;
             case 4:
-                suggestion = "建议休息24-48小时。请保证充足睡眠（7-8小时），注意补充营养，可以进行20分钟轻度有氧运动或拉伸。适度按摩或泡温水澡有助于帮助恢复。";
+                suggestion = "建议休息24小时。请保持正常作息，可以进行20分钟轻度有氧运动或拉伸。注意补充水分和适量蛋白质，帮助肌肉恢复。";
                 break;
             case 3:
-                suggestion = "建议休息24小时。请保持正常作息，可以进行30分钟中等强度有氧运动或力量训练。注意补充水分和适量蛋白质，帮助肌肉恢复。";
+                suggestion = "建议停止运动开始休息。请保持正常作息，可以进行30分钟中等强度有氧运动或力量训练。经过休息后，你可以再次训练。";
                 break;
             case 2:
                 suggestion = "可以继续进行训练，建议适当增加运动强度或时长。注意在运动前做足热身，合理安排训练计划。可以尝试增加配速或距离来提高训练效果。";

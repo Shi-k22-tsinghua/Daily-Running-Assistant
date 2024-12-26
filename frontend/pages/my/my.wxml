@@ -9,18 +9,18 @@
 
     <!-- 新增的菜单栏 -->
     <view class="menu-bar">
-        <navigator class="menu-item" url='../runrecord/runrecord'>
+        <view class="menu-item" bindtap="navigateToRecord">
             <text>跑步记录</text>
-        </navigator>
-        <navigator class="menu-item" bindtap="showModal" data-action="nickname" url="">
+        </view>
+        <view class="menu-item" bindtap="showModal" data-action="nickname">
             <text>修改昵称</text>
-        </navigator>
-        <navigator class="menu-item" bindtap="showModal" data-action="avatar" url="">
+        </view>
+        <view class="menu-item" bindtap="showModal" data-action="avatar">
             <text>修改头像</text>
-        </navigator>
-        <navigator class="menu-item" bindtap="showModal" data-action="profile" url="">
+        </view>
+        <view class="menu-item" bindtap="showModal" data-action="profile">
             <text>个人信息</text>
-        </navigator>
+        </view>
     </view>
 
     <!-- 弹窗组件 -->
