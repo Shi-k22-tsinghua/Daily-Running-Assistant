@@ -60,13 +60,16 @@
 }
 
 .menu-item {
+    width: 700rpx;
+    height: 100rpx;
     display: flex;
     align-items: center;
-    padding: 15px;
-    margin: 3px;
-    border-bottom: 1px solid lightcyan;
+    padding: 30rpx;
+    margin: 10rpx;
+    border-bottom: 1rpx solid lightcyan;
     font-weight: bold;
     background-color: lightcyan;
+    box-sizing: border-box;
 }
 
 /* 自定义弹窗样式 */

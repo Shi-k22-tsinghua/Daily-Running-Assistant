@@ -5,7 +5,7 @@ const { MongoMemoryServer } = require('mongodb-memory-server');
 let mongoServer;
 
 // Connect to the in-memory database before running tests
-beforeAll(async () => {
+beforeAll(async() => {
   mongoServer = await MongoMemoryServer.create({
     binary: {
       version: '4.4.18', // Use an older version of MongoDB
@@ -17,7 +17,7 @@ beforeAll(async () => {
 }, 60000); // Increase timeout to 60 seconds
 
 // Clear all test data after every test
-afterEach(async () => {
+afterEach(async() => {
   const collections = mongoose.connection.collections;
   for (const key in collections) {
     const collection = collections[key];
@@ -26,7 +26,7 @@ afterEach(async () => {
 }, 10000); // Increase timeout to 10 seconds
 
 // Disconnect and stop the in-memory server after all tests are done
-afterAll(async () => {
+afterAll(async() => {
   if (mongoose.connection.readyState !== 0) {
     await mongoose.disconnect();
   }

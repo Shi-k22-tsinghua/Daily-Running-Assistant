@@ -180,16 +180,15 @@ Page({
                 title: '上传中...'
             });
 
-            // 调用api上传选择的图片头像
             global.api.updateProfilePicture(username, this.data.tempImagePath)
                 .then(() => {
-                    // Get the new profile picture URL
+                    // Success handling
                     const newProfilePicUrl = global.api.getProfilePicture(username);
                     wx.setStorageSync('profilePicUrl', newProfilePicUrl)
                     this.setData({
                         profilePicUrl: newProfilePicUrl + '?t=' + new Date().getTime()
                     });
-
+            
                     wx.showToast({
                         title: '头像已更新',
                         icon: 'success',
@@ -197,8 +196,9 @@ Page({
                     });
                 })
                 .catch((error) => {
+                    console.error('Upload error details:', error);
                     wx.showToast({
-                        title: error.message || '上传失败',
+                        title: '上传失败，请重试',
                         icon: 'none',
                         duration: 2000
                     });

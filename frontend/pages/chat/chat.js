@@ -1,101 +1,105 @@
 // pages/chat/chat.js
 const app = require('../../app.js');
+const utils = require('../../utils/util.js')
+const debugUtils = require('../../utils/debug-utils.js');
+
 
 Page({
-
-    /**
-     * 页面的初始数据
-     */
     data: {
-        nickname: '', // 从用户信息中获取的昵称
-        username: 'username', // 从用户信息中获取的用户名
-        messages: [], // 存储聊天消息的数组
-        messageInput: '', // 用户输入的消息
-        pageContext: this, //当前页面的引用
-        fromUser: false, //bool变量，表示当前是否消息由用户发出
+        nickname: '',
+        username: 'username',
+        messages: [],
+        messageInput: '',
+        pageContext: this,
+        fromUser: false,
     },
 
-    /**
-     * 获取用户输入
-     */
-    inputMessage: function (e) {
+    showDebugInfo: function(title, content) {
+        wx.showModal({
+            title: title,
+            content: JSON.stringify(content, null, 2),
+            showCancel: false
+        });
+    },
+
+    inputMessage: function(e) {
         this.setData({
             messageInput: e.detail.value,
         });
     },
 
-    /**
-     * 点击发送按钮，发送信息并更新对话列表
-     */
-    sendMessage: function () {
+    sendMessage: function() {
         if (this.data.messageInput.trim() === '') return;
 
-        // 将用户输入的消息添加到消息数组中
         const newMessage = {
             'role': 'user',
             'content': this.data.messageInput,
         };
+        
         this.setData({
             fromUser: true,
         });
+        
         const messages = this.data.messages.concat(newMessage);
 
-        // 清空输入框
         this.setData({
             messages: messages,
             messageInput: '',
         });
-        console.log('After send:', this.data.messageInput); // 打印发送后的消息输入值
 
-        // 显示加载指示器
         wx.showLoading({
             title: '正在回复...',
         });
 
-        const that = this; // 保存当前页面的this引用
-        // 发送请求到AI模型
+        const that = this;
+        
+        // Show API URL for debugging
+        const apiUrl = global.utils.getAPI(global.utils.serverURL, `/api/chat`);
+        //debugUtils.showDebugInfo('API URL', apiUrl);
+        
         wx.request({
-            url: 'https://open.bigmodel.cn/api/paas/v4/chat/completions', // 请求URL
+            url: apiUrl,
             method: 'POST',
             data: {
-                model: 'glm-4', // 模型代码
-                messages: that.data.messages,
-                // 其他可选参数
+                messages: messages
             },
             header: {
-                'Content-Type': 'application/json', // 设置请求头
-                'Authorization': 'Bearer 0d567b5f2975fe9553b9122af1fb183e.zC8c4UK9yC8nuxmF' //设置api key
+                'Content-Type': 'application/json'
             },
             success(res) {
-                //console.log(res.data); // 处理响应数据
+                // Show response data for debugging
+                //debugUtils.showDebugInfo('Response Data', res);
+                
+                if (!res.data || !res.data.choices || !res.data.choices[0] || !res.data.choices[0].message) {
+                    wx.showModal({
+                        title: '响应格式错误',
+                        content: JSON.stringify(res.data),
+                        showCancel: false
+                    });
+                    wx.hideLoading();
+                    return;
+                }
+
                 const aiMessage = {
-                    'role': 'assistant', // 来自AI的答复
-                    'content': res.data.choices[0].message.content, // 假设响应数据中有AI回复的内容       
+                    'role': 'assistant',
+                    'content': res.data.choices[0].message.content,
                 };
                 that.setData({
                     fromUser: false,
                     messages: messages.concat(aiMessage),
                 });
-                wx.hideLoading(); // 隐藏加载指示器
+                wx.hideLoading();
             },
             fail(error) {
-                console.error(error); // 处理请求失败情况
-                wx.showToast({
-                    title: '请求失败，请重试',
-                    icon: 'none',
-                });
-                wx.hideLoading(); // 隐藏加载指示器
+                debugUtils.showErrorInfo('请求失败', error);
+                wx.hideLoading();
             }
         });
     },
 
-    clearMessages: function () {
-        // 清除聊天记录
+    clearMessages: function() {
         this.setData({
             messages: [],
-        });
-        // 可选：清空输入框
-        this.setData({
             messageInput: '',
         });
     },
@@ -107,6 +111,7 @@ Page({
                 nickname: nickname,
             });
         }
-    },
-
-})
+        // Show server URL on load
+        //this.showDebugInfo('Server URL', global.utils.serverURL);
+    }
+});

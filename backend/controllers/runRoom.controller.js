@@ -5,130 +5,128 @@ const { User } = require('../models/user.model');
 const jwt = require('jsonwebtoken');
 const SECRET_KEY = process.env.SECRET_KEY;
 
-const serverURL = "http://124.221.96.133:8000"; //for deployment testing
-
 // Initialize GridFS
 let gfs;
 const conn = mongoose.connection;
 conn.once('open', () => {
-    gfs = new mongoose.mongo.GridFSBucket(conn.db, {
-        bucketName: 'uploads'
-    });
+  gfs = new mongoose.mongo.GridFSBucket(conn.db, {
+    bucketName: 'uploads'
+  });
 });
 
-const getRoom = async (req, res) => {
+const getRoom = async(req, res) => {
   try {
-      // Get runID from query string
-      const { runID } = req.params;
+    // Get runID from query string
+    const { runID } = req.params;
 
-      // Validate runID
-      if (!runID) {
-          return res.status(400).json({
-              success: false,
-              code: 'MISSING_RUNID',
-              message: 'Run ID is required'
-          });
-      }
-
-      // Find the room and populate profile pictures for runners
-      const room = await RunRoom.findOne({ runID });
-
-      // Check if room exists
-      if (!room) {
-          return res.status(404).json({
-              success: false,
-              code: 'ROOM_NOT_FOUND',
-              message: 'Run room not found'
-          });
-      }
-
-      // Return success response with room data
-      return res.status(200).json({
-          success: true,
-          code: 'ROOM_FOUND',
-          message: 'Run room retrieved successfully',
-          data: {
-              runID: room.runID,
-              runners: room.runners.map(runner => ({
-                  username: runner.username,
-                  nickname: runner.nickname,
-                  profile_pic: runner.profile_pic,
-                  meters: runner.meters,
-                  seconds: runner.seconds,
-                  latitude: runner.latitude,
-                  longitude: runner.longitude,
-                  running: runner.running,
-                  markers: runner.markers,
-                  start: runner.start,
-                  end: runner.end,
-                  marathon_place: runner.marathon_place,
-                  in_room: runner.in_room,
-              })),
-              createdAt: room.createdAt,
-              updatedAt: room.updatedAt
-          }
+    // Validate runID
+    if (!runID) {
+      return res.status(400).json({
+        success: false,
+        code: 'MISSING_RUNID',
+        message: 'Run ID is required'
       });
-
-  } catch (error) {
-      console.error('Error in getRoom:', error);
-      return res.status(500).json({
-          success: false,
-          code: 'SERVER_ERROR',
-          message: 'An internal server error occurred'
-      });
-  }
-};
-
-const getAllRooms = async (req, res) => {
-  try {
-      // Fetch all rooms from the database
-      const rooms = await RunRoom.find();
-
-      // Check if there are no rooms
-      if (rooms.length === 0) {
-          return res.status(404).json({ message: "No rooms found." });
-      }
-
-      res.status(200).json({
-          message: "Rooms retrieved successfully.",
-          rooms,
-      });
-  } catch (error) {
-      console.error("Error in getAllRooms:", error);
-      res.status(500).json({ error: "Internal server error." });
-  }
-};
-
-const createRoom = async (req, res) => {
-    try {
-      const { runID, password } = req.body;
-  
-      // Check if the room already exists
-      const existingRoom = await RunRoom.findOne({ runID });
-      if (existingRoom) {
-        return res.status(400).json({ error: 'Room already exists' });
-      }
-  
-      // Create a new room
-      const newRoom = new RunRoom({
-        runID,
-        password,
-        runners: [],
-      });
-  
-      // Save the new room to the database
-      await newRoom.save();
-  
-      res.status(201).json({ message: 'Room created successfully', room: newRoom });
-    } catch (error) {
-      console.error('Error creating room:', error);
-      res.status(500).json({ error: 'An error occurred while creating the room' });
     }
+
+    // Find the room and populate profile pictures for runners
+    const room = await RunRoom.findOne({ runID });
+
+    // Check if room exists
+    if (!room) {
+      return res.status(404).json({
+        success: false,
+        code: 'ROOM_NOT_FOUND',
+        message: 'Run room not found'
+      });
+    }
+
+    // Return success response with room data
+    return res.status(200).json({
+      success: true,
+      code: 'ROOM_FOUND',
+      message: 'Run room retrieved successfully',
+      data: {
+        runID: room.runID,
+        runners: room.runners.map(runner => ({
+          username: runner.username,
+          nickname: runner.nickname,
+          profile_pic: runner.profile_pic,
+          meters: runner.meters,
+          seconds: runner.seconds,
+          latitude: runner.latitude,
+          longitude: runner.longitude,
+          running: runner.running,
+          markers: runner.markers,
+          start: runner.start,
+          end: runner.end,
+          marathon_place: runner.marathon_place,
+          in_room: runner.in_room
+        })),
+        createdAt: room.createdAt,
+        updatedAt: room.updatedAt
+      }
+    });
+
+  } catch (error) {
+    console.error('Error in getRoom:', error);
+    return res.status(500).json({
+      success: false,
+      code: 'SERVER_ERROR',
+      message: 'An internal server error occurred'
+    });
+  }
 };
 
-const joinRoom = async (req, res) => {
+const getAllRooms = async(req, res) => {
   try {
-    const { runID, password, username , longitude, latitude} = req.body;
+    // Fetch all rooms from the database
+    const rooms = await RunRoom.find();
+
+    // Check if there are no rooms
+    if (rooms.length === 0) {
+      return res.status(404).json({ message: 'No rooms found.' });
+    }
+
+    res.status(200).json({
+      message: 'Rooms retrieved successfully.',
+      rooms
+    });
+  } catch (error) {
+    console.error('Error in getAllRooms:', error);
+    res.status(500).json({ error: 'Internal server error.' });
+  }
+};
+
+const createRoom = async(req, res) => {
+  try {
+    const { runID, password } = req.body;
+
+    // Check if the room already exists
+    const existingRoom = await RunRoom.findOne({ runID });
+    if (existingRoom) {
+      return res.status(400).json({ error: 'Room already exists' });
+    }
+
+    // Create a new room
+    const newRoom = new RunRoom({
+      runID,
+      password,
+      runners: []
+    });
+
+    // Save the new room to the database
+    await newRoom.save();
+
+    res.status(201).json({ message: 'Room created successfully', room: newRoom });
+  } catch (error) {
+    console.error('Error creating room:', error);
+    res.status(500).json({ error: 'An error occurred while creating the room' });
+  }
+};
+
+const joinRoom = async(req, res) => {
+  try {
+    const { runID, password, username, longitude, latitude } = req.body;
 
     // Find the room by runID
     const room = await RunRoom.findOne({ runID });
@@ -171,18 +169,18 @@ const joinRoom = async (req, res) => {
       username,
       nickname,
       longitude,
-      latitude,
+      latitude
     });
 
     // Save the updated room
     await room.save();
 
     // Update the room with the fetched profile picture URLs
-    //room.runners = updatedRunners;
+    // room.runners = updatedRunners;
 
     // Send the updated room information to all connected users
     // (assuming you have a way to broadcast the update, e.g., using Socket.IO)
-    //io.to(runID).emit('roomUpdate', room);
+    // io.to(runID).emit('roomUpdate', room);
 
     res.status(200).json({ message: 'Joined room successfully', room });
   } catch (error) {
@@ -191,157 +189,158 @@ const joinRoom = async (req, res) => {
   }
 };
 
-const leaveRoom = async (req, res) => {
+const leaveRoom = async(req, res) => {
   try {
-      const { runID, username, password } = req.body;
+    const { runID, username, password } = req.body;
 
-      // Ensure all required fields are provided
-      if (!runID || !username || !password) {
-          return res.status(400).json({ error: "runID, username, and password are required." });
-      }
-
-      // Find the room by runID
-      const room = await RunRoom.findOne({ runID });
-
-      // Check if the room exists
-      if (!room) {
-          return res.status(404).json({ error: "RunRoom not found." });
-      }
-
-      // Validate the password
-      if (room.password !== password) {
-          return res.status(403).json({ error: "Invalid password for the room." });
-      }
-
-      // Update the runner's in_room status to false
-      const updatedRoom = await RunRoom.findOneAndUpdate(
-          { runID, "runners.username": username },
-          { $set: { "runners.$.in_room": false } },
-          { new: true } // Return the updated document
-      );
-
-      // Check if the runner was found
-      if (!updatedRoom) {
-          return res.status(404).json({ error: "Runner not found in the specified room." });
-      }
-
-      res.status(200).json({
-          message: `Runner ${username} has left the room.`,
-          updatedRoom,
-      });
-  } catch (error) {
-      console.error("Error in leaveRoom:", error);
-      res.status(500).json({ error: "Internal server error." });
-  }
-};
-
-
-const updateRoom = async (req, res) => {
-  try {
-      const { runID, password, username, longitude, latitude } = req.body;
-
-      // Validate required fields
-      if (!runID || !password || !username || longitude === undefined || latitude === undefined) {
-          return res.status(400).json({ error: 'Missing required fields' });
-      }
-
-      // Find the room by runID
-      const room = await RunRoom.findOne({ runID });
-
-      // Check if the room exists
-      if (!room) {
-          return res.status(404).json({ error: 'Room not found' });
-      }
-
-      // Check if the provided password matches the room's password
-      if (room.password !== password) {
-          return res.status(401).json({ error: 'Invalid password' });
-      }
-
-      // Find the runner in the room
-      const runner = room.runners.find((runner) => runner.username === username);
-
-      // Check if the runner exists in the room
-      if (!runner) {
-          return res.status(404).json({ error: 'Runner not found in the room' });
-      }
-
-      // Update the runner's longitude and latitude
-      runner.longitude = longitude;
-      runner.latitude = latitude;
-
-      // Save the updated room
-      await room.save();
-
-      res.status(200).json({ message: 'Room updated successfully', room });
-  } catch (error) {
-      console.error('Error updating room:', error);
-      res.status(500).json({ error: 'An error occurred while updating the room' });
-  }
-};
-
-const deleteRoom = async (req, res) => {
-    try {
-        const { runID, password } = req.body;
-
-        // Ensure both runID and password are provided
-        if (!runID || !password) {
-            return res.status(400).json({ error: "runID and password are required." });
-        }
-
-        // Find the room by runID
-        const room = await RunRoom.findOne({ runID });
-
-        // Check if the room exists
-        if (!room) {
-            return res.status(404).json({ error: "RunRoom not found." });
-        }
-
-        // Validate the password
-        if (room.password !== password) {
-            return res.status(403).json({ error: "Invalid password for the room." });
-        }
-
-        // Delete the room
-        await RunRoom.deleteOne({ runID });
-
-        res.status(200).json({
-            message: `RunRoom with ID ${runID} has been deleted successfully.`,
-        });
-    } catch (error) {
-        console.error("Error in deleteRoom:", error);
-        res.status(500).json({ error: "Internal server error." });
+    // Ensure all required fields are provided
+    if (!runID || !username || !password) {
+      return res.status(400).json({ error: 'runID, username, and password are required.' });
     }
+
+    // Find the room by runID
+    const room = await RunRoom.findOne({ runID });
+
+    // Check if the room exists
+    if (!room) {
+      return res.status(404).json({ error: 'RunRoom not found.' });
+    }
+
+    // Validate the password
+    if (room.password !== password) {
+      return res.status(403).json({ error: 'Invalid password for the room.' });
+    }
+
+    // Update the runner's in_room status to false
+    const updatedRoom = await RunRoom.findOneAndUpdate(
+      { runID, 'runners.username': username },
+      { $set: { 'runners.$.in_room': false } },
+      { new: true } // Return the updated document
+    );
+
+    // Check if the runner was found
+    if (!updatedRoom) {
+      return res.status(404).json({ error: 'Runner not found in the specified room.' });
+    }
+
+    res.status(200).json({
+      message: `Runner ${username} has left the room.`,
+      updatedRoom
+    });
+  } catch (error) {
+    console.error('Error in leaveRoom:', error);
+    res.status(500).json({ error: 'Internal server error.' });
+  }
+};
+
+const updateRoom = async(req, res) => {
+  try {
+    const { runID, password, username, longitude, latitude, meters, seconds } = req.body;
+
+    // Validate required fields
+    if (!runID || !password || !username || longitude === undefined || latitude === undefined) {
+      return res.status(400).json({ error: 'Missing required fields' });
+    }
+
+    // Find the room by runID
+    const room = await RunRoom.findOne({ runID });
+
+    // Check if the room exists
+    if (!room) {
+      return res.status(404).json({ error: 'Room not found' });
+    }
+
+    // Check if the provided password matches the room's password
+    if (room.password !== password) {
+      return res.status(401).json({ error: 'Invalid password' });
+    }
+
+    // Find the runner in the room
+    const runner = room.runners.find((runner) => runner.username === username);
+
+    // Check if the runner exists in the room
+    if (!runner) {
+      return res.status(404).json({ error: 'Runner not found in the room' });
+    }
+
+    // Update the runner's location, meters, and seconds
+    runner.longitude = longitude;
+    runner.latitude = latitude;
+    if (meters !== undefined) runner.meters = meters;
+    if (seconds !== undefined) runner.seconds = seconds;
+
+    // Save the updated room
+    await room.save();
+
+    res.status(200).json({ message: 'Room updated successfully', room });
+  } catch (error) {
+    console.error('Error updating room:', error);
+    res.status(500).json({ error: 'An error occurred while updating the room' });
+  }
+};
+
+const deleteRoom = async(req, res) => {
+  try {
+    const { runID, password } = req.body;
+
+    // Ensure both runID and password are provided
+    if (!runID || !password) {
+      return res.status(400).json({ error: 'runID and password are required.' });
+    }
+
+    // Find the room by runID
+    const room = await RunRoom.findOne({ runID });
+
+    // Check if the room exists
+    if (!room) {
+      return res.status(404).json({ error: 'RunRoom not found.' });
+    }
+
+    // Validate the password
+    if (room.password !== password) {
+      return res.status(403).json({ error: 'Invalid password for the room.' });
+    }
+
+    // Delete the room
+    await RunRoom.deleteOne({ runID });
+
+    res.status(200).json({
+      message: `RunRoom with ID ${runID} has been deleted successfully.`
+    });
+  } catch (error) {
+    console.error('Error in deleteRoom:', error);
+    res.status(500).json({ error: 'Internal server error.' });
+  }
 };
 
 // Delete all run rooms
-const deleteAllRooms = async (req, res) => {
-    try {
-        // Delete all run rooms
-        await RunRoom.deleteMany({});
+const deleteAllRooms = async(req, res) => {
+  try {
+    // Delete all run rooms
+    await RunRoom.deleteMany({});
 
-        res.status(200).json({
-            success: true,
-            message: "All run rooms have been deleted successfully"
-        });
-    } catch (error) {
-        console.error('Error in deleteAllRooms:', error);
-        res.status(500).json({
-            success: false,
-            message: error.message
-        });
-    }
+    res.status(200).json({
+      success: true,
+      message: 'All run rooms have been deleted successfully'
+    });
+  } catch (error) {
+    console.error('Error in deleteAllRooms:', error);
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
 };
 
 module.exports = {
-    getRoom,
-    getAllRooms,
-    
-    createRoom,
-    joinRoom,
-    leaveRoom,
-    updateRoom,
-    deleteRoom,
+  getRoom,
+  getAllRooms,
 
-    deleteAllRooms
-}
+  createRoom,
+  joinRoom,
+  leaveRoom,
+  updateRoom,
+  deleteRoom,
+
+  deleteAllRooms
+};

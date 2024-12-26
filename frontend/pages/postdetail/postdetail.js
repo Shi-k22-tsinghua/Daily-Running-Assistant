@@ -189,7 +189,7 @@ Page({
         } else {
             // isLiked = false,取消点赞
             wx.request({
-                url: global.utils.getAPI(global.utils.serverURL, '/api/users/share/posts'+postId+'/unlikePost'),
+                url: global.utils.getAPI(global.utils.serverURL, '/api/users/share/posts/'+postId+'/unlikePost'),
                 method: 'POST',
                 data: {
                     postId: postId,

@@ -110,8 +110,30 @@ Page({
                     longitude: res.longitude,
                     showMap: true,
                 });
-
-                this.updateOtherRunners();
+    
+                // Send initial join/update to mark as in room
+                wx.request({
+                    url: global.utils.getAPI(global.utils.serverURL, `/api/runRoom/update`),
+                    method: 'POST',
+                    data: {
+                        runID: wx.getStorageSync('verifiedRoomID'),
+                        password: wx.getStorageSync('verifiedRoomPassword'),
+                        username: wx.getStorageSync('username'),
+                        longitude: res.longitude,
+                        latitude: res.latitude,
+                        meters: 0,
+                        seconds: 0,
+                        running: false,
+                        in_room: true
+                    },
+                    success: (res) => {
+                        console.log('初始房间状态更新成功');
+                        this.updateOtherRunners();  // Update after successful join
+                    },
+                    fail: (error) => {
+                        console.error('初始房间状态更新失败:', error);
+                    }
+                });
             },
             fail: (error) => {
                 console.error('获取位置失败', error);
@@ -176,70 +198,121 @@ Page({
         });
 
         this.formatPace();
-        this.updateLocation();
+
+        // Start location updates immediately
+        this.locationUpdateInterval = setInterval(() => {
+            wx.getLocation({
+                type: 'gcj02',
+                success: (res) => {
+                    this.setData({
+                        latitude: res.latitude,
+                        longitude: res.longitude,
+                    });
+                    this.updateLocation();
+                },
+                fail: (error) => {
+                    console.error('获取位置失败', error);
+                }
+            });
+        }, this.data.interval);
+
+        // Keep the other runners update interval
         this.otherRunnersInterval = setInterval(this.updateOtherRunners.bind(this), 5000);
     },
 
     updateOtherRunners() {
         const runID = this.data.verifiedRoomID;
         if (!runID) return;
-
+    
+        console.log('Fetching room data for runID:', runID);
+    
         wx.request({
             url: global.utils.getAPI(global.utils.serverURL, `/api/runRoom/${runID}`),
             method: 'GET',
             success: (res) => {
+                console.log('Raw API Response:', res.data);
+    
                 if (res.data.success && res.data.code === 'ROOM_FOUND') {
                     const currentUsername = wx.getStorageSync('username');
+                    console.log('Current username:', currentUsername);
+    
                     const otherRunners = res.data.data.runners.filter(
                         runner => runner.username !== currentUsername && runner.in_room === true
                     );
-
+    
+                    console.log('Filtered other runners:', otherRunners);
+    
+                    // Log each runner's data before creating markers
+                    otherRunners.forEach(runner => {
+                        console.log('Runner details:', {
+                            username: runner.nickname || runner.username,
+                            meters: runner.meters,
+                            seconds: runner.seconds,
+                            running: runner.running,
+                            latitude: runner.latitude,
+                            longitude: runner.longitude
+                        });
+                    });
+    
                     // 更新其他跑步者的标记
-                    const markers = otherRunners.map((runner, index) => ({
-                        id: index,
-                        latitude: runner.latitude,
-                        longitude: runner.longitude,
-                        width: 30,
-                        height: 30,
-                        iconPath: global.api.getProfilePicture(runner.username) || '../../images/my-icon.png',
-                        // 添加以下属性使图标显示为圆形
-                        borderRadius: 15, // 设置为宽高的一半
-                        anchor: {
-                            x: 0.5,
-                            y: 0.5
-                        },
-                        callout: {
-                            content: `${runner.nickname || runner.username}\n路程：${runner.meters}m\n时间：${Math.floor(runner.seconds/60)}'${(runner.seconds%60).toString().padStart(2,'0')}"\n配速：${runner.meters === 0 ? "0'00\"" : `${Math.floor((runner.seconds/runner.meters*1000)/60)}'${((runner.seconds/runner.meters*1000)%60).toFixed(0).padStart(2,'0')}"`}`,
-                            color: '#000000',
-                            fontSize: 14,
-                            borderRadius: 5,
-                            padding: 5,
-                            display: 'BYCLICK',
-                            textAlign: 'center',
-                            bgColor: '#ffffff'
-                        }
-                    }));
-
+                    const markers = otherRunners.map((runner, index) => {
+                        const markerData = {
+                            id: index,
+                            latitude: runner.latitude,
+                            longitude: runner.longitude,
+                            width: 30,
+                            height: 30,
+                            iconPath: global.api.getProfilePicture(runner.username) || '../../images/my-icon.png',
+                            borderRadius: 15,
+                            anchor: {
+                                x: 0.5,
+                                y: 0.5
+                            },
+                            callout: {
+                                content: `${runner.nickname || runner.username}\n路程：${runner.meters}m\n时间：${Math.floor(runner.seconds/60)}'${(runner.seconds%60).toString().padStart(2,'0')}"\n配速：${runner.meters === 0 ? "0'00\"" : `${Math.floor((runner.seconds/runner.meters*1000)/60)}'${((runner.seconds/runner.meters*1000)%60).toFixed(0).padStart(2,'0')}"`}`,
+                                color: '#000000',
+                                fontSize: 14,
+                                borderRadius: 5,
+                                padding: 5,
+                                display: 'BYCLICK',
+                                textAlign: 'center',
+                                bgColor: '#ffffff'
+                            }
+                        };
+    
+                        console.log('Created marker data for runner:', {
+                            username: runner.nickname || runner.username,
+                            markerData: {
+                                ...markerData,
+                                callout: markerData.callout.content
+                            }
+                        });
+    
+                        return markerData;
+                    });
+    
                     // 更新用户列表数据
-                    const updatedUsers = res.data.data.runners.map(runner => ({
-                        profilePic: global.api.getProfilePicture(runner.username) || '../../images/my-icon.png',
-                        username: runner.nickname || runner.username,
-                        nickname: runner.nickname,
-                        meters: runner.meters,
-                        seconds: runner.seconds,
-                        running: runner.running,
-                        marathonPlace: runner.marathon_place
-                    }));
-
+                    const updatedUsers = res.data.data.runners.map(runner => {
+                        const userData = {
+                            profilePic: global.api.getProfilePicture(runner.username) || '../../images/my-icon.png',
+                            username: runner.nickname || runner.username,
+                            nickname: runner.nickname,
+                            meters: runner.meters,
+                            seconds: runner.seconds,
+                            running: runner.running,
+                            marathonPlace: runner.marathon_place
+                        };
+    
+                        console.log('Updated user data:', userData);
+                        return userData;
+                    });
+    
+                    console.log('Setting state with markers:', markers);
+                    console.log('Setting state with users:', updatedUsers);
+    
                     this.setData({
                         markers,
                         users: updatedUsers
-                    });
-
-                    otherRunners.forEach(runner => {
-                        if (runner.running) {
-                            console.log(`${runner.nickname || runner.username}: ${runner.meters}米`);
-                        }
                     });
                 }
             },
@@ -255,77 +328,137 @@ Page({
         })
         if (this.data.running == true) {
             console.log("开始跑步")
-            // If not already tracking, start tracking (though it should already be tracking)
+            // If not already tracking, start tracking
             if (!this.interval) {
                 this.interval = setInterval(this.record.bind(this), this.data.interval);
             }
-
+    
             // Set start time if not already set
             if (this.data.startTime === '') {
                 this.setData({
                     startTime: new Date().toISOString()
                 });
             }
-
-            // Additional API call to mark run as started
+    
+            // Send initial running state
+            const initialData = {
+                runID: this.data.verifiedRoomID,
+                username: wx.getStorageSync('username'),
+                meters: this.data.meters,
+                seconds: this.data.seconds,
+                running: true
+            };
+    
             wx.request({
                 url: global.utils.getAPI(global.utils.serverURL, `/api/runRoom/start`),
                 method: 'POST',
-                data: {
-                    runID: this.data.verifiedRoomID,
-                    username: wx.getStorageSync('username')
-                },
+                data: initialData,
                 success: (res) => {
-                    console.log('跑步状态更新成功');
+                    console.log('Running state initialized:', res.data);
                 },
                 fail: (error) => {
-                    console.error('跑步状态更新失败:', error);
+                    console.error('Failed to initialize running state:', error);
                 }
             });
         } else {
             console.log("暂停/结束跑步")
-            // You might want to keep tracking, just mark as not actively running
+            // Update running status in backend
+            wx.request({
+                url: global.utils.getAPI(global.utils.serverURL, `/api/runRoom/update`),
+                method: 'POST',
+                data: {
+                    runID: this.data.verifiedRoomID,
+                    password: wx.getStorageSync('verifiedRoomPassword'),
+                    username: wx.getStorageSync('username'),
+                    longitude: this.data.longitude,
+                    latitude: this.data.latitude,
+                    meters: this.data.meters,
+                    seconds: this.data.seconds,
+                    running: false
+                },
+                success: (res) => {
+                    console.log('暂停状态更新成功');
+                },
+                fail: (error) => {
+                    console.error('暂停状态更新失败:', error);
+                }
+            });
             clearInterval(this.interval);
             this.interval = null;
         }
     },
 
     updateLocation: function () {
+        // Keep this function focused only on location updates
         const updatedData = {
             runID: wx.getStorageSync('verifiedRoomID'),
             password: wx.getStorageSync('verifiedRoomPassword'),
             username: wx.getStorageSync('username'),
             longitude: this.data.longitude,
             latitude: this.data.latitude,
+            in_room: true
         }
-
-        console.log('更新位置:', updatedData);
-
+    
+        //console.log('更新位置数据:', updatedData);
+    
         wx.request({
             url: global.utils.getAPI(global.utils.serverURL, `/api/runRoom/update`),
             method: 'POST',
             data: updatedData,
             success: (res) => {
                 if (res.data.message) {
-                    console.log('更新位置成功');
+                    console.log('位置更新成功');
                 } else {
-                    console.log('更新位置失败');
+                    //console.log('位置更新失败');
                 }
+            },
+            fail: (error) => {
+                console.error('位置更新失败:', error);
+            }
+        });
+    },
+    
+    updateRunningStatus: function() {
+        // This function handles running-related updates
+        if (!this.data.running) return;
+    
+        const runData = {
+            runID: wx.getStorageSync('verifiedRoomID'),
+            password: wx.getStorageSync('verifiedRoomPassword'),
+            username: wx.getStorageSync('username'),
+            meters: this.data.meters,
+            seconds: this.data.seconds,
+            running: this.data.running
+        }
+    
+        wx.request({
+            url: global.utils.getAPI(global.utils.serverURL, `/api/runRoom/update`),
+            method: 'POST',
+            data: runData,
+            success: (res) => {
+                if (res.data.message) {
+                    console.log('跑步数据更新成功');
+                } else {
+                    console.log('跑步数据更新失败');
+                }
+            },
+            fail: (error) => {
+                console.error('跑步数据更新失败:', error);
             }
         });
     },
 
     record() {
         if (!this.data.running) {
-            return
+            return;
         }
         const runID = this.data.verifiedRoomID;
         if (!runID) return;
-
+    
         this.setData({
             seconds: this.data.seconds + this.data.interval / 1000
-        })
-
+        });
+    
         wx.getLocation({
             type: 'gcj02',
         }).then(res => {
@@ -334,10 +467,10 @@ Page({
                 longitude: res.longitude,
                 id: this.data.points.length + 1
             }
-
+    
             let points = Array.isArray(this.data.points) ? this.data.points : [];
             let pace = 0;
-
+    
             if (points.length > 0) {
                 let lastPoint = points.slice(-1)[0]
                 pace = utils.getDistance(lastPoint.latitude, lastPoint.longitude, newPoint.latitude, newPoint.longitude);
@@ -350,10 +483,10 @@ Page({
             } else {
                 points.push(newPoint);
             }
-
+    
+            const newMeters = parseFloat((this.data.meters + pace).toFixed(1));
+    
             this.setData({
-                latitude: res.latitude,
-                longitude: res.longitude,
                 points,
                 polyline: [{
                     points: points.map(point => ({
@@ -365,13 +498,43 @@ Page({
                     dottedLine: false,
                     arrowLine: false
                 }],
-                meters: parseFloat((this.data.meters + pace).toFixed(1))
-            })
-
+                meters: newMeters
+            }, () => {
+                // After state is updated, send complete update to server
+                this.sendCompleteUpdate(res.latitude, res.longitude, newMeters);
+            });
+    
             this.formatPace();
-            this.updateLocation();
-        })
+        });
     },
+
+    sendCompleteUpdate(latitude, longitude, meters) {
+        const updateData = {
+            runID: wx.getStorageSync('verifiedRoomID'),
+            password: wx.getStorageSync('verifiedRoomPassword'),
+            username: wx.getStorageSync('username'),
+            longitude: longitude,
+            latitude: latitude,
+            meters: meters,
+            seconds: this.data.seconds,
+            running: this.data.running,
+            in_room: true
+        };
+    
+        console.log('Sending complete update:', updateData);
+    
+        wx.request({
+            url: global.utils.getAPI(global.utils.serverURL, `/api/runRoom/update`),
+            method: 'POST',
+            data: updateData,
+            success: (res) => {
+                console.log('Complete update success:', res.data);
+            },
+            fail: (error) => {
+                console.error('Complete update failed:', error);
+            }
+        });
+    },    
 
     endRun: function (e) {
         if (this.data.points.length < 2) {
@@ -436,9 +599,12 @@ Page({
     },
 
     onUnload() {
-        // 清除所有定时器
+        // Clear all intervals
         if (this.interval) {
             clearInterval(this.interval);
+        }
+        if (this.locationUpdateInterval) {
+            clearInterval(this.locationUpdateInterval);
         }
         if (this.otherRunnersInterval) {
             clearInterval(this.otherRunnersInterval);

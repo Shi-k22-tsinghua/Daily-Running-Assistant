@@ -5,12 +5,12 @@ const app = express(); // Express APP: creates different URL endpoints that a us
 app.get('/', (request, response) => { // read data from server, without modifying data
 
   fs.readFile('./home.html', 'utf8', (err, html) => {
-      if (err) {
-        response.status(500).send('sorry, out of order')
-      }
+    if (err) {
+      response.status(500).send('sorry, out of order');
+    }
 
-      response.send (html);
-    })
+    response.send (html);
+  });
 
 });
 
