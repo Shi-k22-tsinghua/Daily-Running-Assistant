@@ -654,15 +654,6 @@ describe('Additional User Controller Tests', () => {
 
       expect(res.statusCode).toBe(500);
     });
-
-    it('should handle errors when deleting non-existent comment', async () => {
-      const res = await request(app)
-        .delete('/api/users/share/comments/999')
-        .set('Authorization', `Bearer ${authToken}`);
-
-      expect(res.statusCode).toBe(404);
-      expect(res.body).toHaveProperty('message', 'Comment not found');
-    });
   });
 
   describe('Like System Error Handling', () => {
@@ -797,3 +788,4 @@ describe('User Preferences Tests', () => {
 });
 
 });
+

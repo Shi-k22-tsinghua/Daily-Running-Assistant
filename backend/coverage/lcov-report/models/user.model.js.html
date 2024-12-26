@@ -181,7 +181,8 @@
 <a name='L116'></a><a href='#L116'>116</a>
 <a name='L117'></a><a href='#L117'>117</a>
 <a name='L118'></a><a href='#L118'>118</a>
-<a name='L119'></a><a href='#L119'>119</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
+<a name='L119'></a><a href='#L119'>119</a>
+<a name='L120'></a><a href='#L120'>120</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
@@ -271,12 +272,12 @@
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">28x</span>
-<span class="cline-any cline-yes">28x</span>
-<span class="cline-any cline-yes">28x</span>
-<span class="cline-any cline-yes">28x</span>
-<span class="cline-any cline-yes">28x</span>
-<span class="cline-any cline-yes">28x</span>
+<span class="cline-any cline-yes">34x</span>
+<span class="cline-any cline-yes">34x</span>
+<span class="cline-any cline-yes">34x</span>
+<span class="cline-any cline-yes">34x</span>
+<span class="cline-any cline-yes">34x</span>
+<span class="cline-any cline-yes">34x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
@@ -284,8 +285,8 @@
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">35x</span>
-<span class="cline-any cline-yes">35x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
@@ -299,102 +300,103 @@
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span></td><td class="text"><pre class="prettyprint lang-js">const mongoose = require('mongoose');
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 &nbsp;
 const sequence = require('mongoose-sequence')(mongoose);
 &nbsp;
 // For individual running schema
 const RunDataSchema = mongoose.Schema({
-    meters: { type: Number, default: 0 },
-    seconds: { type: Number, default: 0 },
-    latitude: { type: Number, default: 0, required: true },
-    longitude: { type: Number, default: 0, required: true },
-    running: { type: Boolean, default: false },
-    markers: { type: [mongoose.Schema.Types.Mixed], default: [] },
-    start: { type: Date, default: 0 },
-    end: { type: Date, default: 0 }
+  meters: { type: Number, default: 0 },
+  seconds: { type: Number, default: 0 },
+  latitude: { type: Number, default: 0, required: true },
+  longitude: { type: Number, default: 0, required: true },
+  running: { type: Boolean, default: false },
+  markers: { type: [mongoose.Schema.Types.Mixed], default: [] },
+  start: { type: Date, default: 0 },
+  end: { type: Date, default: 0 }
 });
 &nbsp;
 // commentSchema
 const CommentSchema = new mongoose.Schema({
-    commentId: { type: Number, unique: true },
-    content: { type: String, required: [true, "Please enter a comment"] },
-    author: { type: Schema.Types.ObjectId, ref: 'User' },
-    post: { type: Schema.Types.ObjectId, ref: 'Post'}, 
-    likes: { type: Number, default: 0 },
-    createdAt: { type: Date, default: Date.now },
-    updatedAt: { type: Date, default: Date.now }
+  commentId: { type: Number, unique: true },
+  content: { type: String, required: [true, 'Please enter a comment'] },
+  author: { type: Schema.Types.ObjectId, ref: 'User' },
+  post: { type: Schema.Types.ObjectId, ref: 'Post' },
+  likes: { type: Number, default: 0 },
+  createdAt: { type: Date, default: Date.now },
+  updatedAt: { type: Date, default: Date.now }
 });
 &nbsp;
-//PostSchema
+// PostSchema
 const PostSchema = mongoose.Schema({
-    postId: { type: Number, unique: true },
-    title: { type: String, required: [true, "Please enter a title"] },
-    content: { type: String, required: [true, "Please enter content"] },
-    author: { type: Schema.Types.ObjectId, ref: 'User' },
-    images: [{ 
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'uploads.files' ,
-        default: null
-    }],
-    
-    commentCount: { type: Number, default: 0 },
-    comments: [{
-        type: Schema.Types.ObjectId,
-        ref: 'Comment'
-    }],
+  postId: { type: Number, unique: true },
+  title: { type: String, required: [true, 'Please enter a title'] },
+  content: { type: String, required: [true, 'Please enter content'] },
+  author: { type: Schema.Types.ObjectId, ref: 'User' },
+  images: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'uploads.files',
+    default: null
+  }],
 &nbsp;
-    likes: { type: Number, default: 0 },
-    createdAt: { type: Date, default: Date.now },
-    updatedAt: { type: Date, default: Date.now }
+  commentCount: { type: Number, default: 0 },
+  comments: [{
+    type: Schema.Types.ObjectId,
+    ref: 'Comment'
+  }],
+&nbsp;
+  likes: { type: Number, default: 0 },
+  createdAt: { type: Date, default: Date.now },
+  updatedAt: { type: Date, default: Date.now }
 }, { timestamps: true });
 &nbsp;
 const UserSchema = mongoose.Schema({
-    //userId: { type: Number, unique: true },
-    username: { type: String, required: [true, "Please enter username"], unique: true },
-    password: { type: String, required: [true, "Please enter password"] },
-    nickname: { type: String, default: function() { return this.username; } },
-    profilePicture: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'uploads.files',
-        default: null
-    },
-    lastRunId: { type: Number, default: 0 },
-    data: { type: RunDataSchema, default: {} },
-    record: { 
-        type: [{
-            runId: Number,
-            meters: { type: Number, default: 0 },
-            seconds: { type: Number, default: 0 },
-            markers: { type: [mongoose.Schema.Types.Mixed], default: [] },
-            start: Date,
-            end: Date,
-            timestamp: { type: Date, default: Date.now }
-        }], 
-        default: [] 
-    },
-    posts: [{
-        type: Schema.Types.ObjectId,
-        ref: 'Post'
-    }]
+  // userId: { type: Number, unique: true },
+  username: { type: String, required: [true, 'Please enter username'], unique: true },
+  password: { type: String, required: [true, 'Please enter password'] },
+  nickname: { type: String, default: function() { return this.username; } },
+  profilePicture: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'uploads.files',
+    default: null
+  },
+  lastRunId: { type: Number, default: 0 },
+  data: { type: RunDataSchema, default: {} },
+  record: {
+    type: [{
+      runId: Number,
+      meters: { type: Number, default: 0 },
+      seconds: { type: Number, default: 0 },
+      markers: { type: [mongoose.Schema.Types.Mixed], default: [] },
+      start: Date,
+      end: Date,
+      timestamp: { type: Date, default: Date.now }
+    }],
+    default: []
+  },
+  posts: [{
+    type: Schema.Types.ObjectId,
+    ref: 'Post'
+  }]
 });
 &nbsp;
 const LikeSchema = mongoose.Schema({
-    user: { type: Schema.Types.ObjectId, ref: 'User' },
-    post: { type: Schema.Types.ObjectId, ref: 'Post' },
-    createdAt: { type: Date, default: Date.now }
+  user: { type: Schema.Types.ObjectId, ref: 'User' },
+  post: { type: Schema.Types.ObjectId, ref: 'Post' },
+  createdAt: { type: Date, default: Date.now }
 });
 &nbsp;
 // Keep the existing toJSON transform
 UserSchema.set('toJSON', {
-    transform: (doc, ret, options) =&gt; {
-        ret.id = ret._id;
-        delete ret._id;
-        delete ret.__v;
-        delete ret.password;
-        return ret;
-    }
+  transform: (doc, ret, options) =&gt; {
+    ret.id = ret._id;
+    delete ret._id;
+    delete ret.__v;
+    delete ret.password;
+    return ret;
+  }
 });
 &nbsp;
 // 应用sequence插件来生成自增的postId
@@ -402,29 +404,30 @@ PostSchema.plugin(sequence, { id: 'post_id_counter', inc_field: 'postId' });
 CommentSchema.plugin(sequence, { id: 'commenet_id_counter', inc_field: 'commentId' });
 &nbsp;
 PostSchema.pre('save', function(next) {
-    this.updatedAt = Date.now();
-    next();
-  });
+  this.updatedAt = Date.now();
+  next();
+});
 &nbsp;
-const User = mongoose.model("User", UserSchema);
+const User = mongoose.model('User', UserSchema);
 const Comment = mongoose.model('Comment', CommentSchema);
 const Post = mongoose.model('Post', PostSchema);
 const Like = mongoose.model('Like', LikeSchema);
 &nbsp;
 // 导出模型
 module.exports = {
-    User,
-    Post,
-    Comment,
-    Like
-};</pre></td></tr></table></pre>
+  User,
+  Post,
+  Comment,
+  Like
+};
+&nbsp;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
             </div><!-- /wrapper -->
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2024-12-25T14:27:49.102Z
+                at 2024-12-26T06:44:46.271Z
             </div>
         <script src="../prettify.js"></script>
         <script>

@@ -23,16 +23,16 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">81.6% </span>
+                <span class="strong">81.5% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>284/348</span>
+                <span class='fraction'>282/346</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">54.16% </span>
+                <span class="strong">53.84% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>26/48</span>
+                <span class='fraction'>28/52</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">81.6% </span>
+                <span class="strong">81.5% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>284/348</span>
+                <span class='fraction'>282/346</span>
             </div>
         
             
@@ -409,12 +409,7 @@
 <a name='L344'></a><a href='#L344'>344</a>
 <a name='L345'></a><a href='#L345'>345</a>
 <a name='L346'></a><a href='#L346'>346</a>
-<a name='L347'></a><a href='#L347'>347</a>
-<a name='L348'></a><a href='#L348'>348</a>
-<a name='L349'></a><a href='#L349'>349</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
+<a name='L347'></a><a href='#L347'>347</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
@@ -650,7 +645,6 @@
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">2x</span>
@@ -683,6 +677,8 @@
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
@@ -766,131 +762,128 @@ const { User } = require('../models/user.model');
 const jwt = require('jsonwebtoken');
 const SECRET_KEY = process.env.SECRET_KEY;
 &nbsp;
-const serverURL = "http://124.221.96.133:8000"; //for deployment testing
-//const serverURL = "http://localhost:8000"; //for local testing
-&nbsp;
 // Initialize GridFS
 let gfs;
 const conn = mongoose.connection;
 conn.once('open', () =&gt; {
-    gfs = new mongoose.mongo.GridFSBucket(conn.db, {
-        bucketName: 'uploads'
-    });
+  gfs = new mongoose.mongo.GridFSBucket(conn.db, {
+    bucketName: 'uploads'
+  });
 });
 &nbsp;
-const getRoom = async (req, res) =&gt; {
+const getRoom = async(req, res) =&gt; {
   try {
-      // Get runID from query string
-      const { runID } = req.params;
+    // Get runID from query string
+    const { runID } = req.params;
 &nbsp;
-      // Validate runID
-      if (!runID) <span class="branch-0 cbranch-no" title="branch not covered" >{</span>
-<span class="cstat-no" title="statement not covered" >          return res.status(400).json({</span>
-<span class="cstat-no" title="statement not covered" >              success: false,</span>
-<span class="cstat-no" title="statement not covered" >              code: 'MISSING_RUNID',</span>
-<span class="cstat-no" title="statement not covered" >              message: 'Run ID is required'</span>
-<span class="cstat-no" title="statement not covered" >          });</span>
-<span class="cstat-no" title="statement not covered" >      }</span>
-&nbsp;
-      // Find the room and populate profile pictures for runners
-      const room = await RunRoom.findOne({ runID });
-&nbsp;
-      // Check if room exists
-      if (!room) {
-          return res.status(404).json({
-              success: false,
-              code: 'ROOM_NOT_FOUND',
-              message: 'Run room not found'
-          });
-      }
-&nbsp;
-      // Return success response with room data
-      return res.status(200).json({
-          success: true,
-          code: 'ROOM_FOUND',
-          message: 'Run room retrieved successfully',
-          data: {
-              runID: room.runID,
-              runners: room.runners.map(runner =&gt; ({
-                  username: runner.username,
-                  nickname: runner.nickname,
-                  profile_pic: runner.profile_pic,
-                  meters: runner.meters,
-                  seconds: runner.seconds,
-                  latitude: runner.latitude,
-                  longitude: runner.longitude,
-                  running: runner.running,
-                  markers: runner.markers,
-                  start: runner.start,
-                  end: runner.end,
-                  marathon_place: runner.marathon_place,
-                  in_room: runner.in_room,
-              })),
-              createdAt: room.createdAt,
-              updatedAt: room.updatedAt
-          }
-      });
-&nbsp;
-  } <span class="branch-0 cbranch-no" title="branch not covered" >catch (error) {</span>
-<span class="cstat-no" title="statement not covered" >      console.error('Error in getRoom:', error);</span>
-<span class="cstat-no" title="statement not covered" >      return res.status(500).json({</span>
-<span class="cstat-no" title="statement not covered" >          success: false,</span>
-<span class="cstat-no" title="statement not covered" >          code: 'SERVER_ERROR',</span>
-<span class="cstat-no" title="statement not covered" >          message: 'An internal server error occurred'</span>
+    // Validate runID
+    if (!runID) <span class="branch-0 cbranch-no" title="branch not covered" >{</span>
+<span class="cstat-no" title="statement not covered" >      return res.status(400).json({</span>
+<span class="cstat-no" title="statement not covered" >        success: false,</span>
+<span class="cstat-no" title="statement not covered" >        code: 'MISSING_RUNID',</span>
+<span class="cstat-no" title="statement not covered" >        message: 'Run ID is required'</span>
 <span class="cstat-no" title="statement not covered" >      });</span>
-<span class="cstat-no" title="statement not covered" >  }</span>
-};
-&nbsp;
-const getAllRooms = async (req, res) =&gt; {
-  try {
-      // Fetch all rooms from the database
-      const rooms = await RunRoom.find();
-&nbsp;
-      // Check if there are no rooms
-      if (rooms.length === 0) <span class="branch-0 cbranch-no" title="branch not covered" >{</span>
-<span class="cstat-no" title="statement not covered" >          return res.status(404).json({ message: "No rooms found." });</span>
-<span class="cstat-no" title="statement not covered" >      }</span>
-&nbsp;
-      res.status(200).json({
-          message: "Rooms retrieved successfully.",
-          rooms,
-      });
-  } <span class="branch-0 cbranch-no" title="branch not covered" >catch (error) {</span>
-<span class="cstat-no" title="statement not covered" >      console.error("Error in getAllRooms:", error);</span>
-<span class="cstat-no" title="statement not covered" >      res.status(500).json({ error: "Internal server error." });</span>
-<span class="cstat-no" title="statement not covered" >  }</span>
-};
-&nbsp;
-const createRoom = async (req, res) =&gt; {
-    try {
-      const { runID, password } = req.body;
-  
-      // Check if the room already exists
-      const existingRoom = await RunRoom.findOne({ runID });
-      if (existingRoom) {
-        return res.status(400).json({ error: 'Room already exists' });
-      }
-  
-      // Create a new room
-      const newRoom = new RunRoom({
-        runID,
-        password,
-        runners: [],
-      });
-  
-      // Save the new room to the database
-      await newRoom.save();
-  
-      res.status(201).json({ message: 'Room created successfully', room: newRoom });
-    } <span class="branch-0 cbranch-no" title="branch not covered" >catch (error) {</span>
-<span class="cstat-no" title="statement not covered" >      console.error('Error creating room:', error);</span>
-<span class="cstat-no" title="statement not covered" >      res.status(500).json({ error: 'An error occurred while creating the room' });</span>
 <span class="cstat-no" title="statement not covered" >    }</span>
+&nbsp;
+    // Find the room and populate profile pictures for runners
+    const room = await RunRoom.findOne({ runID });
+&nbsp;
+    // Check if room exists
+    if (!room) {
+      return res.status(404).json({
+        success: false,
+        code: 'ROOM_NOT_FOUND',
+        message: 'Run room not found'
+      });
+    }
+&nbsp;
+    // Return success response with room data
+    return res.status(200).json({
+      success: true,
+      code: 'ROOM_FOUND',
+      message: 'Run room retrieved successfully',
+      data: {
+        runID: room.runID,
+        runners: room.runners.map(runner =&gt; ({
+          username: runner.username,
+          nickname: runner.nickname,
+          profile_pic: runner.profile_pic,
+          meters: runner.meters,
+          seconds: runner.seconds,
+          latitude: runner.latitude,
+          longitude: runner.longitude,
+          running: runner.running,
+          markers: runner.markers,
+          start: runner.start,
+          end: runner.end,
+          marathon_place: runner.marathon_place,
+          in_room: runner.in_room
+        })),
+        createdAt: room.createdAt,
+        updatedAt: room.updatedAt
+      }
+    });
+&nbsp;
+  } <span class="branch-0 cbranch-no" title="branch not covered" >catch (error) {</span>
+<span class="cstat-no" title="statement not covered" >    console.error('Error in getRoom:', error);</span>
+<span class="cstat-no" title="statement not covered" >    return res.status(500).json({</span>
+<span class="cstat-no" title="statement not covered" >      success: false,</span>
+<span class="cstat-no" title="statement not covered" >      code: 'SERVER_ERROR',</span>
+<span class="cstat-no" title="statement not covered" >      message: 'An internal server error occurred'</span>
+<span class="cstat-no" title="statement not covered" >    });</span>
+<span class="cstat-no" title="statement not covered" >  }</span>
 };
 &nbsp;
-const joinRoom = async (req, res) =&gt; {
+const getAllRooms = async(req, res) =&gt; {
   try {
-    const { runID, password, username , longitude, latitude} = req.body;
+    // Fetch all rooms from the database
+    const rooms = await RunRoom.find();
+&nbsp;
+    // Check if there are no rooms
+    if (rooms.length === 0) <span class="branch-0 cbranch-no" title="branch not covered" >{</span>
+<span class="cstat-no" title="statement not covered" >      return res.status(404).json({ message: 'No rooms found.' });</span>
+<span class="cstat-no" title="statement not covered" >    }</span>
+&nbsp;
+    res.status(200).json({
+      message: 'Rooms retrieved successfully.',
+      rooms
+    });
+  } <span class="branch-0 cbranch-no" title="branch not covered" >catch (error) {</span>
+<span class="cstat-no" title="statement not covered" >    console.error('Error in getAllRooms:', error);</span>
+<span class="cstat-no" title="statement not covered" >    res.status(500).json({ error: 'Internal server error.' });</span>
+<span class="cstat-no" title="statement not covered" >  }</span>
+};
+&nbsp;
+const createRoom = async(req, res) =&gt; {
+  try {
+    const { runID, password } = req.body;
+&nbsp;
+    // Check if the room already exists
+    const existingRoom = await RunRoom.findOne({ runID });
+    if (existingRoom) {
+      return res.status(400).json({ error: 'Room already exists' });
+    }
+&nbsp;
+    // Create a new room
+    const newRoom = new RunRoom({
+      runID,
+      password,
+      runners: []
+    });
+&nbsp;
+    // Save the new room to the database
+    await newRoom.save();
+&nbsp;
+    res.status(201).json({ message: 'Room created successfully', room: newRoom });
+  } <span class="branch-0 cbranch-no" title="branch not covered" >catch (error) {</span>
+<span class="cstat-no" title="statement not covered" >    console.error('Error creating room:', error);</span>
+<span class="cstat-no" title="statement not covered" >    res.status(500).json({ error: 'An error occurred while creating the room' });</span>
+<span class="cstat-no" title="statement not covered" >  }</span>
+};
+&nbsp;
+const joinRoom = async(req, res) =&gt; {
+  try {
+    const { runID, password, username, longitude, latitude } = req.body;
 &nbsp;
     // Find the room by runID
     const room = await RunRoom.findOne({ runID });
@@ -933,18 +926,18 @@ const joinRoom = async (req, res) =&gt; {
       username,
       nickname,
       longitude,
-      latitude,
+      latitude
     });
 &nbsp;
     // Save the updated room
     await room.save();
 &nbsp;
     // Update the room with the fetched profile picture URLs
-    //room.runners = updatedRunners;
+    // room.runners = updatedRunners;
 &nbsp;
     // Send the updated room information to all connected users
     // (assuming you have a way to broadcast the update, e.g., using Socket.IO)
-    //io.to(runID).emit('roomUpdate', room);
+    // io.to(runID).emit('roomUpdate', room);
 &nbsp;
     res.status(200).json({ message: 'Joined room successfully', room });
   } <span class="branch-0 cbranch-no" title="branch not covered" >catch (error) {</span>
@@ -953,160 +946,161 @@ const joinRoom = async (req, res) =&gt; {
 <span class="cstat-no" title="statement not covered" >  }</span>
 };
 &nbsp;
-const leaveRoom = async (req, res) =&gt; {
+const leaveRoom = async(req, res) =&gt; {
   try {
-      const { runID, username, password } = req.body;
+    const { runID, username, password } = req.body;
 &nbsp;
-      // Ensure all required fields are provided
-      if (!runID || !username || !password) <span class="branch-0 cbranch-no" title="branch not covered" >{</span>
-<span class="cstat-no" title="statement not covered" >          return res.status(400).json({ error: "runID, username, and password are required." });</span>
-<span class="cstat-no" title="statement not covered" >      }</span>
-&nbsp;
-      // Find the room by runID
-      const room = await RunRoom.findOne({ runID });
-&nbsp;
-      // Check if the room exists
-      if (!room) <span class="branch-0 cbranch-no" title="branch not covered" >{</span>
-<span class="cstat-no" title="statement not covered" >          return res.status(404).json({ error: "RunRoom not found." });</span>
-<span class="cstat-no" title="statement not covered" >      }</span>
-&nbsp;
-      // Validate the password
-      if (room.password !== password) <span class="branch-0 cbranch-no" title="branch not covered" >{</span>
-<span class="cstat-no" title="statement not covered" >          return res.status(403).json({ error: "Invalid password for the room." });</span>
-<span class="cstat-no" title="statement not covered" >      }</span>
-&nbsp;
-      // Update the runner's in_room status to false
-      const updatedRoom = await RunRoom.findOneAndUpdate(
-          { runID, "runners.username": username },
-          { $set: { "runners.$.in_room": false } },
-          { new: true } // Return the updated document
-      );
-&nbsp;
-      // Check if the runner was found
-      if (!updatedRoom) <span class="branch-0 cbranch-no" title="branch not covered" >{</span>
-<span class="cstat-no" title="statement not covered" >          return res.status(404).json({ error: "Runner not found in the specified room." });</span>
-<span class="cstat-no" title="statement not covered" >      }</span>
-&nbsp;
-      res.status(200).json({
-          message: `Runner ${username} has left the room.`,
-          updatedRoom,
-      });
-  } <span class="branch-0 cbranch-no" title="branch not covered" >catch (error) {</span>
-<span class="cstat-no" title="statement not covered" >      console.error("Error in leaveRoom:", error);</span>
-<span class="cstat-no" title="statement not covered" >      res.status(500).json({ error: "Internal server error." });</span>
-<span class="cstat-no" title="statement not covered" >  }</span>
-};
-&nbsp;
-&nbsp;
-const updateRoom = async (req, res) =&gt; {
-  try {
-      const { runID, password, username, longitude, latitude } = req.body;
-&nbsp;
-      // Validate required fields
-      if (!runID || !password || !username || longitude === undefined || latitude === undefined) {
-          return res.status(400).json({ error: 'Missing required fields' });
-      }
-&nbsp;
-      // Find the room by runID
-      const room = await RunRoom.findOne({ runID });
-&nbsp;
-      // Check if the room exists
-      if (!room) <span class="branch-0 cbranch-no" title="branch not covered" >{</span>
-<span class="cstat-no" title="statement not covered" >          return res.status(404).json({ error: 'Room not found' });</span>
-<span class="cstat-no" title="statement not covered" >      }</span>
-&nbsp;
-      // Check if the provided password matches the room's password
-      if (room.password !== password) <span class="branch-0 cbranch-no" title="branch not covered" >{</span>
-<span class="cstat-no" title="statement not covered" >          return res.status(401).json({ error: 'Invalid password' });</span>
-<span class="cstat-no" title="statement not covered" >      }</span>
-&nbsp;
-      // Find the runner in the room
-      const runner = room.runners.find((runner) =&gt; runner.username === username);
-&nbsp;
-      // Check if the runner exists in the room
-      if (!runner) <span class="branch-0 cbranch-no" title="branch not covered" >{</span>
-<span class="cstat-no" title="statement not covered" >          return res.status(404).json({ error: 'Runner not found in the room' });</span>
-<span class="cstat-no" title="statement not covered" >      }</span>
-&nbsp;
-      // Update the runner's longitude and latitude
-      runner.longitude = longitude;
-      runner.latitude = latitude;
-&nbsp;
-      // Save the updated room
-      await room.save();
-&nbsp;
-      res.status(200).json({ message: 'Room updated successfully', room });
-  } <span class="branch-0 cbranch-no" title="branch not covered" >catch (error) {</span>
-<span class="cstat-no" title="statement not covered" >      console.error('Error updating room:', error);</span>
-<span class="cstat-no" title="statement not covered" >      res.status(500).json({ error: 'An error occurred while updating the room' });</span>
-<span class="cstat-no" title="statement not covered" >  }</span>
-};
-&nbsp;
-const deleteRoom = async (req, res) =&gt; {
-    try {
-        const { runID, password } = req.body;
-&nbsp;
-        // Ensure both runID and password are provided
-        if (!runID || !password) <span class="branch-0 cbranch-no" title="branch not covered" >{</span>
-<span class="cstat-no" title="statement not covered" >            return res.status(400).json({ error: "runID and password are required." });</span>
-<span class="cstat-no" title="statement not covered" >        }</span>
-&nbsp;
-        // Find the room by runID
-        const room = await RunRoom.findOne({ runID });
-&nbsp;
-        // Check if the room exists
-        if (!room) <span class="branch-0 cbranch-no" title="branch not covered" >{</span>
-<span class="cstat-no" title="statement not covered" >            return res.status(404).json({ error: "RunRoom not found." });</span>
-<span class="cstat-no" title="statement not covered" >        }</span>
-&nbsp;
-        // Validate the password
-        if (room.password !== password) {
-            return res.status(403).json({ error: "Invalid password for the room." });
-        }
-&nbsp;
-        // Delete the room
-        await RunRoom.deleteOne({ runID });
-&nbsp;
-        res.status(200).json({
-            message: `RunRoom with ID ${runID} has been deleted successfully.`,
-        });
-    } <span class="branch-0 cbranch-no" title="branch not covered" >catch (error) {</span>
-<span class="cstat-no" title="statement not covered" >        console.error("Error in deleteRoom:", error);</span>
-<span class="cstat-no" title="statement not covered" >        res.status(500).json({ error: "Internal server error." });</span>
+    // Ensure all required fields are provided
+    if (!runID || !username || !password) <span class="branch-0 cbranch-no" title="branch not covered" >{</span>
+<span class="cstat-no" title="statement not covered" >      return res.status(400).json({ error: 'runID, username, and password are required.' });</span>
 <span class="cstat-no" title="statement not covered" >    }</span>
+&nbsp;
+    // Find the room by runID
+    const room = await RunRoom.findOne({ runID });
+&nbsp;
+    // Check if the room exists
+    if (!room) <span class="branch-0 cbranch-no" title="branch not covered" >{</span>
+<span class="cstat-no" title="statement not covered" >      return res.status(404).json({ error: 'RunRoom not found.' });</span>
+<span class="cstat-no" title="statement not covered" >    }</span>
+&nbsp;
+    // Validate the password
+    if (room.password !== password) <span class="branch-0 cbranch-no" title="branch not covered" >{</span>
+<span class="cstat-no" title="statement not covered" >      return res.status(403).json({ error: 'Invalid password for the room.' });</span>
+<span class="cstat-no" title="statement not covered" >    }</span>
+&nbsp;
+    // Update the runner's in_room status to false
+    const updatedRoom = await RunRoom.findOneAndUpdate(
+      { runID, 'runners.username': username },
+      { $set: { 'runners.$.in_room': false } },
+      { new: true } // Return the updated document
+    );
+&nbsp;
+    // Check if the runner was found
+    if (!updatedRoom) <span class="branch-0 cbranch-no" title="branch not covered" >{</span>
+<span class="cstat-no" title="statement not covered" >      return res.status(404).json({ error: 'Runner not found in the specified room.' });</span>
+<span class="cstat-no" title="statement not covered" >    }</span>
+&nbsp;
+    res.status(200).json({
+      message: `Runner ${username} has left the room.`,
+      updatedRoom
+    });
+  } <span class="branch-0 cbranch-no" title="branch not covered" >catch (error) {</span>
+<span class="cstat-no" title="statement not covered" >    console.error('Error in leaveRoom:', error);</span>
+<span class="cstat-no" title="statement not covered" >    res.status(500).json({ error: 'Internal server error.' });</span>
+<span class="cstat-no" title="statement not covered" >  }</span>
+};
+&nbsp;
+const updateRoom = async(req, res) =&gt; {
+  try {
+    const { runID, password, username, longitude, latitude, meters, seconds } = req.body;
+&nbsp;
+    // Validate required fields
+    if (!runID || !password || !username || longitude === undefined || latitude === undefined) {
+      return res.status(400).json({ error: 'Missing required fields' });
+    }
+&nbsp;
+    // Find the room by runID
+    const room = await RunRoom.findOne({ runID });
+&nbsp;
+    // Check if the room exists
+    if (!room) <span class="branch-0 cbranch-no" title="branch not covered" >{</span>
+<span class="cstat-no" title="statement not covered" >      return res.status(404).json({ error: 'Room not found' });</span>
+<span class="cstat-no" title="statement not covered" >    }</span>
+&nbsp;
+    // Check if the provided password matches the room's password
+    if (room.password !== password) <span class="branch-0 cbranch-no" title="branch not covered" >{</span>
+<span class="cstat-no" title="statement not covered" >      return res.status(401).json({ error: 'Invalid password' });</span>
+<span class="cstat-no" title="statement not covered" >    }</span>
+&nbsp;
+    // Find the runner in the room
+    const runner = room.runners.find((runner) =&gt; runner.username === username);
+&nbsp;
+    // Check if the runner exists in the room
+    if (!runner) <span class="branch-0 cbranch-no" title="branch not covered" >{</span>
+<span class="cstat-no" title="statement not covered" >      return res.status(404).json({ error: 'Runner not found in the room' });</span>
+<span class="cstat-no" title="statement not covered" >    }</span>
+&nbsp;
+    // Update the runner's location, meters, and seconds
+    runner.longitude = longitude;
+    runner.latitude = latitude;
+    if (meters !== undefined) <span class="branch-0 cbranch-no" title="branch not covered" >runner.meters = meters;</span>
+    if (seconds !== undefined) <span class="branch-0 cbranch-no" title="branch not covered" >runner.seconds = seconds;</span>
+&nbsp;
+    // Save the updated room
+    await room.save();
+&nbsp;
+    res.status(200).json({ message: 'Room updated successfully', room });
+  } <span class="branch-0 cbranch-no" title="branch not covered" >catch (error) {</span>
+<span class="cstat-no" title="statement not covered" >    console.error('Error updating room:', error);</span>
+<span class="cstat-no" title="statement not covered" >    res.status(500).json({ error: 'An error occurred while updating the room' });</span>
+<span class="cstat-no" title="statement not covered" >  }</span>
+};
+&nbsp;
+const deleteRoom = async(req, res) =&gt; {
+  try {
+    const { runID, password } = req.body;
+&nbsp;
+    // Ensure both runID and password are provided
+    if (!runID || !password) <span class="branch-0 cbranch-no" title="branch not covered" >{</span>
+<span class="cstat-no" title="statement not covered" >      return res.status(400).json({ error: 'runID and password are required.' });</span>
+<span class="cstat-no" title="statement not covered" >    }</span>
+&nbsp;
+    // Find the room by runID
+    const room = await RunRoom.findOne({ runID });
+&nbsp;
+    // Check if the room exists
+    if (!room) <span class="branch-0 cbranch-no" title="branch not covered" >{</span>
+<span class="cstat-no" title="statement not covered" >      return res.status(404).json({ error: 'RunRoom not found.' });</span>
+<span class="cstat-no" title="statement not covered" >    }</span>
+&nbsp;
+    // Validate the password
+    if (room.password !== password) {
+      return res.status(403).json({ error: 'Invalid password for the room.' });
+    }
+&nbsp;
+    // Delete the room
+    await RunRoom.deleteOne({ runID });
+&nbsp;
+    res.status(200).json({
+      message: `RunRoom with ID ${runID} has been deleted successfully.`
+    });
+  } <span class="branch-0 cbranch-no" title="branch not covered" >catch (error) {</span>
+<span class="cstat-no" title="statement not covered" >    console.error('Error in deleteRoom:', error);</span>
+<span class="cstat-no" title="statement not covered" >    res.status(500).json({ error: 'Internal server error.' });</span>
+<span class="cstat-no" title="statement not covered" >  }</span>
 };
 &nbsp;
 // Delete all run rooms
-const deleteAllRooms = async (req, res) =&gt; {
-    try {
-        // Delete all run rooms
-        await RunRoom.deleteMany({});
+const deleteAllRooms = async(req, res) =&gt; {
+  try {
+    // Delete all run rooms
+    await RunRoom.deleteMany({});
 &nbsp;
-        res.status(200).json({
-            success: true,
-            message: "All run rooms have been deleted successfully"
-        });
-    } <span class="branch-0 cbranch-no" title="branch not covered" >catch (error) {</span>
-<span class="cstat-no" title="statement not covered" >        console.error('Error in deleteAllRooms:', error);</span>
-<span class="cstat-no" title="statement not covered" >        res.status(500).json({</span>
-<span class="cstat-no" title="statement not covered" >            success: false,</span>
-<span class="cstat-no" title="statement not covered" >            message: error.message</span>
-<span class="cstat-no" title="statement not covered" >        });</span>
-<span class="cstat-no" title="statement not covered" >    }</span>
+    res.status(200).json({
+      success: true,
+      message: 'All run rooms have been deleted successfully'
+    });
+  } <span class="branch-0 cbranch-no" title="branch not covered" >catch (error) {</span>
+<span class="cstat-no" title="statement not covered" >    console.error('Error in deleteAllRooms:', error);</span>
+<span class="cstat-no" title="statement not covered" >    res.status(500).json({</span>
+<span class="cstat-no" title="statement not covered" >      success: false,</span>
+<span class="cstat-no" title="statement not covered" >      message: error.message</span>
+<span class="cstat-no" title="statement not covered" >    });</span>
+<span class="cstat-no" title="statement not covered" >  }</span>
 };
 &nbsp;
 module.exports = {
-    getRoom,
-    getAllRooms,
-    
-    createRoom,
-    joinRoom,
-    leaveRoom,
-    updateRoom,
-    deleteRoom,
+  getRoom,
+  getAllRooms,
 &nbsp;
-    deleteAllRooms
-}
+  createRoom,
+  joinRoom,
+  leaveRoom,
+  updateRoom,
+  deleteRoom,
+&nbsp;
+  deleteAllRooms
+};
 &nbsp;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
@@ -1114,7 +1108,7 @@ module.exports = {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2024-12-25T14:27:49.102Z
+                at 2024-12-26T06:44:46.271Z
             </div>
         <script src="../prettify.js"></script>
         <script>
